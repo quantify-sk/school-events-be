@@ -1,0 +1,26 @@
+class ResponseMessages:
+    # Success messages
+    MSG_SUCCESS_LOGIN = "Login successful"
+    MSG_SUCCESS_LOGOUT = "Logout successful"
+    MSG_SUCCESS_ADD_LABORANT = "Successfully added laborant"
+    MSG_SUCCESS_REMOVE_LABORANT = "Successfully removed laborant"
+    MSG_SUCCESS_CREATE_USER = "User created successfully"
+    MSG_SUCCESS_GET_USER_PROJECTS = "User projects retrieved successfully"
+    MSG_SUCCESS_GET_ALL_USERS = "All users retrieved successfully"
+    MSG_SUCCESS_UPDATE_USER = "User updated successfully"
+    MSG_SUCCESS_GET_USER = "User retrieved successfully"
+    MSG_SUCCESS_DELETE_USER = "User deleted successfully"
+
+    # Error messages
+    ERR_USER_NOT_FOUND = "User not found"
+    ERR_LABORANT_NOT_ASSIGNED_TO_USER = "Laborant not assigned to user"
+    ERR_USER_ALREADY_EXISTS = "User already exists"
+    ERR_EMAIL_ALREADY_TAKEN = "Email already taken"
+    ERR_ROUTE_NOT_FOUND = "Route not found"
+    ERR_INVALID_USER_CREDENTIALS = "Invalid user credentials"
+    ERR_INVALID_REFRESH_TOKEN = "Invalid refresh token"
+    ERR_USER_NOT_LOGGED_IN = "User not logged in"
+    ERR_TOKEN_EXPIRED = "Token expired"
+    ERR_TOKEN_INVALID = "Token invalid"
+    ERR_TOKEN_NOT_PROVIDED = "Token not provided"
+    ERR_INVALID_DATA = "Invalid data"

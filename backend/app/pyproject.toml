@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "app"
+version = "0.0.1"
+description = "Video Platform BE"
+authors = [ "Tomas Snyrch <t.snyrch@gmail.com>",]
+[[tool.poetry.packages]]
+include = "app"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+mypy = "^1.5.0"
+ruff = "^0.0.284"
+black = "^23.7.0"
+
+[tool.black]
+line-length = 88
+target-version = [ "py37", "py38", "py39", "py310", "py311",]
+exclude = "((.eggs | .git | .pytest_cache | build | dist))"
+
+[tool.ruff]
+line-length = 88
+exclude = [ ".git", "__pycache__", ".mypy_cache", ".pytest_cache",]
+select = [ "E", "W", "F", "C", "B",]
+ignore = [ "B904", "B006", "E501", "B008", "C901",]
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [ "alembic", "__pycache__",]
+
+[tool.build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+fastapi = {extras = ["all"], version = "^0.110.0"}
+fastapi-pagination = {version = "^0.12.7", extras = ["sqlalchemy"]}
+asyncer = "^0.0.2"
+httpx = "^0.24.1"
+boto3 = "^1.34.74"
+hcloud = "^1.34.0"
+psycopg2 = "^2.9.9"
+python-jose = "^3.3.0"
+bcrypt = "^4.1.2"
+status = "^0.2.5"
+poetry-dotenv-plugin = "^0.2.0"
+faker = "^25.3.0"
+celery = "^5.4.0"
+redis = "^5.0.7"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [ "F401",]

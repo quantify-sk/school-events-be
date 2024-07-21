@@ -1,0 +1,85 @@
+services:
+  fastapi_server:
+    container_name: ${PROJECT_NAME}_fastapi_server
+    build: ./backend
+    restart: always
+    command: "sh -c 'uvicorn app.main:app --reload --host 0.0.0.0 --port 8000'"
+    volumes:
+      - ./backend/app:/code
+      - ../files:/files
+      - ../logs:/logs   
+    expose:
+      - 8000    
+    env_file: 
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data/
+    ports:
+      - 5579:5432
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST_AUTH_METHOD= "trust"
+
+  caddy_reverse_proxy:
+    container_name: ${PROJECT_NAME}_caddy_reverse_proxy
+    image: caddy:alpine
+    restart: always
+    ports:
+      - 8082:80
+      - 8445:443
+    environment:
+      - EXT_ENDPOINT1=${EXT_ENDPOINT1}
+      - LOCAL_1=${LOCAL_1}
+      - LOCAL_2=${LOCAL_2}
+    volumes:
+      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6399:6379
+
+  celery_worker:
+    container_name: ${PROJECT_NAME}_celery_worker
+    build: ./backend
+    command: celery -A app.core.celery_app worker --loglevel=info
+    volumes:
+      - ./backend/app:/code
+      - ./backend/templates:/templates
+      - ../files:/files
+      - ../logs:/logs     
+    env_file: 
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  celery_beat:
+    container_name: ${PROJECT_NAME}_celery_beat
+    build: ./backend
+    command: celery -A app.core.celery_app beat --loglevel=info
+    volumes:
+      - ./backend/app:/code
+      - ./backend/templates:/templates
+      - ../files:/files
+      - ../logs:/logs   
+    env_file: 
+      - .env
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data_dev:
