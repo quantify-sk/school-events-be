@@ -12,15 +12,13 @@ from app.utils.exceptions import (
     CustomValidationException,
 )
 from app.utils.middleware import (
-    ApidocBasicAuthMiddleware,
-    FilesAuthMiddleware,
-    RequestMiddleware,
+    CombinedDBSessionRequestLogMiddleware,
+    CombinedAuthMiddleware,
 )
 from app.utils.response_messages import ResponseMessages
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse
@@ -41,12 +39,11 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
-# Add middleware in the correct sequence
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-app.add_middleware(FilesAuthMiddleware)
-app.add_middleware(ApidocBasicAuthMiddleware)
+# Add the combined middlewares
+app.add_middleware(CombinedDBSessionRequestLogMiddleware)
+# app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(CombinedAuthMiddleware)
 app.add_middleware(TrustedHostMiddleware)
-app.add_middleware(RequestMiddleware)
 
 # Add CORS middleware if needed
 if settings.BACKEND_CORS_ORIGINS:

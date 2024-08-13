@@ -1,6 +1,8 @@
 import json
+from datetime import datetime
 from typing import Dict, List, Optional, Type, Union
 
+from app.dependencies import get_base_table_columns
 from fastapi import HTTPException
 from sqlalchemy import Boolean, Date, DateTime
 from sqlalchemy import Enum as SQLAlchemyEnum
@@ -8,7 +10,6 @@ from sqlalchemy import Float, Integer, String, and_, asc, cast, desc, or_
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from app.dependencies import get_base_table_columns
 
 
 def parse_json_params(
@@ -16,11 +17,11 @@ def parse_json_params(
 ) -> Union[Dict[str, Union[str, List[str]]], List[Dict[str, str]]]:
     try:
         param_data = json.loads(param_str)
-        if isinstance(param_data, dict):  # For filter_params
+        if isinstance(param_data, dict):
             return param_data
         elif isinstance(param_data, list) and all(
             isinstance(item, dict) for item in param_data
-        ):  # For sorting_params
+        ):
             return param_data
         else:
             raise ValueError("Invalid parameters format.")
@@ -38,61 +39,27 @@ def validate_column_type(column: InstrumentedAttribute, value: str, is_nullable:
             )
         return
 
-    if isinstance(column_type, SQLAlchemyEnum):
-        enum_values = [e.value for e in column_type.enum_class]
-        if value not in enum_values:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for {column.name}: {value}, must be one of {enum_values}.",
-            )
-    elif isinstance(column_type, Integer):
-        try:
-            int(value)
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be an integer.",
-            )
-    elif isinstance(column_type, String):
-        if not isinstance(value, str):
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be a string.",
-            )
-    elif isinstance(column_type, Boolean):
-        if value not in ["true", "false"]:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be 'true' or 'false'.",
-            )
-    elif isinstance(column_type, Float):
-        try:
-            float(value)
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be a float.",
-            )
-    elif isinstance(column_type, Date):
-        try:
-            from datetime import datetime
+    type_checkers = {
+        SQLAlchemyEnum: lambda v: v in [e.value for e in column_type.enum_class],
+        Integer: lambda v: isinstance(int(v), int),
+        String: lambda v: isinstance(v, str),
+        Boolean: lambda v: v in ["true", "false"],
+        Float: lambda v: isinstance(float(v), float),
+        Date: lambda v: datetime.strptime(v, "%Y-%m-%d"),
+        DateTime: lambda v: datetime.strptime(v, "%Y-%m-%dT%H:%M:%S"),
+    }
 
-            datetime.strptime(value, "%Y-%m-%d")
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be a date in YYYY-MM-DD format.",
-            )
-    elif isinstance(column_type, DateTime):
-        try:
-            from datetime import datetime
-
-            datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid value for column {column.name}: {value}, must be a datetime in YYYY-MM-DDTHH:MM:SS format.",
-            )
+    for sql_type, checker in type_checkers.items():
+        if isinstance(column_type, sql_type):
+            try:
+                if not checker(value):
+                    raise ValueError()
+            except (ValueError, TypeError):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid value for column {column.name}: {value}.",
+                )
+            break
     else:
         raise HTTPException(
             status_code=400, detail=f"Unsupported column type for column {column.name}."
@@ -105,80 +72,75 @@ class ParameterValidator:
         model: Type[DeclarativeMeta], params: Dict[str, Union[str, List[str]]]
     ) -> None:
         model_columns = {col.name: col for col in model.__table__.columns}
-        base_model_columns = get_base_table_columns(model)
+        model_columns.update(get_base_table_columns(model))
 
-        # Add base table columns to column names
-        model_columns.update(base_model_columns)
+        def validate_search_param(search_param: Dict[str, Union[str, List[str]]]):
+            term = search_param.get("term")
+            columns = search_param.get("columns")
+            search_type = search_param.get("type")
 
-        search_params = params.get("search")
+            if (
+                not isinstance(term, str)
+                or not isinstance(columns, list)
+                or search_type not in ["AND", "OR"]
+            ):
+                raise HTTPException(status_code=400, detail="Invalid search parameter.")
 
-        if search_params:
-            if not isinstance(search_params, list):
+            for col in columns:
+                if col not in model_columns:
+                    raise HTTPException(
+                        status_code=400, detail=f"Invalid search column '{col}'."
+                    )
+
+        def validate_multi_column_filter(
+            multi_column_filter: List[Dict[str, Union[List[str], List[int]]]]
+        ):
+            if not isinstance(multi_column_filter, list):
                 raise HTTPException(
-                    status_code=400, detail="Search parameter must be a list."
+                    status_code=400, detail="Invalid multi-column filter format."
                 )
 
-            for _index, search_param in enumerate(search_params):
-                if not isinstance(search_param, dict):
+            for column_entry in multi_column_filter:
+                if not isinstance(column_entry, dict):
                     raise HTTPException(
                         status_code=400,
-                        detail="Search parameter must be a dictionary.",
+                        detail="Each entry in 'multi_columns' must be a dictionary.",
                     )
 
-                term = search_param.get("term")
-                columns = search_param.get("columns")
-                search_type = search_param.get("type")
-
-                if term is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Search parameter is missing 'term'.",
-                    )
-
-                if not isinstance(term, str):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Search 'term' must be a string.",
-                    )
-
-                if columns is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Search parameter is missing 'columns'.",
-                    )
-
-                if not isinstance(columns, list):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Search 'columns' must be a list.",
-                    )
-
-                for _col_index, col in enumerate(columns):
-                    if not isinstance(col, str):
+                for column_name, values in column_entry.items():
+                    if not isinstance(values, list):
                         raise HTTPException(
                             status_code=400,
-                            detail=f"Search column {col} must be a string.",
+                            detail=f"Invalid values for column '{column_name}'.",
                         )
-                    if col not in model_columns:
+
+                    if column_name not in model_columns:
                         raise HTTPException(
                             status_code=400,
-                            detail=f"Invalid search column '{col}'.",
+                            detail=f"Invalid column '{column_name}' for table.",
                         )
 
-                if search_type is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Search parameter is missing 'type'.",
-                    )
+                    for value in values:
+                        validate_column_type(
+                            model_columns[column_name],
+                            value,
+                            model_columns[column_name].nullable,
+                        )
 
-                if search_type not in ["AND", "OR"]:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Invalid search 'type' value '{search_type}'. Must be 'AND' or 'OR'.",
-                    )
+        # Validate search parameters
+        search_params = params.get("search", [])
+        if search_params and isinstance(search_params, list):
+            for search_param in search_params:
+                validate_search_param(search_param)
 
+        # Validate multi-column filter parameters
+        multi_column_filter = params.get("multi_columns", [])
+        if multi_column_filter:
+            validate_multi_column_filter(multi_column_filter)
+
+        # Validate other filters
         for key, value in params.items():
-            if key == "search":
+            if key in ["search", "multi_columns"]:
                 continue
             if key not in model_columns:
                 raise HTTPException(
@@ -186,24 +148,17 @@ class ParameterValidator:
                 )
 
             column = model_columns[key]
-            is_nullable = column.nullable
-
             if isinstance(value, list):
                 for v in value:
-                    validate_column_type(column, v, is_nullable)
+                    validate_column_type(column, v, column.nullable)
             else:
-                validate_column_type(column, value, is_nullable)
+                validate_column_type(column, value, column.nullable)
 
     @staticmethod
     def validate_sorting_params(model: Type, params: List[Dict[str, str]]) -> None:
-        model_columns = list(model.__table__.columns.keys())
-        base_model_columns = get_base_table_columns(model)
-
-        # Add base table columns to column names
-        model_columns.extend(base_model_columns.keys())
-
-        # Make set from list
-        model_columns = set(model_columns)
+        model_columns = set(model.__table__.columns.keys()).union(
+            get_base_table_columns(model)
+        )
 
         for param in params:
             if not isinstance(param, dict) or len(param) != 1:
@@ -212,13 +167,9 @@ class ParameterValidator:
                     detail="Each sorting parameter must be a single key-value pair.",
                 )
             column, order = next(iter(param.items()))
-            if column not in model_columns:
+            if column not in model_columns or order not in ["asc", "desc"]:
                 raise HTTPException(
-                    status_code=400, detail=f"Invalid sorting column: {column}"
-                )
-            if order not in ["asc", "desc"]:
-                raise HTTPException(
-                    status_code=400, detail=f"Invalid sorting order: {order}"
+                    status_code=400, detail="Invalid sorting parameter."
                 )
 
     @staticmethod
@@ -229,84 +180,79 @@ class ParameterValidator:
         sorting_params: Optional[List[Dict[str, str]]],
     ) -> Query:
         if filter_params:
-            if not isinstance(filter_params, dict):
-                raise HTTPException(
-                    status_code=400, detail="Filter parameter must be a dictionary."
-                )
-
             ParameterValidator.validate_filter_params(model, filter_params)
             search_params = filter_params.get("search", [])
             combined_conditions = []
 
+            # Process multi-column filter
+            multi_column_filter = filter_params.get("multi_columns", [])
+            if multi_column_filter:
+                or_conditions = []
+
+                for column_entry in multi_column_filter:
+                    and_conditions = []
+
+                    for column_name, values in column_entry.items():
+                        if column_name not in model.__table__.columns:
+                            continue
+                        column = getattr(model, column_name)
+                        and_conditions.append(column.in_(values))
+
+                    if and_conditions:
+                        or_conditions.append(and_(*and_conditions))
+
+                if or_conditions:
+                    combined_conditions.append(or_(*or_conditions))
+
+            # Process normal search parameters
             for param in search_params:
                 term = f"%{param.get('term', '')}%"
-                columns = param.get("columns", [])
                 conditions = [
                     cast(getattr(model, col), String).ilike(term)
-                    for col in columns
+                    for col in param.get("columns", [])
                     if col in model.__table__.columns
                 ]
 
                 if conditions:
-                    # Combine conditions within the search object using OR
-                    combined_condition = or_(*conditions)
-                    combined_conditions.append(combined_condition)
+                    combined_conditions.append(or_(*conditions))
 
-            # Apply combined conditions according to the overall type between search objects
             if combined_conditions:
                 for i in range(len(combined_conditions) - 1):
-                    type_next = (
+                    next_type = (
                         search_params[i + 1].get("type", "AND").upper()
                         if i + 1 < len(search_params)
                         else "AND"
                     )
-                    if type_next == "AND":
-                        combined_conditions[i + 1] = and_(
-                            combined_conditions[i], combined_conditions[i + 1]
-                        )
-                    else:
-                        combined_conditions[i + 1] = or_(
-                            combined_conditions[i], combined_conditions[i + 1]
-                        )
-
+                    combined_conditions[i + 1] = (
+                        and_(combined_conditions[i], combined_conditions[i + 1])
+                        if next_type == "AND"
+                        else or_(combined_conditions[i], combined_conditions[i + 1])
+                    )
                 query = query.filter(combined_conditions[-1])
-
-            # Get column names once
-            column_names = list(model.__table__.columns.keys())
-            base_model_columns = get_base_table_columns(model)
-
-            # Add base table columns to column names
-            column_names.extend(base_model_columns.keys())
-
-            # Make set from list
-            column_names = set(column_names)
 
             # Apply additional direct filters
             for key, value in filter_params.items():
-                if key != "search" and key in column_names:
-                    column = getattr(model, key, None)
-                    if column:
-                        if isinstance(value, list):
-                            query = query.filter(column.in_(value))
-                        else:
-                            query = query.filter(column == value)
+                if (
+                    key not in ["search", "multi_columns"]
+                    and key in model.__table__.columns
+                ):
+                    column = getattr(model, key)
+                    query = query.filter(
+                        column.in_(value)
+                        if isinstance(value, list)
+                        else column == value
+                    )
 
         if sorting_params:
-            if not isinstance(sorting_params, list):
-                raise HTTPException(
-                    status_code=400, detail="Sorting parameter must be a list."
-                )
             ParameterValidator.validate_sorting_params(model, sorting_params)
             for sort_param in sorting_params:
                 column, order = next(iter(sort_param.items()))
-                if column in model.__table__.columns:
-                    query = query.order_by(
-                        asc(getattr(model, column))
-                        if order == "asc"
-                        else desc(getattr(model, column))
-                    )
+                query = query.order_by(
+                    asc(getattr(model, column))
+                    if order == "asc"
+                    else desc(getattr(model, column))
+                )
         else:
-            # Default sorting by primary key in ascending order
             primary_key_column = model.__table__.primary_key.columns.values()[0].name
             query = query.order_by(asc(getattr(model, primary_key_column)))
 
