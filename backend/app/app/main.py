@@ -11,10 +11,7 @@ from app.utils.exceptions import (
     CustomInternalServerErrorException,
     CustomValidationException,
 )
-from app.utils.middleware import (
-    CombinedDBSessionRequestLogMiddleware,
-    CombinedAuthMiddleware,
-)
+from app.utils.middleware import CombinedAuthMiddleware, CombinedDBSessionMiddleware
 from app.utils.response_messages import ResponseMessages
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -27,9 +24,9 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response
 
 # Debug database setup
-print("DEBUG: Drop all tables: ")
+print("DEBUG: Drop all tables:")
 # Base.metadata.drop_all(bind=engine)
-print("DEBUG: Create all tables: ")
+print("DEBUG: Create all tables:")
 Base.metadata.create_all(bind=engine)
 
 # Initialize FastAPI application
@@ -39,9 +36,8 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
-# Add the combined middlewares
-app.add_middleware(CombinedDBSessionRequestLogMiddleware)
-# app.add_middleware(GZipMiddleware, minimum_size=1000)
+# Add middlewares
+app.add_middleware(CombinedDBSessionMiddleware)
 app.add_middleware(CombinedAuthMiddleware)
 app.add_middleware(TrustedHostMiddleware)
 
@@ -49,7 +45,7 @@ app.add_middleware(TrustedHostMiddleware)
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=settings.BACKEND_CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -94,7 +90,7 @@ def catch_all(path: str):
 # Custom exception handler
 async def handle_exception(request: Request, exc: HTTPException) -> Response:
     context_set_db_session_rollback.set(True)
-    logger.info(f"Application exception occurred: {str(exc)}")
+    logger.info(f"Application exception occurred: {exc.detail}")
 
     response = GenericResponseModel(
         api_id=context_id_api.get(),
@@ -112,7 +108,6 @@ exception_handlers = [
     CustomBadRequestException,
 ]
 
-# Register custom exception handlers
 for exc in exception_handlers:
     app.exception_handler(exc)(handle_exception)
 
@@ -128,7 +123,7 @@ async def handle_known_exceptions(request: Request, exc: HTTPException) -> Respo
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> Response:
-    logger.info(f"Validation exception occurred: {str(exc.errors())}")
+    logger.info(f"Validation exception occurred: {exc.errors()}")
     custom_exception = CustomValidationException(errors=exc.errors())
     return await handle_exception(request, custom_exception)
 
