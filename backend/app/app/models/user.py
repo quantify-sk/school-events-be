@@ -3,6 +3,7 @@ from enum import Enum
 from pydantic import BaseModel, EmailStr, field_validator
 
 
+
 class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
@@ -11,6 +12,9 @@ class UserStatus(str, Enum):
 
 class UserRole(str, Enum):
     ADMIN = "admin"
+    ORGANIZER = "organizer"
+    SCHOOL_REPRESENTATIVE = "school_representative"
+    ANALYST = "analyst"
     USER = "user"
 
 

@@ -1,5 +1,5 @@
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 from app.context_manager import context_actor_user_data, context_id_api
@@ -10,6 +10,7 @@ from app.models.notification import NotificationType
 from app.models.response import GenericResponseModel, PaginationResponseDataModel
 from app.models.user import UserCreateModel, UserModel, UserUpdateModel
 from app.utils.exceptions import (
+    CustomAccountLockedException,
     CustomBadRequestException,
     CustomInternalServerErrorException,
 )
@@ -241,4 +242,73 @@ class UserService:
             message=ResponseMessages.MSG_SUCCESS_GET_USER,  # The success message
             status_code=status.HTTP_200_OK,  # The success status code
             data=user,  # The retrieved user
+        )
+    
+    @staticmethod
+    def check_account_lock(user: User) -> None:
+        """
+        Check if the user account is locked and raise an exception if it is.
+
+        Args:
+            user (User): The user to check.
+
+        Raises:
+            CustomAccountLockedException: If the account is locked.
+        """
+        is_locked, unlock_time = user.is_account_locked()
+        if is_locked:
+            raise CustomAccountLockedException(unlock_time)
+
+    @staticmethod
+    def handle_failed_login(user: User) -> None:
+        """
+        Handle a failed login attempt.
+
+        Args:
+            user (User): The user who failed to log in.
+        """
+        User.handle_failed_login(user.user_id)
+
+    @staticmethod
+    def reset_failed_login_attempts(user: User) -> None:
+        """
+        Reset failed login attempts for a user.
+
+        Args:
+            user (User): The user to reset failed login attempts for.
+        """
+        User.reset_failed_login_attempts(user.user_id)
+
+
+    @staticmethod
+    def get_user_role(user_id: int) -> GenericResponseModel:
+        """
+        Get the role of a user by their ID.
+
+        This method fetches the user's role from the database and returns it
+        wrapped in a GenericResponseModel.
+
+        Args:
+            user_id (int): The ID of the user whose role we want to retrieve.
+
+        Returns:
+            GenericResponseModel: A response model containing the user's role or an error message.
+        """
+        # Attempt to get the user's role from the database
+        user_role = User.get_user_role(user_id)
+        
+        # If no role is found, return a 404 error
+        if user_role is None:
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_404_NOT_FOUND,
+                error=ResponseMessages.ERR_USER_NOT_FOUND,
+            )
+        
+        # If a role is found, return it in a success response
+        return GenericResponseModel(
+            api_id=context_id_api.get(),
+            status_code=status.HTTP_200_OK,
+            message=ResponseMessages.MSG_SUCCESS_GET_USER_ROLE,
+            data={"role": user_role}
         )

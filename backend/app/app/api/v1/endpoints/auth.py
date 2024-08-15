@@ -21,10 +21,11 @@ from app.models.response import (
     build_api_response,
 )
 from app.models.user import UserModel
-from app.utils.exceptions import CustomBadRequestException
+from app.utils.exceptions import CustomAccountLockedException, CustomBadRequestException
 from app.utils.response_messages import ResponseMessages
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+from app.service.user_service import UserService
 
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRE_MINUTES = settings.REFRESH_TOKEN_EXPIRE_MINUTES
@@ -44,13 +45,17 @@ router = APIRouter()
             "model": GenericResponseModel,
             "description": "Invalid user credentials",
         },
+        403: {
+            "model": GenericResponseModel,
+            "description": "Account locked",
+        },
         500: {
             "model": GenericResponseModel,
             "description": "Internal Server Error",
         },
     },
-    summary="Loging User",
-    description="Logins user using form_data.",
+    summary="Login User",
+    description="Logs in user using form_data.",
     response_description="An access token, a refresh token and token type.",
 )
 async def login_user(
@@ -61,9 +66,9 @@ async def login_user(
     Login user
     :param form_data: OAuth2PasswordRequestForm contains username and password
     :param _: build_request_context dependency injection handles the request context
-    :return: GenericResponseModel
+    :return: OAuth2TokenModel or GenericResponseModel
     """
-    user: UserModel = User.get_user_by_email(form_data.username)
+    user = User.get_user_object_by_email(form_data.username)
     if user is None:
         context_set_db_session_rollback.set(True)
         return build_api_response(
@@ -74,7 +79,19 @@ async def login_user(
             )
         )
 
+    try:
+        UserService.check_account_lock(user)
+    except CustomAccountLockedException as e:
+        return build_api_response(
+            GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=e.status_code,
+                error=e.detail,
+            )
+        )
+
     if not verify_password(form_data.password, user.password_hash):
+        User.handle_failed_login(user.user_id)
         logger.info(
             msg=f"Invalid credentials for user {user.user_id} at {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
         )
@@ -86,6 +103,9 @@ async def login_user(
                 error=ResponseMessages.ERR_INVALID_USER_CREDENTIALS,
             )
         )
+
+    # Reset failed login attempts on successful login
+    User.reset_failed_login_attempts(user.user_id)
 
     # Generate access and refresh tokens
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

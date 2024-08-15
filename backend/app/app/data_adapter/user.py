@@ -1,12 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Dict, List, Optional
-
+from pytz import timezone
 from app.database import Base
 from app.models.get_params import ParameterValidator
 from app.models.user import (
     UserCreateModel,
     UserModel,
     UserStatus,
+    UserTokenData,
     UserUpdateModel,
     UserRole,
 )
@@ -43,6 +44,29 @@ class User(Base):
     notifications: Mapped[list["Notification"]] = relationship(
         "Notification", secondary="user_notification", back_populates="users"
     )
+
+    #Locked login attempts
+    failed_login_attempts = Column(Integer, default=0)
+    last_failed_login = Column(DateTime, nullable=True)
+    account_locked_until = Column(DateTime, nullable=True)
+    organized_events = relationship("Event", back_populates="organizer")
+
+    def build_user_token_data(self) -> UserTokenData:
+        return UserTokenData(
+            user_id=self.user_id,
+        )
+    
+    def is_account_locked(self) -> tuple[bool, Optional[datetime]]:
+        """
+        Check if the user account is locked.
+
+        Returns:
+            tuple[bool, Optional[datetime]]: A tuple containing a boolean indicating if the account is locked,
+            and the datetime when the account will be unlocked (if it is locked).
+        """
+        if self.account_locked_until and self.account_locked_until > datetime.now():
+            return True, self.account_locked_until
+        return False, None
 
     def __init__(
         self,
@@ -304,3 +328,68 @@ class User(Base):
         )
 
         return [user._to_model() for user in users], total_count
+
+    MAX_LOGIN_ATTEMPTS = 5
+    LOCKOUT_DURATION = timedelta(minutes=5)
+
+    @classmethod
+    def handle_failed_login(cls, user_id: int) -> None:
+        """
+        Handle a failed login attempt.
+
+        Args:
+            user_id (int): The ID of the user who failed to log in.
+        """
+        from app.context_manager import get_db_session
+        db = get_db_session()
+        user = db.query(cls).filter(cls.user_id == user_id).first()
+        if user:
+            user.failed_login_attempts += 1
+            slovakia_tz = timezone('Europe/Bratislava')
+            current_time = datetime.now(slovakia_tz)
+            user.last_failed_login = current_time
+
+            if user.failed_login_attempts >= cls.MAX_LOGIN_ATTEMPTS:
+                user.account_locked_until = current_time + cls.LOCKOUT_DURATION
+
+            db.commit()
+
+    @classmethod
+    def reset_failed_login_attempts(cls, user_id: int) -> None:
+        """
+        Reset failed login attempts for a user.
+
+        Args:
+            user_id (int): The ID of the user to reset failed login attempts for.
+        """
+        from app.context_manager import get_db_session
+        db = get_db_session()
+        user = db.query(cls).filter(cls.user_id == user_id).first()
+        if user:
+            user.failed_login_attempts = 0
+            user.last_failed_login = None
+            user.account_locked_until = None
+            db.commit()
+
+    @classmethod
+    def get_user_role(cls, user_id: int) -> Optional[str]:
+        """
+        Get the role of a user by their ID.
+
+        This class method queries the database to find a user by their ID
+        and returns their role if found.
+
+        Args:
+            user_id (int): The ID of the user whose role we want to retrieve.
+
+        Returns:
+            Optional[str]: The user's role if found, None otherwise.
+        """
+        from app.context_manager import get_db_session
+        
+        db = get_db_session()
+        user = db.query(cls).filter(cls.user_id == user_id).first()
+        
+        if user:
+            return user.role
+        return None

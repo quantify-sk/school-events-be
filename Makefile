@@ -9,6 +9,7 @@ help:
 	@echo "  run-dev-build      Run development docker compose and force build containers."
 	@echo "  seed-db            Seed the database."
 	@echo "  seed-admin-db      Seed only the admin user."
+	@echo "  seed-events-db     Seed the events."
 	@echo "  run-dev            Run development docker compose."
 	@echo "  stop-dev           Stop development docker compose."
 	@echo "  run-prod           Run production docker compose."
@@ -42,6 +43,10 @@ seed-db:
 seed-admin-db:
 	@echo "Seeding only the admin user..."
 	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db admin
+
+seed-events-db:
+	@echo "Seeding the events..."
+	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db events
 
 run-dev:
 	@echo "Running development docker compose..."

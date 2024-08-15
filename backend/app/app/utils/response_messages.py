@@ -10,6 +10,20 @@ class ResponseMessages:
     MSG_SUCCESS_UPDATE_USER = "User updated successfully"
     MSG_SUCCESS_GET_USER = "User retrieved successfully"
     MSG_SUCCESS_DELETE_USER = "User deleted successfully"
+    MSG_SUCCESS_GET_USER_ROLE = "User role retrieved successfully"
+
+    MSG_SUCCESS_CREATE_EVENT = "Event created successfully"
+    MSG_SUCCESS_UPDATE_EVENT = "Event updated successfully"
+    MSG_SUCCESS_DELETE_EVENT = "Event deleted successfully"
+    MSG_SUCCESS_GET_EVENT = "Event retrieved successfully"
+    MSG_SUCCESS_GET_ALL_EVENTS = "All events retrieved successfully"
+    MSG_SUCCESS_GET_ORGANIZER_EVENTS = "Organizer events retrieved successfully"
+
+    MSG_SUCCESS_CREATE_RESERVATION = "Reservation created successfully"
+    MSG_SUCCESS_UPDATE_RESERVATION = "Reservation updated successfully"
+    MSG_SUCCESS_DELETE_RESERVATION = "Reservation deleted successfully"
+    MSG_SUCCESS_GET_RESERVATION = "Reservation retrieved successfully"
+    MSG_SUCCESS_GET_ALL_RESERVATIONS = "All reservations retrieved successfully"
 
     # Error messages
     ERR_USER_NOT_FOUND = "User not found"
@@ -24,3 +38,15 @@ class ResponseMessages:
     ERR_TOKEN_INVALID = "Token invalid"
     ERR_TOKEN_NOT_PROVIDED = "Token not provided"
     ERR_INVALID_DATA = "Invalid data"
+    ERR_INVALID_USER_ID = "Invalid user ID"
+
+    ERR_EVENT_NOT_FOUND = "Event not found"
+    ERR_CREATE_EVENT = "Error creating event"
+
+    ERR_RESERVATION_NOT_FOUND = "Reservation not found"
+    ERR_INSUFFICIENT_CAPACITY = "Insufficient capacity for the reservation"
+    ERR_INVALID_RESERVATION_DATA = "Invalid reservation data"
+    ERR_INVALID_NUMBER_OF_SEATS = (
+        "Invalid number of seats. The number of seats must be greater than zero."
+    )
+    MSG_SUCCESS_GET_RESERVATIONS_BY_EVENT = "Reservations retrieved successfully"

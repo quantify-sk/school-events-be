@@ -76,6 +76,33 @@ async def create_user(
 
 
 @router.get(
+    "/{user_id}/role",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get User Role",
+    description="Retrieve the role of a user by their ID.",
+)
+async def get_user_role(
+    user_id: int,
+    auth=Depends(authenticate_user_token),  # The authentication token.
+    _=Depends(build_request_context),  # Build the request context.
+):
+    """
+    Get the role of a user by their ID.
+    
+    This endpoint requires authentication and returns the role of the specified user.
+    
+    Args:
+        user_id (int): The ID of the user whose role we want to retrieve.
+        current_user (UserModel): The currently authenticated user (injected by dependency).
+    
+    Returns:
+        GenericResponseModel: A response model containing the user's role.
+    """
+    response = UserService.get_user_role(user_id)
+    return response
+
+@router.get(
     "/{user_id}",
     status_code=status.HTTP_200_OK,
     response_model=GenericResponseModel,
