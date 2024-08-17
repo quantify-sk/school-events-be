@@ -11,6 +11,7 @@ class ResponseMessages:
     MSG_SUCCESS_GET_USER = "User retrieved successfully"
     MSG_SUCCESS_DELETE_USER = "User deleted successfully"
     MSG_SUCCESS_GET_USER_ROLE = "User role retrieved successfully"
+    ERR_ACCOUNT_PENDING_APPROVAL = "Account pending approval"
 
     MSG_SUCCESS_CREATE_EVENT = "Event created successfully"
     MSG_SUCCESS_UPDATE_EVENT = "Event updated successfully"
@@ -18,12 +19,16 @@ class ResponseMessages:
     MSG_SUCCESS_GET_EVENT = "Event retrieved successfully"
     MSG_SUCCESS_GET_ALL_EVENTS = "All events retrieved successfully"
     MSG_SUCCESS_GET_ORGANIZER_EVENTS = "Organizer events retrieved successfully"
+    MSG_SUCCESS_GET_PENDING_USERS = "Pending users retrieved successfully"
+    MSG_SUCCESS_APPROVE_USER = "User approved successfully"
+    MSG_SUCCESS_REJECT_USER = "User rejected successfully"
 
     MSG_SUCCESS_CREATE_RESERVATION = "Reservation created successfully"
     MSG_SUCCESS_UPDATE_RESERVATION = "Reservation updated successfully"
     MSG_SUCCESS_DELETE_RESERVATION = "Reservation deleted successfully"
     MSG_SUCCESS_GET_RESERVATION = "Reservation retrieved successfully"
     MSG_SUCCESS_GET_ALL_RESERVATIONS = "All reservations retrieved successfully"
+    MSG_SUCCESS_GET_USER_RESERVATIONS = "User reservations retrieved successfully"
 
     # Error messages
     ERR_USER_NOT_FOUND = "User not found"

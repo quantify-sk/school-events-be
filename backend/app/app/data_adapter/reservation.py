@@ -1,121 +1,142 @@
-from app.models.get_params import ParameterValidator
-from sqlalchemy import Column, Integer, Enum, ForeignKey
-from sqlalchemy.orm import Session
+from sqlalchemy import Column, Integer, Enum, ForeignKey, String, Text, DateTime
+from sqlalchemy.orm import relationship
+from datetime import datetime
 from app.database import Base
 from app.models.reservation import ReservationStatus, ReservationCreateModel
-from app.data_adapter.event import Event
 from app.utils.exceptions import CustomBadRequestException
 from app.utils.response_messages import ResponseMessages
+from app.context_manager import get_db_session
 from typing import List, Optional, Tuple, Dict, Any, Union
+
+# Assuming Event is imported here, or you can import it directly.
+from app.data_adapter.event import Event
 
 
 class Reservation(Base):
     __tablename__ = "reservation"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
-    number_of_seats = Column(Integer, nullable=False)
+    number_of_students = Column(Integer, nullable=False)
+    number_of_teachers = Column(Integer, nullable=False)
+    special_requirements = Column(Text, nullable=True)
+    contact_info = Column(String(255), nullable=False)
     status = Column(
         Enum(ReservationStatus), nullable=False, default=ReservationStatus.PENDING
     )
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    def __init__(self, event_id: int, user_id: int, number_of_seats: int, status: str):
+    def __init__(
+        self,
+        event_id: int,
+        user_id: int,
+        number_of_students: int,
+        number_of_teachers: int,
+        special_requirements: str,
+        contact_info: str,
+        status: ReservationStatus = ReservationStatus.PENDING,
+    ):
         self.event_id = event_id
         self.user_id = user_id
-        self.number_of_seats = number_of_seats
+        self.number_of_students = number_of_students
+        self.number_of_teachers = number_of_teachers
+        self.special_requirements = special_requirements
+        self.contact_info = contact_info
         self.status = status
 
     def _to_model(self) -> Dict[str, Any]:
-        """
-        Convert the Reservation object to a dictionary.
-
-        Returns:
-            Dict[str, Any]: A dictionary representation of the Reservation.
-        """
         return {
             "id": self.id,
             "event_id": self.event_id,
             "user_id": self.user_id,
-            "number_of_seats": self.number_of_seats,
+            "number_of_students": self.number_of_students,
+            "number_of_teachers": self.number_of_teachers,
+            "special_requirements": self.special_requirements,
+            "contact_info": self.contact_info,
             "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
         }
 
     @classmethod
     def create_reservation(
-        cls, session: Session, reservation_data: ReservationCreateModel
+        cls, reservation_data: ReservationCreateModel
     ) -> Dict[str, Any]:
         """
-        Create a new reservation.
+        Create a new reservation for an event.
+
+        This method creates a new reservation based on the provided data. It checks if the event exists
+        and if there's sufficient capacity before creating the reservation.
 
         Args:
-            session (Session): The database session.
             reservation_data (ReservationCreateModel): The data for the new reservation.
 
         Returns:
-            Dict[str, Any]: The created reservation as a dictionary.
+            Dict[str, Any]: A dictionary representation of the created reservation.
 
         Raises:
-            CustomBadRequestException: If the event is not found or there's not enough capacity.
+            CustomBadRequestException: If the event is not found or there's insufficient capacity.
         """
-        event = session.query(Event).filter_by(id=reservation_data.event_id).first()
-        if not event:
-            raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
+        with get_db_session() as session:
+            # Check if the event exists
+            event = session.query(Event).filter_by(id=reservation_data.event_id).first()
+            if not event:
+                raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
-        # Check current reservations for this event
-        current_reservations = (
-            session.query(cls)
-            .filter_by(event_id=event.id, status=ReservationStatus.CONFIRMED)
-            .all()
-        )
-        total_reserved_seats = sum(
-            reservation.number_of_seats for reservation in current_reservations
-        )
-
-        if event.capacity < total_reserved_seats + reservation_data.number_of_seats:
-            raise CustomBadRequestException(ResponseMessages.ERR_INSUFFICIENT_CAPACITY)
-
-        new_reservation = cls(
-            event_id=reservation_data.event_id,
-            user_id=reservation_data.user_id,
-            number_of_seats=reservation_data.number_of_seats,
-            status=ReservationStatus.CREATED,  # Assuming we're creating confirmed reservations
-        )
-        session.add(new_reservation)
-        session.commit()
-        return new_reservation._to_model()
+            # Calculate total seats and check if booking is possible
+            total_seats = (
+                reservation_data.number_of_students
+                + reservation_data.number_of_teachers
+            )
+            if event.book_seats(total_seats):
+                # Create new reservation
+                new_reservation = cls(
+                    event_id=reservation_data.event_id,
+                    user_id=reservation_data.user_id,
+                    number_of_students=reservation_data.number_of_students,
+                    number_of_teachers=reservation_data.number_of_teachers,
+                    special_requirements=reservation_data.special_requirements,
+                    contact_info=reservation_data.contact_info,
+                    status=ReservationStatus.CONFIRMED,
+                )
+                session.add(new_reservation)
+                session.commit()
+                return new_reservation._to_model()
+            else:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_INSUFFICIENT_CAPACITY
+                )
 
     @classmethod
-    def get_reservation_by_id(
-        cls, session: Session, reservation_id: int
-    ) -> Dict[str, Any]:
+    def get_reservation_by_id(cls, reservation_id: int) -> Dict[str, Any]:
         """
-        Get a reservation by its ID.
+        Retrieve a reservation by its ID.
 
         Args:
-            session (Session): The database session.
             reservation_id (int): The ID of the reservation to retrieve.
 
         Returns:
-            Dict[str, Any]: The reservation as a dictionary.
+            Dict[str, Any]: A dictionary representation of the reservation.
 
         Raises:
             CustomBadRequestException: If the reservation is not found.
         """
-        reservation = session.query(cls).filter_by(id=reservation_id).first()
-        if not reservation:
-            raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
-
-        return reservation._to_model()
+        with get_db_session() as session:
+            reservation = session.query(cls).filter_by(id=reservation_id).first()
+            if not reservation:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+            return reservation._to_model()
 
     @classmethod
-    def delete_reservation(
-        cls, session: Session, reservation_id: int
-    ) -> Dict[str, int]:
+    def delete_reservation(cls, reservation_id: int) -> Dict[str, int]:
         """
         Delete a reservation by its ID.
 
         Args:
-            session (Session): The database session.
             reservation_id (int): The ID of the reservation to delete.
 
         Returns:
@@ -124,67 +145,144 @@ class Reservation(Base):
         Raises:
             CustomBadRequestException: If the reservation is not found.
         """
-        reservation = session.query(cls).filter_by(id=reservation_id).first()
-        if not reservation:
-            raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+        with get_db_session() as session:
+            reservation = session.query(cls).filter_by(id=reservation_id).first()
+            if not reservation:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
 
-        session.delete(reservation)
-        session.commit()
-        return {"reservation_id": reservation_id}
+            # Retrieve the event associated with this reservation to update available spots
+            event = session.query(Event).filter_by(id=reservation.event_id).first()
+            if event:
+                event.available_spots += (
+                    reservation.number_of_students + reservation.number_of_teachers
+                )
+                session.add(event)
+
+            session.delete(reservation)
+            session.commit()
+            return {"reservation_id": reservation_id}
 
     @classmethod
     def get_reservations(
         cls,
-        session: Session,
         current_page: int,
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
     ) -> Tuple[List[Dict[str, Any]], int]:
-        query = session.query(cls)
+        """
+        Retrieve a paginated list of reservations with optional filtering and sorting.
 
-        # Apply filters and sorting
-        query = ParameterValidator.apply_filters_and_sorting(
-            query,
-            cls,
-            filter_params,
-            sorting_params,
-        )
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): Parameters for filtering the reservations.
+            sorting_params (Optional[List[Dict[str, str]]]): Parameters for sorting the reservations.
 
-        total_count = query.count()
-        reservations = (
-            query.offset((current_page - 1) * items_per_page)
-            .limit(items_per_page)
-            .all()
-        )
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing a list of reservation dictionaries and the total count.
+        """
+        with get_db_session() as session:
+            query = session.query(cls)
 
-        return [reservation._to_model() for reservation in reservations], total_count
+            # Apply filters and sorting
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, sorting_params
+            )
+
+            total_count = query.count()
+
+            reservations = (
+                query.offset((current_page - 1) * items_per_page)
+                .limit(items_per_page)
+                .all()
+            )
+
+            return [
+                reservation._to_model() for reservation in reservations
+            ], total_count
 
     @classmethod
     def get_reservations_by_event_id(
         cls,
-        session: Session,
         event_id: int,
         current_page: int,
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
     ) -> Tuple[List[Dict[str, Any]], int]:
-        query = session.query(cls).filter(cls.event_id == event_id)
+        """
+        Retrieve a paginated list of reservations for a specific event with optional filtering and sorting.
 
-        # Apply filters and sorting
-        query = ParameterValidator.apply_filters_and_sorting(
-            query,
-            cls,
-            filter_params,
-            sorting_params,
-        )
+        Args:
+            event_id (int): The ID of the event to get reservations for.
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): Parameters for filtering the reservations.
+            sorting_params (Optional[List[Dict[str, str]]]): Parameters for sorting the reservations.
 
-        total_count = query.count()
-        reservations = (
-            query.offset((current_page - 1) * items_per_page)
-            .limit(items_per_page)
-            .all()
-        )
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing a list of reservation dictionaries and the total count.
+        """
+        with get_db_session() as session:
+            query = session.query(cls).filter(cls.event_id == event_id)
 
-        return [reservation._to_model() for reservation in reservations], total_count
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, sorting_params
+            )
+
+            total_count = query.count()
+
+            reservations = (
+                query.offset((current_page - 1) * items_per_page)
+                .limit(items_per_page)
+                .all()
+            )
+
+            return [
+                reservation._to_model() for reservation in reservations
+            ], total_count
+
+    @classmethod
+    def get_reservations_by_user_id(cls, user_id: int) -> List[Dict[str, Any]]:
+        """
+        Retrieve all reservations for a specific user from the database.
+
+        Args:
+            user_id (int): The ID of the user to retrieve reservations for.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries containing the reservation data.
+        """
+        with get_db_session() as session:
+            reservations = session.query(cls).filter_by(user_id=user_id).all()
+            return [reservation._to_model() for reservation in reservations]
+
+    @classmethod
+    def get_reservation_by_user_and_event(
+        cls, user_id: int, event_id: int
+    ) -> Dict[str, Any]:
+        """
+        Retrieve a reservation for a specific user and event from the database.
+
+        Args:
+            user_id (int): The ID of the user.
+            event_id (int): The ID of the event.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the reservation data.
+
+        Raises:
+            CustomBadRequestException: If the reservation is not found.
+        """
+        with get_db_session() as session:
+            reservation = (
+                session.query(cls).filter_by(user_id=user_id, event_id=event_id).first()
+            )
+            if not reservation:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+            return reservation._to_model()

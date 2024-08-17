@@ -1,3 +1,4 @@
+import app.api.v1.endpoints
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Dict, List, Optional
 from pytz import timezone
@@ -12,8 +13,12 @@ from app.models.user import (
     UserRole,
 )
 from pydantic import EmailStr
-from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
+from app.data_adapter.reservation import Reservation
+from app.data_adapter.school import School
+import app.context_manager
+from app.context_manager import get_db_session
 
 if TYPE_CHECKING:
     from app.data_adapter.notification import Notification
@@ -33,7 +38,7 @@ class User(Base):
     profile_picture = Column(String(255), nullable=True)
     subscription = Column(String(50), nullable=True)
     status = Column(
-        Enum(UserStatus), nullable=False, default=UserStatus.ACTIVE, index=True
+        Enum(UserStatus), nullable=False, default=UserStatus.INACTIVE, index=True
     )
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(
@@ -45,17 +50,20 @@ class User(Base):
         "Notification", secondary="user_notification", back_populates="users"
     )
 
-    #Locked login attempts
+    # Locked login attempts
     failed_login_attempts = Column(Integer, default=0)
     last_failed_login = Column(DateTime, nullable=True)
     account_locked_until = Column(DateTime, nullable=True)
     organized_events = relationship("Event", back_populates="organizer")
 
+    school_id = Column(Integer, ForeignKey("school.id"))
+    school = relationship("School", back_populates="representatives")
+
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
             user_id=self.user_id,
         )
-    
+
     def is_account_locked(self) -> tuple[bool, Optional[datetime]]:
         """
         Check if the user account is locked.
@@ -64,6 +72,7 @@ class User(Base):
             tuple[bool, Optional[datetime]]: A tuple containing a boolean indicating if the account is locked,
             and the datetime when the account will be unlocked (if it is locked).
         """
+        print("self.account_locked_until", self.account_locked_until)
         if self.account_locked_until and self.account_locked_until > datetime.now():
             return True, self.account_locked_until
         return False, None
@@ -72,23 +81,20 @@ class User(Base):
         self,
         first_name: str,
         last_name: str,
-        user_email: EmailStr,
+        user_email: str,
         password_hash: str,
-        role: UserRole = UserRole.USER,
-        email_verified: bool = False,
-        preferred_language: str = None,
-        profile_picture: str = None,
-        subscription: str = None,
+        role: UserRole,
+        school_id: Optional[int] = None,
+        **kwargs,
     ):
         self.first_name = first_name
         self.last_name = last_name
         self.user_email = user_email
         self.password_hash = password_hash
         self.role = role
-        self.email_verified = email_verified
-        self.preferred_language = preferred_language
-        self.profile_picture = profile_picture
-        self.subscription = subscription
+        self.school_id = school_id
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def _to_model(self) -> UserModel:
         """
@@ -174,7 +180,7 @@ class User(Base):
             UserModel: The created user model.
         """
         from app.context_manager import get_db_session
-
+        print("user_data", user_data)
         db = get_db_session()
         new_user = User(
             first_name=user_data.first_name,
@@ -188,6 +194,7 @@ class User(Base):
             preferred_language=user_data.preferred_language,
             profile_picture=user_data.profile_picture,
             subscription=user_data.subscription,
+ 
         )
         db.add(new_user)
         db.commit()
@@ -341,11 +348,12 @@ class User(Base):
             user_id (int): The ID of the user who failed to log in.
         """
         from app.context_manager import get_db_session
+
         db = get_db_session()
         user = db.query(cls).filter(cls.user_id == user_id).first()
         if user:
             user.failed_login_attempts += 1
-            slovakia_tz = timezone('Europe/Bratislava')
+            slovakia_tz = timezone("Europe/Bratislava")
             current_time = datetime.now(slovakia_tz)
             user.last_failed_login = current_time
 
@@ -363,6 +371,7 @@ class User(Base):
             user_id (int): The ID of the user to reset failed login attempts for.
         """
         from app.context_manager import get_db_session
+
         db = get_db_session()
         user = db.query(cls).filter(cls.user_id == user_id).first()
         if user:
@@ -386,10 +395,129 @@ class User(Base):
             Optional[str]: The user's role if found, None otherwise.
         """
         from app.context_manager import get_db_session
-        
+
         db = get_db_session()
         user = db.query(cls).filter(cls.user_id == user_id).first()
-        
+
         if user:
             return user.role
         return None
+
+    @classmethod
+    def get_user_role(cls, user_id: int) -> Optional[str]:
+        """
+        Get the role of a user by their ID.
+
+        Args:
+            user_id (int): The ID of the user whose role we want to retrieve.
+
+        Returns:
+            Optional[str]: The user's role if found, None otherwise.
+        """
+        with get_db_session() as db:
+            user = db.query(cls).filter(cls.user_id == user_id).first()
+            return user.role if user else None
+
+    @classmethod
+    def create_school_representative(cls, user_data: dict) -> "User":
+        """
+        Create a new school representative user.
+
+        Args:
+            user_data (dict): The data for creating the new user.
+
+        Returns:
+            User: The newly created user object.
+        """
+        with get_db_session() as session:
+            user = cls(
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"],
+                user_email=user_data["email"],
+                phone_number=user_data["phone_number"],
+                password_hash=user_data["password_hash"],
+                role=UserRole.SCHOOL_REPRESENTATIVE,
+                status=UserStatus.PENDING_APPROVAL,
+                school_id=user_data["school_id"],
+            )
+            session.add(user)
+            session.commit()
+            return user
+
+    @classmethod
+    def get_users_by_status(
+        cls,
+        user_status: UserStatus,
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[List[Dict[str, str]]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None,
+    ) -> tuple[List[UserModel], int]:
+        """
+        Get users by status with pagination, filtering, and sorting.
+
+        Args:
+            user_status (UserStatus): The status of users to retrieve.
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[List[Dict[str, str]]]): The filters to apply.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing a list of user dictionaries and the total count.
+        """
+        with get_db_session() as session:
+            query = session.query(cls).filter(cls.status == user_status)
+
+            # Apply filters and sorting
+            query = ParameterValidator.apply_filters_and_sorting(query, cls, filter_params, sorting_params)
+
+            # Get total count
+            total_count = query.count()
+
+            # Apply pagination
+            users = (
+                query.offset((current_page - 1) * items_per_page)
+                .limit(items_per_page)
+                .all()
+            )
+
+            return [user._to_model() for user in users], total_count
+
+    @classmethod
+    def approve_user(cls, user_id: int) -> Optional[UserModel]:
+        """
+        Approve a user account.
+
+        Args:
+            user_id (int): The ID of the user to approve.
+
+        Returns:
+            Optional[UserModel]: The updated UserModel object if found, None otherwise.
+        """
+
+        with get_db_session() as session:
+            user = session.query(cls).filter(cls.user_id == user_id).first()
+            if user:
+                user.status = UserStatus.ACTIVE
+                session.commit()
+            return user._to_model() if user else None
+
+    @classmethod
+    def reject_user(cls, user_id: int) -> Optional[UserModel]:
+        """
+        Reject a user account.
+
+        Args:
+            user_id (int): The ID of the user to reject.
+
+        Returns:
+            Optional[UserModel]: The updated UserModel object if found, None otherwise.
+        """
+
+        with get_db_session() as session:
+            user = session.query(cls).filter(cls.user_id == user_id).first()
+            if user:
+                user.status = UserStatus.REJECTED
+                session.commit()
+            return user._to_model() if user else None

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 from enum import Enum
@@ -14,23 +14,33 @@ class ReservationStatus(str, Enum):
 class ReservationCreateModel(BaseModel):
     event_id: int
     user_id: int
-    number_of_seats: int
-    status: ReservationStatus
-    comment: Optional[str] = None
+    number_of_students: int
+    number_of_teachers: int
+    special_requirements: Optional[str] = None
+    contact_info: str
+    status: ReservationStatus = ReservationStatus.PENDING
 
 
 class ReservationUpdateModel(BaseModel):
-    number_of_seats: Optional[int] = None
+    number_of_students: Optional[int] = None
+    number_of_teachers: Optional[int] = None
+    special_requirements: Optional[str] = None
+    contact_info: Optional[str] = None
     status: Optional[ReservationStatus] = None
-    comment: Optional[str] = None
 
 
 class ReservationModel(BaseModel):
     id: int
     event_id: int
     user_id: int
-    number_of_seats: int
+    number_of_students: int
+    number_of_teachers: int
+    special_requirements: Optional[str] = None
+    contact_info: str
     status: ReservationStatus
-    comment: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+
+    @property
+    def total_seats(self) -> int:
+        return self.number_of_students + self.number_of_teachers

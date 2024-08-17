@@ -77,6 +77,7 @@ class EventService:
 
         new_event = Event.create_new_event(event_data, attachment_info)
         if not new_event:
+            logger.error("Failed to create new event")
             raise CustomInternalServerErrorException(ResponseMessages.ERR_CREATE_EVENT)
 
         logger.info(
@@ -89,11 +90,11 @@ class EventService:
             data=new_event,
         )
 
-
     @staticmethod
     async def update_event(
         event_id: int,
         event_data: EventUpdateModel,
+        existing_attachment_ids: List[int],
         new_attachments: List[UploadFile] = None,
     ) -> GenericResponseModel:
         """
@@ -102,6 +103,7 @@ class EventService:
         Args:
             event_id (int): ID of the event to update.
             event_data (EventUpdateModel): Updated event data.
+            existing_attachment_ids (List[int]): List of IDs of attachments to keep.
             new_attachments (List[UploadFile], optional): List of new file attachments.
 
         Returns:
@@ -109,6 +111,7 @@ class EventService:
 
         Raises:
             CustomBadRequestException: If the user is not authenticated or the event does not exist.
+            CustomInternalServerErrorException: If the event update fails.
         """
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
@@ -119,14 +122,13 @@ class EventService:
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
         # Handle new attachments
+        new_attachment_info = []
         if new_attachments:
             new_attachment_info = await EventService.handle_attachments(new_attachments)
-            if event_data.attachments:
-                event_data.attachments.extend(new_attachment_info)
-            else:
-                event_data.attachments = new_attachment_info
 
-        updated_event = Event.update_event_by_id(event_id, event_data)
+        updated_event = Event.update_event_by_id(
+            event_id, event_data, existing_attachment_ids, new_attachment_info
+        )
         if not updated_event:
             logger.error(f"Error updating event: {event_id}")
             raise CustomInternalServerErrorException(ResponseMessages.ERR_UPDATE_EVENT)
@@ -134,7 +136,6 @@ class EventService:
         logger.info(
             f"User ID {context_actor_user_data.get().user_id} updated event: {event_id}"
         )
-
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_UPDATE_EVENT,
@@ -167,7 +168,6 @@ class EventService:
         logger.info(
             f"User ID {context_actor_user_data.get().user_id} deleted event: {event_id}"
         )
-
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_DELETE_EVENT,
@@ -200,7 +200,6 @@ class EventService:
         logger.info(
             f"User ID {context_actor_user_data.get().user_id} retrieved event: {event_id}"
         )
-
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_GET_EVENT,
@@ -234,13 +233,7 @@ class EventService:
 
         Returns:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
-
-        Raises:
-            CustomBadRequestException: If the user is not authenticated.
         """
-        # if not context_actor_user_data.get():
-        #     raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
-
         events, total_count = Event.get_events(
             current_page,
             items_per_page,
@@ -257,7 +250,6 @@ class EventService:
         logger.info(
             f"Events retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )
-
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_GET_ALL_EVENTS,
@@ -317,7 +309,6 @@ class EventService:
         logger.info(
             f"Organizer events retrieved. Organizer ID: {organizer_id}, Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )
-
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_GET_ORGANIZER_EVENTS,
@@ -330,4 +321,3 @@ class EventService:
                 items=events,
             ),
         )
-    

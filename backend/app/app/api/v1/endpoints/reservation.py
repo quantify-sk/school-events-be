@@ -245,3 +245,93 @@ async def get_reservations_by_event_id(
         db, event_id, current_page, items_per_page, filters, sorting
     )
     return build_api_response(response)
+
+
+@router.get(
+    "/user/{user_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get user reservations.",
+    description="Retrieve all reservations for a specific user.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successful retrieval of user reservations",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "User not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_user_reservations(
+    user_id: int,
+    db: Session = Depends(get_db),
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Retrieve all reservations for a specific user.
+
+    Args:
+        user_id (int): ID of the user to retrieve reservations for.
+        db (Session): Database session.
+        auth (Depends): The authentication token.
+        _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: The response containing the user's reservations.
+    """
+    response = ReservationService.get_user_reservations(db, user_id)
+    return response
+
+
+@router.get(
+    "/user/{user_id}/event/{event_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get reservation for user and event.",
+    description="Retrieve a reservation for a specific user and event.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successful retrieval of reservation",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Reservation not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_reservation_for_user_and_event(
+    user_id: int,
+    event_id: int,
+    db: Session = Depends(get_db),
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Retrieve a reservation for a specific user and event.
+
+    Args:
+        user_id (int): ID of the user.
+        event_id (int): ID of the event.
+        db (Session): Database session.
+        auth (Depends): The authentication token.
+        _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: The response containing the reservation.
+    """
+    response = ReservationService.get_reservation_for_user_and_event(
+        db, user_id, event_id
+    )
+    return response

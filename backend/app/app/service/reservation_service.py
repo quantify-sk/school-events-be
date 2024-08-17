@@ -20,30 +20,22 @@ class ReservationService:
     def create_reservation(
         session: Session, reservation_data: ReservationCreateModel
     ) -> GenericResponseModel:
-        """
-        Create a new reservation.
-
-        Args:
-            session (Session): The database session.
-            reservation_data (ReservationCreateModel): The data for the new reservation.
-
-        Returns:
-            GenericResponseModel: The response containing the created reservation.
-        """
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
-        if reservation_data.number_of_seats <= 0:
+        total_seats = (
+            reservation_data.number_of_students + reservation_data.number_of_teachers
+        )
+        if total_seats <= 0:
             raise CustomBadRequestException(
                 ResponseMessages.ERR_INVALID_NUMBER_OF_SEATS
             )
 
-        # Check if the user ID in the reservation data matches the authenticated user
         if reservation_data.user_id != context_actor_user_data.get().user_id:
             raise CustomBadRequestException(ResponseMessages.ERR_INVALID_USER_ID)
 
         try:
-            new_reservation = Reservation.create_reservation(session, reservation_data)
+            new_reservation = Reservation.create_reservation(reservation_data)
             logger.info(
                 f"User ID {context_actor_user_data.get().user_id} created reservation: {new_reservation['id']}"
             )
@@ -54,9 +46,7 @@ class ReservationService:
                 data=new_reservation,
             )
         except CustomBadRequestException as e:
-            logger.error(
-                f"Error creating reservation for User ID {context_actor_user_data.get().user_id}: {str(e)}"
-            )
+            logger.error(f"Error creating reservation: {str(e)}")
             raise
         except Exception as e:
             logger.error(f"Unexpected error creating reservation: {str(e)}")
@@ -79,7 +69,7 @@ class ReservationService:
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
-        reservation = Reservation.get_reservation_by_id(session, reservation_id)
+        reservation = Reservation.get_reservation_by_id(reservation_id)
         if not reservation:
             logger.error(f"Reservation not found: {reservation_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
@@ -111,7 +101,7 @@ class ReservationService:
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
-        result = Reservation.delete_reservation(session, reservation_id)
+        result = Reservation.delete_reservation(reservation_id)
         if not result:
             logger.error(f"Failed to delete reservation: {reservation_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
@@ -151,7 +141,7 @@ class ReservationService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         reservations, total_count = Reservation.get_reservations(
-            session, current_page, items_per_page, filter_params, sorting_params
+            current_page, items_per_page, filter_params, sorting_params
         )
         total_pages = math.ceil(total_count / items_per_page)
 
@@ -203,7 +193,6 @@ class ReservationService:
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
         reservations, total_count = Reservation.get_reservations_by_event_id(
-            session,
             event_id,
             current_page,
             items_per_page,
@@ -227,3 +216,92 @@ class ReservationService:
                 items=reservations,
             ),
         )
+
+    @staticmethod
+    def get_user_reservations(session: Session, user_id: int) -> GenericResponseModel:
+        """
+        Get all reservations for a specific user.
+
+        This method retrieves all reservations from the database for a given user ID.
+        It checks for user authentication and logs the retrieval attempt.
+
+        Args:
+            session (Session): The database session.
+            user_id (int): The ID of the user to retrieve reservations for.
+
+        Returns:
+            GenericResponseModel: The response containing the list of reservations.
+
+        Raises:
+            CustomBadRequestException: If the user is not authenticated or not found.
+        """
+        if not context_actor_user_data.get():
+            logger.error("Unauthenticated user attempted to retrieve reservations")
+            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+
+        try:
+            reservations = Reservation.get_reservations_by_user_id(user_id)
+            logger.info(f"Retrieved reservations for User ID: {user_id}")
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_USER_RESERVATIONS,
+                status_code=status.HTTP_200_OK,
+                data=reservations,
+            )
+        except Exception as e:
+            logger.error(
+                f"Error retrieving reservations for User ID {user_id}: {str(e)}"
+            )
+            raise
+
+    @staticmethod
+    def get_reservation_for_user_and_event(
+        session: Session, user_id: int, event_id: int
+    ) -> GenericResponseModel:
+        """
+        Get a reservation for a specific user and event.
+
+        This method retrieves a reservation from the database for a given user ID and event ID.
+        It checks for user authentication and logs the retrieval attempt.
+
+        Args:
+            session (Session): The database session.
+            user_id (int): The ID of the user.
+            event_id (int): The ID of the event.
+
+        Returns:
+            GenericResponseModel: The response containing the reservation data.
+
+        Raises:
+            CustomBadRequestException: If the user is not authenticated or the reservation is not found.
+        """
+        if not context_actor_user_data.get():
+            logger.error("Unauthenticated user attempted to retrieve a reservation")
+            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+
+        try:
+            reservation = Reservation.get_reservation_by_user_and_event(
+                user_id, event_id
+            )
+            if not reservation:
+                logger.error(
+                    f"Reservation not found for User ID: {user_id} and Event ID: {event_id}"
+                )
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+
+            logger.info(
+                f"Retrieved reservation for User ID: {user_id} and Event ID: {event_id}"
+            )
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_RESERVATION,
+                status_code=status.HTTP_200_OK,
+                data=reservation,
+            )
+        except Exception as e:
+            logger.error(
+                f"Error retrieving reservation for User ID {user_id} and Event ID {event_id}: {str(e)}"
+            )
+            raise

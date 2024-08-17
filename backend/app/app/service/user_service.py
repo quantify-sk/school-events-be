@@ -1,6 +1,6 @@
 import math
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+import typing
 
 from app.context_manager import context_actor_user_data, context_id_api
 from app.data_adapter.notification import Notification
@@ -8,7 +8,13 @@ from app.data_adapter.user import User
 from app.logger import logger
 from app.models.notification import NotificationType
 from app.models.response import GenericResponseModel, PaginationResponseDataModel
-from app.models.user import UserCreateModel, UserModel, UserUpdateModel
+from app.models.user import (
+    UserCreateModel,
+    UserModel,
+    UserRole,
+    UserStatus,
+    UserUpdateModel,
+)
 from app.utils.exceptions import (
     CustomAccountLockedException,
     CustomBadRequestException,
@@ -16,6 +22,8 @@ from app.utils.exceptions import (
 )
 from app.utils.response_messages import ResponseMessages
 from fastapi import status
+from app.data_adapter.school import School
+from typing import List, Dict, Optional
 
 
 class UserService:
@@ -36,8 +44,8 @@ class UserService:
             CustomInternalServerErrorException: If an error occur while creating the user.
         """
         # Check if the user is authenticated
-        if not context_actor_user_data.get():
-            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+        # if not context_actor_user_data.get():
+        #     raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         # Check if the email is already taken
         user = User.get_user_by_email(user_data.user_email)
@@ -60,7 +68,7 @@ class UserService:
 
         # Log the successful creation of the new user
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} created successfully new user: {new_user.user_id}"
+            f"User ID {new_user.user_id} created successfully new user: {new_user.user_id}"
         )
 
         # Create a new notification
@@ -68,7 +76,7 @@ class UserService:
             f"Uživatel {new_user.first_name} {new_user.last_name} byl úspěšně vytvořen",
             datetime.now().date(),
             NotificationType.INFO,
-            [context_actor_user_data.get().user_id],
+            [new_user.user_id],
         )
 
         # Get the user from the database
@@ -78,6 +86,7 @@ class UserService:
         if not new_user:
             raise CustomInternalServerErrorException()
 
+        print(new_user)
         # Return a GenericResponseModel with the created user
         return GenericResponseModel(
             api_id=context_id_api.get(),  # The ID of the API
@@ -243,7 +252,7 @@ class UserService:
             status_code=status.HTTP_200_OK,  # The success status code
             data=user,  # The retrieved user
         )
-    
+
     @staticmethod
     def check_account_lock(user: User) -> None:
         """
@@ -279,7 +288,6 @@ class UserService:
         """
         User.reset_failed_login_attempts(user.user_id)
 
-
     @staticmethod
     def get_user_role(user_id: int) -> GenericResponseModel:
         """
@@ -296,7 +304,7 @@ class UserService:
         """
         # Attempt to get the user's role from the database
         user_role = User.get_user_role(user_id)
-        
+
         # If no role is found, return a 404 error
         if user_role is None:
             return GenericResponseModel(
@@ -304,11 +312,156 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 error=ResponseMessages.ERR_USER_NOT_FOUND,
             )
-        
+
         # If a role is found, return it in a success response
         return GenericResponseModel(
             api_id=context_id_api.get(),
             status_code=status.HTTP_200_OK,
             message=ResponseMessages.MSG_SUCCESS_GET_USER_ROLE,
-            data={"role": user_role}
+            data={"role": user_role},
         )
+
+    @staticmethod
+    def create_school_representative(user_data: UserCreateModel):
+        """
+        Create a new school representative user and associated school.
+
+        This method creates a new school entry and a new user with the role of school representative.
+        The user's status is set to pending approval.
+
+        Args:
+            user_data (UserCreateModel): The data for creating the new user and school.
+
+        Returns:
+            User: The newly created user object.
+        """
+        logger.info(f"Creating new school representative: {user_data.email}")
+
+        # Create school first
+        school = School.create_school(
+            {
+                "name": user_data.school_name,
+                "address": user_data.school_address,
+                "ico": user_data.school_ico,
+            }
+        )
+
+        # Create user with school_id
+        user_dict = user_data.dict()
+        user_dict["school_id"] = school.id
+        user_dict["role"] = UserRole.SCHOOL_REPRESENTATIVE
+        user_dict["status"] = UserStatus.PENDING_APPROVAL
+
+        user = User.create_user(user_dict)
+
+        logger.info(f"Successfully created school representative: {user.email}")
+        return user
+
+    @staticmethod
+    def get_pending_approval_requests(
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[List[Dict[str, str]]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None,
+    ) -> GenericResponseModel:
+        """
+        Get all users with pending approval status.
+
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[List[Dict[str, str]]]): The filters to apply.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
+
+        Returns:
+            GenericResponseModel: A GenericResponseModel with the list of pending users or an error.
+        """
+        # Get pending approval users
+        pending_users, total_items = User.get_users_by_status(
+            UserStatus.INACTIVE,
+            current_page,
+            items_per_page,
+            filter_params,
+            sorting_params,
+        )
+
+        total_pages = math.ceil(total_items / items_per_page)
+
+        # Return a GenericResponseModel with the list of pending users
+        return GenericResponseModel(
+            api_id=context_id_api.get(),
+            message=ResponseMessages.MSG_SUCCESS_GET_PENDING_USERS,
+            status_code=status.HTTP_200_OK,
+            data=PaginationResponseDataModel(
+                current_page=current_page,
+                items_per_page=items_per_page,
+                total_pages=total_pages,
+                total_items=total_items,
+                items=pending_users,
+            ),
+        )
+
+    @staticmethod
+    def approve_user(user_id: int) -> GenericResponseModel:
+        """
+        Approve a school representative account.
+
+        This method changes the status of a user from PENDING_APPROVAL to ACTIVE.
+
+        Args:
+            user_id (int): The ID of the user to approve.
+
+        Returns:
+            GenericResponseModel: A response model containing the result of the operation.
+        """
+        logger.info(f"Approving school representative with ID: {user_id}")
+        user = User.approve_user(user_id)
+        
+        if user:
+            logger.info(f"Successfully approved school representative: {user.user_email}")
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_200_OK,
+                message=ResponseMessages.MSG_SUCCESS_APPROVE_USER,
+                data=user
+            )
+        else:
+            logger.warning(f"User with ID {user_id} not found for approval")
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_404_NOT_FOUND,
+                error=ResponseMessages.ERR_USER_NOT_FOUND
+            )
+
+    @staticmethod
+    def reject_user(user_id: int, reason: str) -> GenericResponseModel:
+        """
+        Reject a school representative account.
+
+        This method changes the status of a user from PENDING_APPROVAL to REJECTED.
+
+        Args:
+            user_id (int): The ID of the user to reject.
+            reason (str): The reason for rejection.
+
+        Returns:
+            GenericResponseModel: A response model containing the result of the operation.
+        """
+        logger.info(f"Rejecting school representative with ID: {user_id}")
+        user = User.update_user_status(user_id, UserStatus.REJECTED, reason)
+        
+        if user:
+            logger.info(f"Successfully rejected school representative: {user.user_email}")
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_200_OK,
+                message=ResponseMessages.MSG_SUCCESS_REJECT_USER,
+                data=user
+            )
+        else:
+            logger.warning(f"User with ID {user_id} not found for rejection")
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_404_NOT_FOUND,
+                error=ResponseMessages.ERR_USER_NOT_FOUND
+            )

@@ -39,14 +39,15 @@ class CustomValidationException(HTTPException):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(messages[0])
         )
 
+
 class CustomAccountLockedException(HTTPException):
     """Exception for locked user accounts."""
 
     def __init__(self, unlock_time: datetime) -> None:
-        slovakia_tz = timezone('Europe/Bratislava')
+        slovakia_tz = timezone("Europe/Bratislava")
         local_time = unlock_time.astimezone(slovakia_tz)
         formatted_time = local_time.strftime("%d.%m.%Y %H:%M:%S")
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Account is locked. Please try again after {formatted_time}."
+            detail=f"Account is locked. Please try again after {formatted_time}.",
         )

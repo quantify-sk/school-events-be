@@ -1,3 +1,5 @@
+import app.api.v1.endpoints
+import app.logger
 from datetime import datetime, timedelta
 import json
 from fastapi import APIRouter, Depends, Query, status, File, Form, UploadFile
@@ -17,6 +19,7 @@ from app.context_manager import build_request_context
 from typing import Optional, List, Dict, Union
 from pydantic import Json
 from app.utils.exceptions import CustomBadRequestException
+from app.logger import logger
 
 router = APIRouter()
 
@@ -108,10 +111,7 @@ async def create_event(
             "model": GenericResponseModel,
             "description": "Invalid input data or event not found",
         },
-        500: {
-            "model": GenericResponseModel,
-            "description": "Internal Server Error",
-        },
+        500: {"model": GenericResponseModel, "description": "Internal Server Error"},
     },
 )
 async def update_event(
@@ -131,7 +131,7 @@ async def update_event(
     duration: Optional[float] = Form(None),
     parent_info: Optional[str] = Form(None),
     new_attachments: List[UploadFile] = File(None),
-    existing_attachments: str = Form(None),
+    existing_attachment_ids: str = Form(None),
     organizer_id: Optional[int] = Form(None),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
@@ -142,46 +142,26 @@ async def update_event(
     event_data = {
         k: v
         for k, v in locals().items()
-        if v is not None and k not in ["event_id", "new_attachments", "existing_attachments", "auth", "_"]
+        if v is not None
+        and k
+        not in ["event_id", "new_attachments", "existing_attachment_ids", "auth", "_"]
     }
 
-
     event_update_model = EventUpdateModel(**event_data)
-
-    # Process existing attachments
-    existing_attachments_list = json.loads(existing_attachments) if existing_attachments else []
-
-    # Fetch the current event from the database
-    current_event = EventService.get_event_by_id(event_id)
-    if not current_event:
-        raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
-
-    # Combine existing and new attachments
-    all_attachments = []
-
-    # Add existing attachments from the database
-    if isinstance(current_event.data, dict) and 'attachments' in current_event.data:
-        for attachment in current_event.data['attachments']:
-        
-            if attachment['name'] in existing_attachments_list:
-                print("FOUND EXISTING ATTACHMENT:")
-                all_attachments.append(attachment)
-    else:
-        print("Warning: No attachments found in current event")
-
-    # Process new attachments
-    if new_attachments:
-        new_attachment_info = await EventService.handle_attachments(new_attachments)
-        all_attachments.extend(new_attachment_info)
-
-    event_update_model.attachments = all_attachments
-
-    print("Event update model:", event_update_model)
+    print("Route existing_attachment_ids: ", existing_attachment_ids)
+    # Parse the existing attachment IDs
+    try:
+        existing_attachment_ids = (
+            json.loads(existing_attachment_ids) if existing_attachment_ids else []
+        )
+    except json.JSONDecodeError:
+        raise CustomBadRequestException(ResponseMessages.ERR_INVALID_DATA)
 
     response: GenericResponseModel = await EventService.update_event(
-        event_id, event_update_model
+        event_id, event_update_model, existing_attachment_ids, new_attachments
     )
     return build_api_response(response)
+
 
 @router.get(
     "/{event_id}",
@@ -269,12 +249,25 @@ async def delete_event(
 async def get_all_events(
     current_page: int = Query(1, description="Page number of the results"),
     items_per_page: int = Query(10, description="Number of results per page"),
-    filter_params: Optional[str] = Query(None, alias="filter_params", description="JSON string of filter parameters"),
-    sorting_params: Optional[str] = Query(None, alias="sorting_params", description="JSON string of sorting parameters"),
-    date_from: Optional[datetime] = Query(None, description="Start date for filtering events"),
-    date_to: Optional[datetime] = Query(None, description="End date for filtering events"),
-    coordinates: Optional[str] = Query(None, description="Coordinates for filtering events (format: latitude,longitude)"),
-    radius: Optional[float] = Query(None, description="Radius in kilometers for location-based filtering"),
+    filter_params: Optional[str] = Query(
+        None, alias="filter_params", description="JSON string of filter parameters"
+    ),
+    sorting_params: Optional[str] = Query(
+        None, alias="sorting_params", description="JSON string of sorting parameters"
+    ),
+    date_from: Optional[datetime] = Query(
+        None, description="Start date for filtering events"
+    ),
+    date_to: Optional[datetime] = Query(
+        None, description="End date for filtering events"
+    ),
+    coordinates: Optional[str] = Query(
+        None,
+        description="Coordinates for filtering events (format: latitude,longitude)",
+    ),
+    radius: Optional[float] = Query(
+        None, description="Radius in kilometers for location-based filtering"
+    ),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
@@ -312,7 +305,6 @@ async def get_all_events(
     return build_api_response(response)
 
 
-
 @router.get(
     "/organizer/{organizer_id}/events",
     status_code=status.HTTP_200_OK,
@@ -334,12 +326,25 @@ async def get_organizer_events(
     organizer_id: int,
     current_page: int = Query(1, description="Page number of the results"),
     items_per_page: int = Query(10, description="Number of results per page"),
-    filter_params: Optional[str] = Query(None, alias="filter_params", description="JSON string of filter parameters"),
-    sorting_params: Optional[str] = Query(None, alias="sorting_params", description="JSON string of sorting parameters"),
-    date_from: Optional[datetime] = Query(None, description="Start date for filtering events"),
-    date_to: Optional[datetime] = Query(None, description="End date for filtering events"),
-    coordinates: Optional[str] = Query(None, description="Coordinates for filtering events (format: latitude,longitude)"),
-    radius: Optional[float] = Query(None, description="Radius in kilometers for location-based filtering"),
+    filter_params: Optional[str] = Query(
+        None, alias="filter_params", description="JSON string of filter parameters"
+    ),
+    sorting_params: Optional[str] = Query(
+        None, alias="sorting_params", description="JSON string of sorting parameters"
+    ),
+    date_from: Optional[datetime] = Query(
+        None, description="Start date for filtering events"
+    ),
+    date_to: Optional[datetime] = Query(
+        None, description="End date for filtering events"
+    ),
+    coordinates: Optional[str] = Query(
+        None,
+        description="Coordinates for filtering events (format: latitude,longitude)",
+    ),
+    radius: Optional[float] = Query(
+        None, description="Radius in kilometers for location-based filtering"
+    ),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:

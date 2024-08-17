@@ -10,6 +10,7 @@ help:
 	@echo "  seed-db            Seed the database."
 	@echo "  seed-admin-db      Seed only the admin user."
 	@echo "  seed-events-db     Seed the events."
+	@echo "  seed-users         Seed users (admin, organizers, and school representatives)."
 	@echo "  run-dev            Run development docker compose."
 	@echo "  stop-dev           Stop development docker compose."
 	@echo "  run-prod           Run production docker compose."
@@ -23,6 +24,7 @@ help:
 	@echo "  logs-dev           Show logs from development docker compose."
 	@echo "  logs-prod          Show logs from production docker compose."
 	@echo "  reload             Remove volumes, reset git state, rebuild and seed the database."
+	
 
 install:
 	@echo "Installing all packages with poetry..."
@@ -47,6 +49,14 @@ seed-admin-db:
 seed-events-db:
 	@echo "Seeding the events..."
 	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db events
+
+seed-users:
+	@echo "Seeding users (admin, organizers, and school representatives)..."
+	docker compose -f docker-compose-dev.yml exec -T fastapi_server poetry run python -m app.db users
+
+seed-db:
+	@echo "Seeding the database..."
+	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db seed all
 
 run-dev:
 	@echo "Running development docker compose..."

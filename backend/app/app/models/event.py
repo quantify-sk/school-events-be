@@ -1,24 +1,7 @@
-import base64
-import json
-import os
-from sqlalchemy import (
-    Column,
-    Float,
-    Integer,
-    String,
-    DateTime,
-    JSON,
-    Text,
-    Enum as SAEnum,
-)
-from datetime import datetime
-from app.database import Base
-from app.context_manager import get_db_session
-from app.models.get_params import ParameterValidator
-from typing import List, Dict, Optional, Tuple, Union, Any
-from sqlalchemy import func
-from enum import Enum
 from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
+from enum import Enum
 
 
 class EventStatus(str, Enum):
@@ -44,8 +27,10 @@ class TargetGroup(str, Enum):
 
 
 class AttachmentModel(BaseModel):
+    id: Optional[int] = None
     name: str
-    url: str
+    path: str
+    type: str
 
 
 class EventCreateModel(BaseModel):
@@ -64,6 +49,8 @@ class EventCreateModel(BaseModel):
     duration: float
     parent_info: Optional[str] = None
     organizer_id: int
+    attachments: Optional[List[AttachmentModel]] = None
+
 
 class EventUpdateModel(BaseModel):
     title: Optional[str] = None
@@ -82,7 +69,7 @@ class EventUpdateModel(BaseModel):
     duration: Optional[float] = None
     parent_info: Optional[str] = None
     organizer_id: Optional[int] = None
-    attachments: Optional[List[Dict[str, Any]]] = None
+    attachments: Optional[List[AttachmentModel]] = None
 
 
 class EventModel(BaseModel):
@@ -106,4 +93,4 @@ class EventModel(BaseModel):
     attachments: List[AttachmentModel]
     created_at: datetime
     updated_at: datetime
-    organizer_id: int 
+    organizer_id: int

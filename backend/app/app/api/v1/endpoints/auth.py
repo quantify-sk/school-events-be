@@ -20,7 +20,7 @@ from app.models.response import (
     OAuth2TokenModel,
     build_api_response,
 )
-from app.models.user import UserModel
+from app.models.user import UserModel, UserStatus
 from app.utils.exceptions import CustomAccountLockedException, CustomBadRequestException
 from app.utils.response_messages import ResponseMessages
 from fastapi import APIRouter, Depends, status
@@ -68,6 +68,10 @@ async def login_user(
     :param _: build_request_context dependency injection handles the request context
     :return: OAuth2TokenModel or GenericResponseModel
     """
+
+    
+
+
     user = User.get_user_object_by_email(form_data.username)
     if user is None:
         context_set_db_session_rollback.set(True)
@@ -78,7 +82,7 @@ async def login_user(
                 error=ResponseMessages.ERR_INVALID_USER_CREDENTIALS,
             )
         )
-
+    
     try:
         UserService.check_account_lock(user)
     except CustomAccountLockedException as e:
@@ -89,6 +93,17 @@ async def login_user(
                 error=e.detail,
             )
         )
+    
+    
+    if user.status == UserStatus.INACTIVE:
+        return build_api_response(
+            GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_403_FORBIDDEN,
+                error=ResponseMessages.ERR_ACCOUNT_PENDING_APPROVAL,
+            )
+        )
+
 
     if not verify_password(form_data.password, user.password_hash):
         User.handle_failed_login(user.user_id)
