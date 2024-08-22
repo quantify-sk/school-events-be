@@ -79,6 +79,8 @@ services:
       - db
       - redis
 
+  
+
 volumes:
   caddy_data:
   caddy_config:
