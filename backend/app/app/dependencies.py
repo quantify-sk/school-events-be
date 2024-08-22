@@ -13,6 +13,7 @@ from fastapi import Depends
 from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from jose import jwt
 from jose.exceptions import JWTError
+from sqlalchemy.exc import DBAPIError, OperationalError
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -40,14 +41,20 @@ def get_db() -> Generator[Session, None, None]:
 
     try:
         yield db
+
         if context_set_db_session_rollback.get():
             logger.info("Rollback db session")
             db.rollback()
         else:
             db.commit()
-    except Exception:
+    except (OperationalError, DBAPIError) as e:
+        logger.error(f"Database error encountered: {e}")
+        db.rollback()  # Ensure rollback on database errors
+        raise e
+    except Exception as e:
         db.rollback()
-        raise
+        logger.error(f"General exception in DB session: {e}")
+        raise e
     finally:
         db.close()
 
