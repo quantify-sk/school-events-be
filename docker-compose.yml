@@ -33,7 +33,7 @@ services:
     image: caddy:alpine
     restart: always
     ports:
-      - 8085:80
+      - 8082:80
       - 8445:443
     environment:
       - EXT_ENDPOINT1=${EXT_ENDPOINT1}
