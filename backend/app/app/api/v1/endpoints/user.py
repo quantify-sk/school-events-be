@@ -329,55 +329,6 @@ async def get_all_users(
     return build_api_response(response)
 
 
-
-
-
-@router.post(
-    "/school-representative/",
-    status_code=status.HTTP_201_CREATED,
-    response_model=GenericResponseModel,
-    summary="Create a new school representative account",
-    description="Create a new school representative account pending approval.",
-    responses={
-        201: {
-            "model": GenericResponseModel[UserModel],
-            "description": "Successfully created school representative account",
-        },
-        400: {
-            "model": GenericResponseModel,
-            "description": "Bad request",
-        },
-        500: {
-            "model": GenericResponseModel,
-            "description": "Internal Server Error",
-        },
-    },
-)
-async def create_school_representative(
-    user_data: UserCreateModel,
-    _=Depends(build_request_context),
-):
-    """
-    Create a new school representative account.
-
-    This endpoint creates a new school representative account with pending approval status.
-
-    Parameters:
-        - user_data (UserCreateModel): The data for creating the new user and school.
-        - _ (Depends): The request context.
-
-    Returns:
-        GenericResponseModel: A GenericResponseModel containing the result of the operation.
-            The response model is UserModel.
-
-    Responses:
-        - 201: Successfully created school representative account. The model is GenericResponseModel.
-        - 400: Bad request. The model is GenericResponseModel.
-        - 500: Internal Server Error. The model is GenericResponseModel.
-    """
-    response: GenericResponseModel = UserService.create_school_representative(user_data)
-    return build_api_response(response)
-
 @router.get(
     "/pending-approval/",
     status_code=status.HTTP_200_OK,
@@ -401,9 +352,15 @@ async def create_school_representative(
 )
 async def get_pending_approval_requests(
     current_page: int = Query(1, ge=1, description="The page number to fetch"),
-    items_per_page: int = Query(10, ge=1, le=100, description="The number of items per page"),
-    filter_params: Optional[str] = Query(None, description="JSON string of filter parameters"),
-    sorting_params: Optional[str] = Query(None, description="JSON string of sorting parameters"),
+    items_per_page: int = Query(
+        10, ge=1, le=100, description="The number of items per page"
+    ),
+    filter_params: Optional[str] = Query(
+        None, description="JSON string of filter parameters"
+    ),
+    sorting_params: Optional[str] = Query(
+        None, description="JSON string of sorting parameters"
+    ),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ):
@@ -430,12 +387,13 @@ async def get_pending_approval_requests(
         - 500: Internal Server Error. The model is GenericResponseModel.
     """
     response: GenericResponseModel = UserService.get_pending_approval_requests(
-        current_page, 
-        items_per_page, 
+        current_page,
+        items_per_page,
         json.loads(filter_params) if filter_params else None,
-        json.loads(sorting_params) if sorting_params else None
+        json.loads(sorting_params) if sorting_params else None,
     )
     return build_api_response(response)
+
 
 @router.put(
     "/approve/{user_id}",
@@ -489,6 +447,7 @@ async def approve_user(
     """
     response: GenericResponseModel = UserService.approve_user(user_id)
     return build_api_response(response)
+
 
 @router.put(
     "/reject/{user_id}",

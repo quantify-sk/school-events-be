@@ -1,6 +1,8 @@
 import app.api.v1.endpoints
+import app.logger
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Dict, List, Optional
+import starlette.responses
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from pytz import timezone
 from app.database import Base
 from app.models.get_params import ParameterValidator
@@ -59,6 +61,10 @@ class User(Base):
     school_id = Column(Integer, ForeignKey("school.id"))
     school = relationship("School", back_populates="representatives")
 
+    # New field for employee accounts
+    parent_organizer_id = Column(Integer, ForeignKey("user.user_id"), nullable=True)
+    employees = relationship("User", backref="parent_organizer", remote_side=[user_id])
+
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
             user_id=self.user_id,
@@ -85,6 +91,7 @@ class User(Base):
         password_hash: str,
         role: UserRole,
         school_id: Optional[int] = None,
+        parent_organizer_id: Optional[int] = None,
         **kwargs,
     ):
         self.first_name = first_name
@@ -93,6 +100,7 @@ class User(Base):
         self.password_hash = password_hash
         self.role = role
         self.school_id = school_id
+        self.parent_organizer_id = parent_organizer_id
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -115,6 +123,8 @@ class User(Base):
             preferred_language=self.preferred_language,
             profile_picture=self.profile_picture,
             subscription=self.subscription,
+            school=self.school._to_model() if self.school else None,
+            parent_organizer_id=self.parent_organizer_id,
         )
 
     @classmethod
@@ -166,36 +176,41 @@ class User(Base):
 
         db = get_db_session()
         user = db.query(cls).filter(cls.user_id == user_id).first()
+        print("user", user._to_model())
         return user._to_model() if user else None
 
     @classmethod
     def create_new_user(cls, user_data: UserCreateModel) -> UserModel:
         """
-        Create a new user.
+        Create a new user. The school association and error handling are managed in the service layer.
 
         Args:
-            user_data (UserModel): The data of the new user.
+            user_data (UserCreateModel): The data of the new user.
 
         Returns:
             UserModel: The created user model.
         """
         from app.context_manager import get_db_session
-        print("user_data", user_data)
+
         db = get_db_session()
+
         new_user = User(
             first_name=user_data.first_name,
             last_name=user_data.last_name,
             user_email=user_data.user_email,
             password_hash=user_data.password_hash,
             role=user_data.role if user_data.role else "user",
-            email_verified=(
-                user_data.email_verified if user_data.email_verified else False
-            ),
+            email_verified=user_data.email_verified
+            if user_data.email_verified
+            else False,
             preferred_language=user_data.preferred_language,
             profile_picture=user_data.profile_picture,
             subscription=user_data.subscription,
- 
+            status=UserStatus.INACTIVE,
+            school_id=user_data.school_id,  # This is set in the service layer if applicable
+            parent_organizer_id=user_data.parent_organizer_id,  # New field for employee accounts
         )
+
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
@@ -285,6 +300,11 @@ class User(Base):
             )
             user.subscription = (
                 user_data.subscription if user_data.subscription else user.subscription
+            )
+            user.parent_organizer_id = (
+                user_data.parent_organizer_id
+                if user_data.parent_organizer_id
+                else user.parent_organizer_id
             )
 
             db.commit()
@@ -419,32 +439,6 @@ class User(Base):
             return user.role if user else None
 
     @classmethod
-    def create_school_representative(cls, user_data: dict) -> "User":
-        """
-        Create a new school representative user.
-
-        Args:
-            user_data (dict): The data for creating the new user.
-
-        Returns:
-            User: The newly created user object.
-        """
-        with get_db_session() as session:
-            user = cls(
-                first_name=user_data["first_name"],
-                last_name=user_data["last_name"],
-                user_email=user_data["email"],
-                phone_number=user_data["phone_number"],
-                password_hash=user_data["password_hash"],
-                role=UserRole.SCHOOL_REPRESENTATIVE,
-                status=UserStatus.PENDING_APPROVAL,
-                school_id=user_data["school_id"],
-            )
-            session.add(user)
-            session.commit()
-            return user
-
-    @classmethod
     def get_users_by_status(
         cls,
         user_status: UserStatus,
@@ -470,7 +464,9 @@ class User(Base):
             query = session.query(cls).filter(cls.status == user_status)
 
             # Apply filters and sorting
-            query = ParameterValidator.apply_filters_and_sorting(query, cls, filter_params, sorting_params)
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, sorting_params
+            )
 
             # Get total count
             total_count = query.count()
@@ -521,3 +517,79 @@ class User(Base):
                 user.status = UserStatus.REJECTED
                 session.commit()
             return user._to_model() if user else None
+
+    @classmethod
+    def get_employees(cls, organizer_id: int) -> List[UserModel]:
+        """
+        Get all employees for a given organizer.
+
+        Args:
+            organizer_id (int): The ID of the organizer.
+
+        Returns:
+            List[UserModel]: A list of employee user models.
+        """
+        with get_db_session() as session:
+            employees = (
+                session.query(cls).filter(cls.parent_organizer_id == organizer_id).all()
+            )
+            return [employee._to_model() for employee in employees]
+
+    @classmethod
+    def add_employee(
+        cls, organizer_id: int, employee_data: UserCreateModel
+    ) -> UserModel:
+        """
+        Add a new employee for an organizer.
+
+        Args:
+            organizer_id (int): The ID of the organizer.
+            employee_data (UserCreateModel): The data for the new employee.
+
+        Returns:
+            UserModel: The created employee user model.
+        """
+        employee_data.parent_organizer_id = organizer_id
+        employee_data.role = UserRole.EMPLOYEE
+        return cls.create_new_user(employee_data)
+
+    @classmethod
+    def remove_employee(cls, employee_id: int) -> bool:
+        """
+        Remove an employee (set their status to DELETED).
+
+        Args:
+            employee_id (int): The ID of the employee to remove.
+
+        Returns:
+            bool: True if the employee was successfully removed, False otherwise.
+        """
+        return cls.delete_user_by_id(employee_id)
+
+    @classmethod
+    def get_organizer_with_employees(
+        cls, organizer_id: int
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Get an organizer's details along with their employees.
+
+        Args:
+            organizer_id (int): The ID of the organizer.
+
+        Returns:
+            Optional[Dict[str, Any]]: A dictionary containing the organizer's details and a list of their employees,
+                                      or None if the organizer is not found.
+        """
+        with get_db_session() as session:
+            organizer = (
+                session.query(cls)
+                .filter(cls.user_id == organizer_id, cls.role == UserRole.ORGANIZER)
+                .first()
+            )
+            if organizer:
+                organizer_data = organizer._to_model().dict()
+                organizer_data["employees"] = [
+                    employee._to_model().dict() for employee in organizer.employees
+                ]
+                return organizer_data
+            return None

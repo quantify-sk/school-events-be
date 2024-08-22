@@ -213,24 +213,16 @@ class EventService:
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
-        coordinates: Optional[str] = None,
-        radius: Optional[float] = None,
     ) -> GenericResponseModel:
         """
         Retrieve all events with pagination, filtering, and sorting.
-
+    
         Args:
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-            date_from (Optional[datetime]): Start date for filtering events.
-            date_to (Optional[datetime]): End date for filtering events.
-            coordinates (Optional[str]): Coordinates for filtering events (format: latitude,longitude).
-            radius (Optional[float]): Radius in kilometers for location-based filtering.
-
+    
         Returns:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
         """
@@ -239,14 +231,10 @@ class EventService:
             items_per_page,
             filter_params,
             sorting_params,
-            date_from,
-            date_to,
-            coordinates,
-            radius,
         )
-
+    
         total_pages = math.ceil(total_count / items_per_page)
-
+    
         logger.info(
             f"Events retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )
@@ -262,7 +250,7 @@ class EventService:
                 items=events,
             ),
         )
-
+    
     @staticmethod
     def get_organizer_events(
         organizer_id: int,
@@ -270,25 +258,17 @@ class EventService:
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
-        coordinates: Optional[str] = None,
-        radius: Optional[float] = None,
     ) -> GenericResponseModel:
         """
         Retrieve events for a specific organizer with pagination, filtering, and sorting.
-
+    
         Args:
             organizer_id (int): The ID of the organizer.
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-            date_from (Optional[datetime]): Start date for filtering events.
-            date_to (Optional[datetime]): End date for filtering events.
-            coordinates (Optional[str]): Coordinates for filtering events (format: latitude,longitude).
-            radius (Optional[float]): Radius in kilometers for location-based filtering.
-
+    
         Returns:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
         """
@@ -298,14 +278,10 @@ class EventService:
             items_per_page,
             filter_params,
             sorting_params,
-            date_from,
-            date_to,
-            coordinates,
-            radius,
         )
-
+    
         total_pages = math.ceil(total_count / items_per_page)
-
+    
         logger.info(
             f"Organizer events retrieved. Organizer ID: {organizer_id}, Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )

@@ -160,6 +160,8 @@ class ParameterValidator:
             get_base_table_columns(model)
         )
 
+        model_columns.add("event_dates.date")  
+
         for param in params:
             if not isinstance(param, dict) or len(param) != 1:
                 raise HTTPException(

@@ -1,3 +1,4 @@
+from app.models.get_params import ParameterValidator
 from sqlalchemy import Column, Integer, Enum, ForeignKey, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime

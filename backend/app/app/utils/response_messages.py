@@ -55,3 +55,7 @@ class ResponseMessages:
         "Invalid number of seats. The number of seats must be greater than zero."
     )
     MSG_SUCCESS_GET_RESERVATIONS_BY_EVENT = "Reservations retrieved successfully"
+
+    # School messages
+    ERR_MISSING_SCHOOL_DATA = "Missing school data"
+    SCHOOL_CREATION_FAILED = "School creation failed"

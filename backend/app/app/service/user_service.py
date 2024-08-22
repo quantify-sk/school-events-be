@@ -28,72 +28,79 @@ from typing import List, Dict, Optional
 
 class UserService:
     @staticmethod
-    def create_user(
-        user_data: UserCreateModel,  # Data of the new user
-    ) -> GenericResponseModel:
+    def create_user(user_data: UserCreateModel) -> GenericResponseModel:
         """
-        Create a new user.
+        Create a new user, handling school representatives separately.
+
+        This method performs the following steps:
+        1. Checks if the email is already taken
+        2. For school representatives:
+           - Validates school data
+           - Checks for existing school or creates a new one
+           - Associates the school with the user
+        3. Creates the new user
+        4. Creates a notification for the new user
 
         Args:
-            user_data (UserCreateModel): Data of the new user.
+            user_data (UserCreateModel): The data for creating the new user.
 
         Returns:
-            GenericResponseModel: A GenericResponseModel with the created user or an error.
+            GenericResponseModel: A response model containing the created user data or error information.
 
         Raises:
-            CustomInternalServerErrorException: If an error occur while creating the user.
+            CustomBadRequestException: If the email is already taken or school data is missing for representatives.
+            CustomInternalServerErrorException: If there's an unexpected error during user creation.
         """
-        # Check if the user is authenticated
-        # if not context_actor_user_data.get():
-        #     raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+        try:
+            # Check if the email is already taken
+            existing_user = User.get_user_by_email(user_data.user_email)
+            if existing_user:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_EMAIL_ALREADY_TAKEN
+                )
 
-        # Check if the email is already taken
-        user = User.get_user_by_email(user_data.user_email)
+            # Handle school representative case
+            if user_data.role == UserRole.SCHOOL_REPRESENTATIVE:
+                if not user_data.school:
+                    raise CustomBadRequestException(
+                        ResponseMessages.ERR_MISSING_SCHOOL_DATA
+                    )
 
-        # Return an error if the email is already taken
-        if user:
-            raise CustomBadRequestException(ResponseMessages.ERR_EMAIL_ALREADY_TAKEN)
+                # Check if the school already exists
+                existing_school = School.get_school_by_ico(user_data.school.ico)
+                if existing_school:
+                    school = existing_school
+                else:
+                    # Create a new school
+                    school = School.create_new_school(user_data.school)
 
-        # Create a new user
-        new_user = User.create_new_user(
-            user_data,
-        )
+                # Associate the school with the user data
+                user_data.school_id = school.id
 
-        # Raise an exception if an error occur while creating the user
-        if not new_user:
-            logger.error(
-                f"Error while creating user for user ID {context_actor_user_data.get().user_id}"
+            # Create a new user
+            new_user = User.create_new_user(user_data)
+
+            # Create a new notification
+            Notification.create_notification(
+                f"Uživatel {new_user.first_name} {new_user.last_name} byl úspěšně vytvořen",
+                datetime.now().date(),
+                NotificationType.INFO,
+                [new_user.user_id],
             )
+
+            # Return a GenericResponseModel with the created user
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_CREATE_USER,
+                status_code=status.HTTP_200_OK,
+                data=new_user,
+            )
+
+        except CustomBadRequestException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error while creating user: {str(e)}")
             raise CustomInternalServerErrorException()
-
-        # Log the successful creation of the new user
-        logger.info(
-            f"User ID {new_user.user_id} created successfully new user: {new_user.user_id}"
-        )
-
-        # Create a new notification
-        Notification.create_notification(
-            f"Uživatel {new_user.first_name} {new_user.last_name} byl úspěšně vytvořen",
-            datetime.now().date(),
-            NotificationType.INFO,
-            [new_user.user_id],
-        )
-
-        # Get the user from the database
-        new_user = User.get_user_by_id(new_user.user_id)
-
-        # Raise an exception if an error occur while getting the user
-        if not new_user:
-            raise CustomInternalServerErrorException()
-
-        print(new_user)
-        # Return a GenericResponseModel with the created user
-        return GenericResponseModel(
-            api_id=context_id_api.get(),  # The ID of the API
-            message=ResponseMessages.MSG_SUCCESS_CREATE_USER,  # The success message
-            status_code=status.HTTP_200_OK,  # The success status code
-            data=new_user,  # The created user
-        )
 
     @staticmethod
     def get_all_users(
@@ -322,42 +329,6 @@ class UserService:
         )
 
     @staticmethod
-    def create_school_representative(user_data: UserCreateModel):
-        """
-        Create a new school representative user and associated school.
-
-        This method creates a new school entry and a new user with the role of school representative.
-        The user's status is set to pending approval.
-
-        Args:
-            user_data (UserCreateModel): The data for creating the new user and school.
-
-        Returns:
-            User: The newly created user object.
-        """
-        logger.info(f"Creating new school representative: {user_data.email}")
-
-        # Create school first
-        school = School.create_school(
-            {
-                "name": user_data.school_name,
-                "address": user_data.school_address,
-                "ico": user_data.school_ico,
-            }
-        )
-
-        # Create user with school_id
-        user_dict = user_data.dict()
-        user_dict["school_id"] = school.id
-        user_dict["role"] = UserRole.SCHOOL_REPRESENTATIVE
-        user_dict["status"] = UserStatus.PENDING_APPROVAL
-
-        user = User.create_user(user_dict)
-
-        logger.info(f"Successfully created school representative: {user.email}")
-        return user
-
-    @staticmethod
     def get_pending_approval_requests(
         current_page: int,
         items_per_page: int,
@@ -416,21 +387,23 @@ class UserService:
         """
         logger.info(f"Approving school representative with ID: {user_id}")
         user = User.approve_user(user_id)
-        
+
         if user:
-            logger.info(f"Successfully approved school representative: {user.user_email}")
+            logger.info(
+                f"Successfully approved school representative: {user.user_email}"
+            )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_200_OK,
                 message=ResponseMessages.MSG_SUCCESS_APPROVE_USER,
-                data=user
+                data=user,
             )
         else:
             logger.warning(f"User with ID {user_id} not found for approval")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_404_NOT_FOUND,
-                error=ResponseMessages.ERR_USER_NOT_FOUND
+                error=ResponseMessages.ERR_USER_NOT_FOUND,
             )
 
     @staticmethod
@@ -449,19 +422,21 @@ class UserService:
         """
         logger.info(f"Rejecting school representative with ID: {user_id}")
         user = User.update_user_status(user_id, UserStatus.REJECTED, reason)
-        
+
         if user:
-            logger.info(f"Successfully rejected school representative: {user.user_email}")
+            logger.info(
+                f"Successfully rejected school representative: {user.user_email}"
+            )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_200_OK,
                 message=ResponseMessages.MSG_SUCCESS_REJECT_USER,
-                data=user
+                data=user,
             )
         else:
             logger.warning(f"User with ID {user_id} not found for rejection")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_404_NOT_FOUND,
-                error=ResponseMessages.ERR_USER_NOT_FOUND
+                error=ResponseMessages.ERR_USER_NOT_FOUND,
             )

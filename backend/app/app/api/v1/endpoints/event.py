@@ -261,19 +261,12 @@ async def get_all_events(
     date_to: Optional[datetime] = Query(
         None, description="End date for filtering events"
     ),
-    coordinates: Optional[str] = Query(
-        None,
-        description="Coordinates for filtering events (format: latitude,longitude)",
-    ),
-    radius: Optional[float] = Query(
-        None, description="Radius in kilometers for location-based filtering"
-    ),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
     Retrieve all events with pagination, filtering, and sorting.
 
-    This endpoint allows fetching events with various filtering options including date range and location-based filtering.
+    This endpoint allows fetching events with various filtering options including date range.
     It also supports pagination and sorting of results.
 
     Args:
@@ -283,8 +276,6 @@ async def get_all_events(
         sorting_params (Optional[str]): JSON string containing sorting parameters.
         date_from (Optional[datetime]): Start date for filtering events.
         date_to (Optional[datetime]): End date for filtering events.
-        coordinates (Optional[str]): Coordinates for location-based filtering (format: "latitude,longitude").
-        radius (Optional[float]): Radius in kilometers for location-based filtering.
 
     Returns:
         GenericResponseModel: A response model containing the list of events and pagination information.
@@ -292,18 +283,23 @@ async def get_all_events(
     filters = parse_json_params(filter_params) if filter_params else None
     sorting = parse_json_params(sorting_params) if sorting_params else None
 
+    # Add date filtering to filter_params if provided
+    if date_from or date_to:
+        if not filters:
+            filters = {}
+        filters["event_dates"] = {}
+        if date_from:
+            filters["event_dates"]["date_from"] = date_from.isoformat()
+        if date_to:
+            filters["event_dates"]["date_to"] = date_to.isoformat()
+
     response = EventService.get_all_events(
         current_page,
         items_per_page,
         filters,
         sorting,
-        date_from,
-        date_to,
-        coordinates,
-        radius,
     )
     return build_api_response(response)
-
 
 @router.get(
     "/organizer/{organizer_id}/events",
@@ -338,21 +334,36 @@ async def get_organizer_events(
     date_to: Optional[datetime] = Query(
         None, description="End date for filtering events"
     ),
-    coordinates: Optional[str] = Query(
-        None,
-        description="Coordinates for filtering events (format: latitude,longitude)",
-    ),
-    radius: Optional[float] = Query(
-        None, description="Radius in kilometers for location-based filtering"
-    ),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
     Retrieve events for the specified organizer with pagination, filtering, and sorting.
+
+    Args:
+        organizer_id (int): The ID of the organizer.
+        current_page (int): The current page number for pagination.
+        items_per_page (int): The number of items to display per page.
+        filter_params (Optional[str]): JSON string containing filter parameters.
+        sorting_params (Optional[str]): JSON string containing sorting parameters.
+        date_from (Optional[datetime]): Start date for filtering events.
+        date_to (Optional[datetime]): End date for filtering events.
+
+    Returns:
+        GenericResponseModel: A response model containing the list of events and pagination information.
     """
     filters = parse_json_params(filter_params) if filter_params else None
     sorting = parse_json_params(sorting_params) if sorting_params else None
+
+    # Add date filtering to filter_params if provided
+    if date_from or date_to:
+        if not filters:
+            filters = {}
+        filters["event_dates"] = {}
+        if date_from:
+            filters["event_dates"]["date_from"] = date_from.isoformat()
+        if date_to:
+            filters["event_dates"]["date_to"] = date_to.isoformat()
 
     response = EventService.get_organizer_events(
         organizer_id,
@@ -360,9 +371,5 @@ async def get_organizer_events(
         items_per_page,
         filters,
         sorting,
-        date_from,
-        date_to,
-        coordinates,
-        radius,
     )
     return build_api_response(response)

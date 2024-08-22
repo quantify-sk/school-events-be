@@ -69,9 +69,6 @@ async def login_user(
     :return: OAuth2TokenModel or GenericResponseModel
     """
 
-    
-
-
     user = User.get_user_object_by_email(form_data.username)
     if user is None:
         context_set_db_session_rollback.set(True)
@@ -82,7 +79,7 @@ async def login_user(
                 error=ResponseMessages.ERR_INVALID_USER_CREDENTIALS,
             )
         )
-    
+
     try:
         UserService.check_account_lock(user)
     except CustomAccountLockedException as e:
@@ -93,8 +90,7 @@ async def login_user(
                 error=e.detail,
             )
         )
-    
-    
+
     if user.status == UserStatus.INACTIVE:
         return build_api_response(
             GenericResponseModel(
@@ -103,7 +99,6 @@ async def login_user(
                 error=ResponseMessages.ERR_ACCOUNT_PENDING_APPROVAL,
             )
         )
-
 
     if not verify_password(form_data.password, user.password_hash):
         User.handle_failed_login(user.user_id)

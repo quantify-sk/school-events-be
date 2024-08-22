@@ -1,14 +1,16 @@
 from sqlalchemy import (
     Column,
-    Float,
     Integer,
     String,
     DateTime,
     Text,
     Enum as SAEnum,
     ForeignKey,
+    func,
+    asc,
+    desc,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, joinedload
 from datetime import datetime
 from app.database import Base
 from app.models.event import (
@@ -21,7 +23,6 @@ from app.models.event import (
 from app.context_manager import get_db_session
 from app.models.get_params import ParameterValidator
 from typing import Dict, Any, List, Optional, Tuple, Union
-from sqlalchemy import func
 from app.data_adapter.attachment import Attachment
 
 
@@ -30,37 +31,45 @@ class Event(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
-    date = Column(DateTime, nullable=False)
-    time = Column(DateTime, nullable=False)
+    institution_name = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
     city = Column(String(100), nullable=False)
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
+    district = Column(String(100), nullable=True)  # Changed to nullable
+    region = Column(String(100), nullable=True)  # Changed to nullable
     capacity = Column(Integer, nullable=False)
     available_spots = Column(Integer, nullable=False)
     description = Column(Text)
-    annotation = Column(String(500))
+    annotation = Column(Text)
+    parent_info = Column(Text, nullable=True)  # Changed to nullable
     target_group = Column(SAEnum(TargetGroup), nullable=False)
+    age_from = Column(Integer, nullable=False)
+    age_to = Column(Integer, nullable=True)
     status = Column(SAEnum(EventStatus), nullable=False, default=EventStatus.SCHEDULED)
     event_type = Column(SAEnum(EventType), nullable=False)
-    duration = Column(Float, nullable=False)
-    parent_info = Column(Text)
+    duration = Column(Integer, nullable=False)  # Duration in minutes
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     organizer_id = Column(Integer, ForeignKey("user.user_id"))
+    more_info_url = Column(String(255), nullable=True)  # New field for additional information URL
 
-    # Relationships
+    # Relationships remain the same
     attachments = relationship(
         "Attachment", back_populates="event", cascade="all, delete-orphan"
     )
     organizer = relationship("User", back_populates="organized_events")
+    event_dates = relationship(
+        "EventDate", back_populates="event", cascade="all, delete-orphan"
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.attachments = []  # Initialize attachments as an empty list
+        self.attachments = []
+        self.event_dates = []
         for k, v in kwargs.items():
             if k == "attachments" and v is not None:
                 self.attachments = v
+            elif k == "event_dates" and v is not None:
+                self.event_dates = v
             else:
                 setattr(self, k, v)
         self.available_spots = self.capacity
@@ -69,45 +78,46 @@ class Event(Base):
         return {
             "id": self.id,
             "title": self.title,
-            "date": self.date,
-            "time": self.time,
+            "institution_name": self.institution_name,
             "address": self.address,
             "city": self.city,
-            "latitude": self.latitude,
-            "longitude": self.longitude,
+            "district": self.district,
+            "region": self.region,
             "capacity": self.capacity,
             "available_spots": self.available_spots,
             "description": self.description,
             "annotation": self.annotation,
+            "parent_info": self.parent_info,
             "target_group": self.target_group,
+            "age_from": self.age_from,
+            "age_to": self.age_to,
             "status": self.status,
             "event_type": self.event_type,
             "duration": self.duration,
-            "parent_info": self.parent_info,
+            "more_info_url": self.more_info_url,
             "attachments": [attachment._to_model() for attachment in self.attachments],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "organizer_id": self.organizer_id,
+            "event_dates": [event_date._to_model() for event_date in self.event_dates],
         }
-
-    def book_seats(self, number_of_seats: int) -> bool:
-        if self.available_spots >= number_of_seats:
-            self.available_spots -= number_of_seats
-            return True
-        return False
 
     @classmethod
     def create_new_event(
         cls, event_data: EventCreateModel, attachments: List[Dict[str, str]] = None
     ) -> Dict[str, Any]:
         db = get_db_session()
-        new_event = cls(**event_data.dict(exclude={"attachments"}))
+        new_event = cls(**event_data.dict(exclude={"attachments", "event_dates"}))
         new_event.available_spots = new_event.capacity
 
         if attachments:
             for attachment_data in attachments:
                 attachment = Attachment(**attachment_data, event=new_event)
                 db.add(attachment)
+
+        for event_date in event_data.event_dates:
+            new_event_date = EventDate(**event_date.dict(), event=new_event)
+            db.add(new_event_date)
 
         db.add(new_event)
         db.commit()
@@ -142,9 +152,16 @@ class Event(Base):
                 new_attachment = Attachment(**attachment_data, event_id=event_id)
                 db.add(new_attachment)
 
+            # Update event dates
+            if "event_dates" in update_data:
+                db.query(EventDate).filter(EventDate.event_id == event_id).delete()
+                for event_date in update_data["event_dates"]:
+                    new_event_date = EventDate(**event_date, event_id=event_id)
+                    db.add(new_event_date)
+
             # Update other fields
             for field, value in update_data.items():
-                if field != "attachments":
+                if field not in ["attachments", "event_dates"]:
                     setattr(event, field, value)
 
             if "capacity" in update_data:
@@ -179,47 +196,74 @@ class Event(Base):
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
-        coordinates: Optional[str] = None,
-        radius: Optional[float] = None,
     ) -> Tuple[List[Dict[str, Any]], int]:
+        """
+        Retrieve events with pagination, filtering, and sorting.
+    
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
+    
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing the list of events and the total count.
+        """
         db = get_db_session()
-        query = db.query(cls)
-
-        # Apply date range filter
-        if date_from:
-            query = query.filter(cls.date >= date_from)
-        if date_to:
-            query = query.filter(cls.date <= date_to)
-
-        # Apply location-based filter
-        if coordinates and radius:
-            lat, lon = map(float, coordinates.split(","))
-            distance = func.sqrt(
-                func.pow(69.1 * (cls.latitude - lat), 2)
-                + func.pow(
-                    69.1 * (lon - cls.longitude) * func.cos(cls.latitude / 57.3), 2
-                )
+    
+        # Start with a subquery to get the earliest date for each event
+        date_subquery = (
+            db.query(EventDate.event_id, func.min(EventDate.date).label('min_date'))
+            .group_by(EventDate.event_id)
+            .subquery()
+        )
+    
+        # Main query
+        query = db.query(cls).join(date_subquery, cls.id == date_subquery.c.event_id)
+    
+        # Apply date range filter if provided
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params.pop("event_dates")
+            if "date_from" in date_filters:
+                query = query.filter(date_subquery.c.min_date >= date_filters["date_from"])
+            if "date_to" in date_filters:
+                query = query.filter(date_subquery.c.min_date <= date_filters["date_to"])
+    
+        # Apply additional filters using ParameterValidator
+        if filter_params:
+            query = ParameterValidator.apply_filters_and_sorting(
+                query,
+                cls,
+                filter_params,
+                None,  # We'll handle sorting separately
             )
-            query = query.filter(distance <= radius)
-
-        # Apply additional filters and sorting
-        query = ParameterValidator.apply_filters_and_sorting(
-            query,
-            cls,
-            filter_params,
-            sorting_params,
-        )
-
-        # Get total count and paginate results
+    
+        # Apply sorting
+        if sorting_params:
+            for sort_param in sorting_params:
+                for key, value in sort_param.items():
+                    if key == "event_dates.date":
+                        query = query.order_by(
+                            date_subquery.c.min_date.asc() if value == "asc" else date_subquery.c.min_date.desc()
+                        )
+                    else:
+                        column = getattr(cls, key)
+                        query = query.order_by(column.asc() if value == "asc" else column.desc())
+        else:
+            # Default sorting by earliest date
+            query = query.order_by(date_subquery.c.min_date.asc())
+    
+        # Get total count of distinct events
         total_count = query.count()
-        events = (
-            query.offset((current_page - 1) * items_per_page)
-            .limit(items_per_page)
-            .all()
-        )
-
+    
+        # Apply pagination
+        query = query.offset((current_page - 1) * items_per_page).limit(items_per_page)
+    
+        # Load related event_dates
+        query = query.options(joinedload(cls.event_dates))
+    
+        # Execute query and convert to model
+        events = query.all()
         return [event._to_model() for event in events], total_count
 
     @classmethod
@@ -230,41 +274,92 @@ class Event(Base):
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
-        coordinates: Optional[str] = None,
-        radius: Optional[float] = None,
     ) -> Tuple[List[Dict[str, Any]], int]:
+        """
+        Retrieve events for a specific organizer with pagination, filtering, and sorting.
+    
+        Args:
+            organizer_id (int): The ID of the organizer.
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
+    
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing the list of events and the total count.
+        """
         db = get_db_session()
-        query = db.query(cls).filter(cls.organizer_id == organizer_id)
-
-        query = ParameterValidator.apply_filters_and_sorting(
-            query,
-            cls,
-            filter_params,
-            sorting_params,
+    
+        # Start with a subquery to get the earliest date for each event
+        date_subquery = (
+            db.query(EventDate.event_id, func.min(EventDate.date).label('min_date'))
+            .group_by(EventDate.event_id)
+            .subquery()
         )
-
-        if date_from:
-            query = query.filter(cls.date >= date_from)
-        if date_to:
-            query = query.filter(cls.date <= date_to)
-
-        if coordinates and radius:
-            lat, lon = map(float, coordinates.split(","))
-            distance = func.sqrt(
-                func.pow(69.1 * (cls.latitude - lat), 2)
-                + func.pow(
-                    69.1 * (lon - cls.longitude) * func.cos(cls.latitude / 57.3), 2
-                )
+    
+        # Main query
+        query = db.query(cls).filter(cls.organizer_id == organizer_id).join(date_subquery, cls.id == date_subquery.c.event_id)
+    
+        # Apply date range filter if provided
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params.pop("event_dates")
+            if "date_from" in date_filters:
+                query = query.filter(date_subquery.c.min_date >= date_filters["date_from"])
+            if "date_to" in date_filters:
+                query = query.filter(date_subquery.c.min_date <= date_filters["date_to"])
+    
+        # Apply additional filters using ParameterValidator
+        if filter_params:
+            query = ParameterValidator.apply_filters_and_sorting(
+                query,
+                cls,
+                filter_params,
+                None,  # We'll handle sorting separately
             )
-            query = query.filter(distance <= radius)
-
+    
+        # Apply sorting
+        if sorting_params:
+            for sort_param in sorting_params:
+                for key, value in sort_param.items():
+                    if key == "event_dates.date":
+                        query = query.order_by(
+                            date_subquery.c.min_date.asc() if value == "asc" else date_subquery.c.min_date.desc()
+                        )
+                    else:
+                        column = getattr(cls, key)
+                        query = query.order_by(column.asc() if value == "asc" else column.desc())
+        else:
+            # Default sorting by earliest date
+            query = query.order_by(date_subquery.c.min_date.asc())
+    
+        # Get total count of distinct events
         total_count = query.count()
-        events = (
-            query.offset((current_page - 1) * items_per_page)
-            .limit(items_per_page)
-            .all()
-        )
-
+    
+        # Apply pagination
+        query = query.offset((current_page - 1) * items_per_page).limit(items_per_page)
+    
+        # Load related event_dates
+        query = query.options(joinedload(cls.event_dates))
+    
+        # Execute query and convert to model
+        events = query.all()
         return [event._to_model() for event in events], total_count
+
+
+class EventDate(Base):
+    __tablename__ = "event_date"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    event_id = Column(Integer, ForeignKey('event.id'), nullable=False)
+    date = Column(DateTime, nullable=False)
+    time = Column(DateTime, nullable=False)
+
+    event = relationship("Event", back_populates="event_dates")
+
+    def _to_model(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "event_id": self.event_id,
+            "date": self.date,
+            "time": self.time,
+        }
