@@ -79,6 +79,18 @@ services:
       - db
       - redis
 
+  frontend:
+    container_name: ${PROJECT_NAME}_frontend
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    command: npm run build && npm run start
+
 volumes:
   caddy_data:
   caddy_config:
