@@ -85,7 +85,7 @@ services:
     ports:
       - "8083:3000"  # Adjust this based on your frontend's port
     environment:
-      - VITE_APP_API_URL=http://51.75.62.15:8000/api/v1
+      - VITE_APP_API_URL=http://51.75.62.15/api/v1
     depends_on:
       - fastapi_server  # Make sure the backend is up before the frontend
 
