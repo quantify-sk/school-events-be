@@ -4,4 +4,5 @@
 
 {$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
   reverse_proxy fastapi_server:8000
+  tls off
 }
