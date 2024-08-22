@@ -3,6 +3,9 @@ from enum import Enum
 
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class ModeEnum(str, Enum):

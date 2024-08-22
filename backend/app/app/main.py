@@ -2,6 +2,9 @@ from app.api.v1.api import api_router as api_router_v1
 from app.context_manager import context_id_api, context_set_db_session_rollback
 from app.core.config import settings
 from app.database import Base, engine
+from app.data_adapter.report import Report
+from app.data_adapter.event import Event
+from app.data_adapter.reservation import Reservation
 from app.event_listeners import register_event_listeners
 from app.logger import logger
 from app.models.response import GenericResponseModel, build_api_response

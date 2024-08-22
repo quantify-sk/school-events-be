@@ -1,17 +1,23 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, constr
+from app.models.school import SchoolCreateModel, SchoolModel
 
 
 class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     DELETED = "deleted"
+    REJECTED = "rejected"
 
 
 class UserRole(str, Enum):
     ADMIN = "admin"
+    ORGANIZER = "organizer"
+    SCHOOL_REPRESENTATIVE = "school_representative"
+    ANALYST = "analyst"
     USER = "user"
+    EMPLOYEE = "employee"
 
 
 class UserTokenData(BaseModel):
@@ -33,6 +39,7 @@ class UserModel(BaseModel):
     preferred_language: str | None = None
     profile_picture: str | None = None
     subscription: str | None = None
+    school: SchoolModel | None = None
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
@@ -49,6 +56,8 @@ class UserCreateWithoutPasswordModel(BaseModel):
     preferred_language: str | None = None
     profile_picture: str | None = None
     subscription: str | None = None
+    school_id: int | None = None
+    school: SchoolCreateModel | None = None
 
 
 class UserCreateModel(UserCreateWithoutPasswordModel):
@@ -68,3 +77,4 @@ class UserUpdateModel(UserCreateWithoutPasswordModel):
     preferred_language: str | None = None
     profile_picture: str | None = None
     subscription: str | None = None
+    school: SchoolModel | None = None
