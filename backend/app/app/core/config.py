@@ -16,7 +16,7 @@ class ModeEnum(str, Enum):
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "app"
-    BACKEND_CORS_ORIGINS: list[str] | list[AnyHttpUrl]
+    BACKEND_CORS_ORIGINS: list[str] | list[AnyHttpUrl] = ["http://51.75.62.15:8083"]
     MODE: ModeEnum = ModeEnum.development
     API_VERSION: str = "v1"
     API_V1_STR: str = f"/api/{API_VERSION}"
