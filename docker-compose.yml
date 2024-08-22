@@ -81,7 +81,7 @@ services:
 
   frontend:
     container_name: ${PROJECT_NAME}_frontend
-    build: ../frontend
+    build: ../frontend/school-events
     ports:
       - "3000:3000"  # Adjust this based on your frontend's port
     depends_on:
