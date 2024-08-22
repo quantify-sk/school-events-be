@@ -3,13 +3,11 @@ from enum import Enum
 from pydantic import BaseModel, EmailStr, field_validator, constr
 from app.models.school import SchoolCreateModel, SchoolModel
 
-
 class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     DELETED = "deleted"
     REJECTED = "rejected"
-
 
 class UserRole(str, Enum):
     ADMIN = "admin"
@@ -19,10 +17,8 @@ class UserRole(str, Enum):
     USER = "user"
     EMPLOYEE = "employee"
 
-
 class UserTokenData(BaseModel):
     user_id: int
-
 
 class UserModel(BaseModel):
     user_id: int
@@ -46,7 +42,6 @@ class UserModel(BaseModel):
             user_id=self.user_id,
         )
 
-
 class UserCreateWithoutPasswordModel(BaseModel):
     first_name: str
     last_name: str
@@ -58,7 +53,7 @@ class UserCreateWithoutPasswordModel(BaseModel):
     subscription: str | None = None
     school_id: int | None = None
     school: SchoolCreateModel | None = None
-
+    parent_organizer_id: int | None = None  # Added this field
 
 class UserCreateModel(UserCreateWithoutPasswordModel):
     password_hash: str
@@ -66,9 +61,7 @@ class UserCreateModel(UserCreateWithoutPasswordModel):
     @field_validator("password_hash")
     def password_validator(cls, password):
         from app.dependencies import get_password_hash
-
         return get_password_hash(password)
-
 
 class UserUpdateModel(UserCreateWithoutPasswordModel):
     status: UserStatus | None = None
@@ -78,3 +71,4 @@ class UserUpdateModel(UserCreateWithoutPasswordModel):
     profile_picture: str | None = None
     subscription: str | None = None
     school: SchoolModel | None = None
+    parent_organizer_id: int | None = None  # Added this field

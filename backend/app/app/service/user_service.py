@@ -75,7 +75,9 @@ class UserService:
                     school = School.create_new_school(user_data.school)
 
                 # Associate the school with the user data
-                user_data.school_id = school.id
+                user_data.school_id = school.id if hasattr(school, 'id') else school['id']
+
+        
 
             # Create a new user
             new_user = User.create_new_user(user_data)

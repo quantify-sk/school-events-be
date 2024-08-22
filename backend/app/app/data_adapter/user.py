@@ -206,7 +206,7 @@ class User(Base):
             preferred_language=user_data.preferred_language,
             profile_picture=user_data.profile_picture,
             subscription=user_data.subscription,
-            status=UserStatus.INACTIVE,
+            status= UserStatus.ACTIVE if user_data.role == UserRole.ORGANIZER else UserStatus.INACTIVE,
             school_id=user_data.school_id,  # This is set in the service layer if applicable
             parent_organizer_id=user_data.parent_organizer_id,  # New field for employee accounts
         )

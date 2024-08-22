@@ -9,6 +9,7 @@ from sqlalchemy import (
     func,
     asc,
     desc,
+    Boolean
 )
 from sqlalchemy.orm import relationship, joinedload
 from datetime import datetime
@@ -34,8 +35,6 @@ class Event(Base):
     institution_name = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
     city = Column(String(100), nullable=False)
-    district = Column(String(100), nullable=True)  # Changed to nullable
-    region = Column(String(100), nullable=True)  # Changed to nullable
     capacity = Column(Integer, nullable=False)
     available_spots = Column(Integer, nullable=False)
     description = Column(Text)
@@ -51,6 +50,8 @@ class Event(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     organizer_id = Column(Integer, ForeignKey("user.user_id"))
     more_info_url = Column(String(255), nullable=True)  # New field for additional information URL
+    ztp_access = Column(Boolean, default=False, nullable=False)
+    parking_spaces = Column(Integer, default=0, nullable=False)
 
     # Relationships remain the same
     attachments = relationship(
@@ -81,8 +82,6 @@ class Event(Base):
             "institution_name": self.institution_name,
             "address": self.address,
             "city": self.city,
-            "district": self.district,
-            "region": self.region,
             "capacity": self.capacity,
             "available_spots": self.available_spots,
             "description": self.description,
@@ -99,6 +98,8 @@ class Event(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "organizer_id": self.organizer_id,
+            "ztp_access": self.ztp_access,
+            "parking_spaces": self.parking_spaces,
             "event_dates": [event_date._to_model() for event_date in self.event_dates],
         }
 
@@ -156,7 +157,13 @@ class Event(Base):
             if "event_dates" in update_data:
                 db.query(EventDate).filter(EventDate.event_id == event_id).delete()
                 for event_date in update_data["event_dates"]:
-                    new_event_date = EventDate(**event_date, event_id=event_id)
+                    # Combine date and time into a single DateTime object
+                    combined_datetime = datetime.combine(event_date['date'], event_date['time'])
+                    new_event_date = EventDate(
+                        event_id=event_id,
+                        date=combined_datetime,
+                        time=combined_datetime
+                    )
                     db.add(new_event_date)
 
             # Update other fields
