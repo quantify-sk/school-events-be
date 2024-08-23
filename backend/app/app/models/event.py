@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime, time
+from datetime import datetime, time, date
 from enum import Enum
 
 
@@ -39,9 +39,15 @@ class AttachmentModel(BaseModel):
 
 
 class EventDateModel(BaseModel):
-    id: Optional[int] = None
-    date: datetime
+    id: int
+    event_id: int
+    date: date
     time: time
+    capacity: int
+    available_spots: int
+
+    class Config:
+        from_attributes = True
 
 
 class EventCreateModel(BaseModel):

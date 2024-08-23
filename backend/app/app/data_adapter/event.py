@@ -61,6 +61,7 @@ class Event(Base):
     event_dates = relationship(
         "EventDate", back_populates="event", cascade="all, delete-orphan"
     )
+    reservations = relationship("Reservation", back_populates="event")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -360,8 +361,24 @@ class EventDate(Base):
     event_id = Column(Integer, ForeignKey('event.id'), nullable=False)
     date = Column(DateTime, nullable=False)
     time = Column(DateTime, nullable=False)
+    capacity = Column(Integer, nullable=False)
+    available_spots = Column(Integer, nullable=False)
 
     event = relationship("Event", back_populates="event_dates")
+    reservations = relationship("Reservation", back_populates="event_date")
+
+    def __init__(self, event_id: int, date: datetime, time: datetime, capacity: int):
+        self.event_id = event_id
+        self.date = date
+        self.time = time
+        self.capacity = capacity
+        self.available_spots = capacity
+
+    def book_seats(self, seats: int) -> bool:
+        if self.available_spots >= seats:
+            self.available_spots -= seats
+            return True
+        return False
 
     def _to_model(self) -> Dict[str, Any]:
         return {
@@ -369,4 +386,33 @@ class EventDate(Base):
             "event_id": self.event_id,
             "date": self.date,
             "time": self.time,
+            "capacity": self.capacity,
+            "available_spots": self.available_spots,
         }
+    
+    @classmethod
+    def get_event_date_by_id(cls, event_date_id: int) -> Optional['EventDate']:
+        """
+        Retrieve an event date by its ID.
+
+        This class method queries the database to find an EventDate instance
+        with the given ID. If found, it returns the EventDate object;
+        otherwise, it returns None.
+
+        Args:
+            event_date_id (int): The unique identifier of the event date to retrieve.
+
+        Returns:
+            Optional[EventDate]: The EventDate object if found, None otherwise.
+
+        Raises:
+            Exception: If there's an error during the database query.
+        """
+        try:
+            with get_db_session() as db:
+                event_date = db.query(cls).filter(cls.id == event_date_id).first()
+                return event_date
+        except Exception as e:
+            # Log the error here if you have a logging system
+            print(f"Error retrieving event date: {str(e)}")
+            raise

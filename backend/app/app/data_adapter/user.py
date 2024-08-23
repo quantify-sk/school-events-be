@@ -40,7 +40,7 @@ class User(Base):
     profile_picture = Column(String(255), nullable=True)
     subscription = Column(String(50), nullable=True)
     status = Column(
-        Enum(UserStatus), nullable=False, default=UserStatus.INACTIVE, index=True
+        Enum(UserStatus), nullable=False, default=UserStatus.ACTIVE, index=True
     )
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(
@@ -64,6 +64,7 @@ class User(Base):
     # New field for employee accounts
     parent_organizer_id = Column(Integer, ForeignKey("user.user_id"), nullable=True)
     employees = relationship("User", backref="parent_organizer", remote_side=[user_id])
+    reservations = relationship("Reservation", back_populates="user")
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(

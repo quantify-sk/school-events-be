@@ -1,10 +1,12 @@
-from typing import Optional
+from http.client import HTTPException
+from typing import Dict, List, Optional, Union
 from app.models.get_params import parse_json_params
+from app.utils.exceptions import CustomBadRequestException
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from app.service.reservation_service import ReservationService
 from app.models.response import GenericResponseModel
-from app.models.reservation import ReservationCreateModel, ReservationModel
+from app.models.reservation import ReservationCreateModel, ReservationModel, ReservationUpdateModel
 from app.dependencies import get_db, authenticate_user_token
 from app.context_manager import build_request_context
 from app.models.response import build_api_response
@@ -335,3 +337,99 @@ async def get_reservation_for_user_and_event(
         db, user_id, event_id
     )
     return response
+
+@router.put(
+    "/{reservation_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Update reservation by ID.",
+    description="Update a reservation by its ID.",
+    responses={
+        200: {
+            "model": GenericResponseModel[ReservationModel],
+            "description": "Successful update of reservation",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Reservation not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def update_reservation(
+    reservation_id: int,
+    reservation_data: ReservationUpdateModel,
+    db: Session = Depends(get_db),
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Update a reservation by ID.
+
+    Args:
+        reservation_id (int): ID of the reservation to update.
+        reservation_data (ReservationUpdateModel): Updated reservation data.
+        db (Session): Database session.
+        auth (Depends): The authentication token.
+        _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: The response containing the updated reservation.
+    """
+    response = ReservationService.update_reservation(db, reservation_id, reservation_data)
+    return build_api_response(response)
+
+
+@router.get(
+    "/user/{user_id}/event/{event_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get paginated reservations for user and event.",
+    description="Retrieve paginated reservations for a specific user and event.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successful retrieval of paginated reservations",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "No reservations found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_reservations_for_user_and_event(
+    user_id: int,
+    event_id: int,
+    page: int = Query(1, ge=1, description="Page number"),
+    items_per_page: int = Query(10, ge=1, le=100, description="Items per page"),
+    filter_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+    sorting_params: Optional[List[Dict[str, str]]] = None,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    try:
+        response = ReservationService.get_reservations_for_user_and_event(
+            user_id, event_id, page, items_per_page, filter_params, sorting_params
+        )
+        print(response)
+        if response.data.total_items == 0:
+            response.message = "No reservations found"
+            response.status_code = status.HTTP_404_NOT_FOUND
+        return build_api_response(response)
+    except CustomBadRequestException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

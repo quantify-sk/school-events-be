@@ -29,6 +29,7 @@ class ResponseMessages:
     MSG_SUCCESS_GET_RESERVATION = "Reservation retrieved successfully"
     MSG_SUCCESS_GET_ALL_RESERVATIONS = "All reservations retrieved successfully"
     MSG_SUCCESS_GET_USER_RESERVATIONS = "User reservations retrieved successfully"
+    MSG_SUCCESS_GET_USER_EVENT_RESERVATIONS = "User event reservations retrieved successfully"
 
     # Error messages
     ERR_USER_NOT_FOUND = "User not found"
@@ -47,6 +48,7 @@ class ResponseMessages:
 
     ERR_EVENT_NOT_FOUND = "Event not found"
     ERR_CREATE_EVENT = "Error creating event"
+    ERR_INVALID_EVENT_DATE_DATA = "Invalid event date data"
 
     ERR_RESERVATION_NOT_FOUND = "Reservation not found"
     ERR_INSUFFICIENT_CAPACITY = "Insufficient capacity for the reservation"
@@ -55,7 +57,12 @@ class ResponseMessages:
         "Invalid number of seats. The number of seats must be greater than zero."
     )
     MSG_SUCCESS_GET_RESERVATIONS_BY_EVENT = "Reservations retrieved successfully"
+    ERR_EVENT_DATE_NOT_FOUND = "The specified event date was not found or does not belong to the event."
+    MSG_SUCCESS_GET_EVENT_DATE = "Event date retrieved successfully"
 
     # School messages
     ERR_MISSING_SCHOOL_DATA = "Missing school data"
     SCHOOL_CREATION_FAILED = "School creation failed"
+
+    ERR_INTERNAL_SERVER_ERROR = "Internal server error"
+    

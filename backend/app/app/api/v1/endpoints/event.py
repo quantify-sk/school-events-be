@@ -406,3 +406,55 @@ async def get_organizer_events(
         sorting,
     )
     return build_api_response(response)
+
+@router.get(
+    "/{event_date_id}/event-date/",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get event date by ID.",
+    description="Retrieve an event date by its ID.",
+    responses={
+        200: {
+            "model": GenericResponseModel[EventDateModel],
+            "description": "Successful retrieval of event date",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Event date not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_event_date(
+    event_date_id: int,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Retrieve an event date by ID.
+
+    This endpoint allows authenticated users to retrieve details of a specific event date.
+
+    Args:
+        event_date_id (int): The unique identifier of the event date to retrieve.
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A generic response model containing the event date details.
+
+    Raises:
+        HTTPException: 
+            - 404: If the event date with the given ID is not found.
+            - 500: If there's an internal server error during the process.
+
+    Note:
+        - This endpoint requires user authentication.
+        - The response includes detailed information about the event date, such as the associated event,
+          date, time, capacity, and available spots.
+    """
+    response: GenericResponseModel = EventService.get_event_date_by_id(event_date_id)
+    return build_api_response(response)

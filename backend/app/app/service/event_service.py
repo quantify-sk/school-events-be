@@ -3,8 +3,8 @@ import math
 from pathlib import Path
 from typing import List, Tuple, Optional, Dict, Union
 from uuid import uuid4
-from app.data_adapter.event import Event
-from app.models.event import EventCreateModel, EventUpdateModel, EventModel
+from app.data_adapter.event import Event, EventDate
+from app.models.event import EventCreateModel, EventDateModel, EventUpdateModel, EventModel
 from app.utils.exceptions import (
     CustomBadRequestException,
     CustomInternalServerErrorException,
@@ -15,6 +15,7 @@ from app.context_manager import context_id_api, context_actor_user_data
 from app.models.response import GenericResponseModel, PaginationResponseDataModel
 from fastapi import status, UploadFile
 from datetime import datetime
+from pydantic import ValidationError
 
 
 class EventService:
@@ -297,3 +298,41 @@ class EventService:
                 items=events,
             ),
         )
+    
+    @staticmethod
+    def get_event_date_by_id(event_date_id: int) -> GenericResponseModel:
+        try:
+            event_date = EventDate.get_event_date_by_id(event_date_id)
+
+            if not event_date:
+                logger.warning(f"Event date not found. ID: {event_date_id}")
+                raise CustomBadRequestException(ResponseMessages.ERR_EVENT_DATE_NOT_FOUND)
+
+            logger.info(f"Event date retrieved successfully. ID: {event_date_id}")
+            event_date_dict = event_date._to_model()
+            
+            # Convert datetime to date and time
+            if isinstance(event_date_dict['date'], datetime):
+                event_date_dict['date'] = event_date_dict['date'].date()
+            if isinstance(event_date_dict['time'], datetime):
+                event_date_dict['time'] = event_date_dict['time'].time()
+
+            print(event_date_dict)
+            
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_EVENT_DATE,
+                status_code=status.HTTP_200_OK,
+                data=EventDateModel(**event_date_dict),
+            )
+
+        except ValidationError as e:
+            logger.error(f"Validation error for event date. ID: {event_date_id}. Error: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INVALID_EVENT_DATE_DATA)
+
+        except CustomBadRequestException as e:
+            raise e
+
+        except Exception as e:
+            logger.error(f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)

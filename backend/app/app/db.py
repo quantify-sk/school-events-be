@@ -154,14 +154,15 @@ def seed_events():
 
         return organizer
     
-    def create_event_dates(event_id, dates, times):
+    def create_event_dates(event_id, dates, times, capacity):
         event_dates = []
         for date in dates:
             for t in times:
                 event_date = EventDate(
                     event_id=event_id,
                     date=datetime.combine(date, t),
-                    time=datetime.combine(date, t)
+                    time=datetime.combine(date, t),
+                    capacity=capacity
                 )
                 event_dates.append(event_date)
         return event_dates
@@ -238,7 +239,7 @@ def seed_events():
     for event in kino_lumiere_events:
         db.add(event)
         db.flush()
-        event_dates = create_event_dates(event.id, kino_lumiere_dates, [time(9, 0)])
+        event_dates = create_event_dates(event.id, kino_lumiere_dates, [time(9, 0)], event.capacity)
         db.add_all(event_dates)
 
     # Štátny komorný orchester Žilina event
@@ -268,7 +269,7 @@ def seed_events():
     # Add event dates
     sko_zilina_dates = [datetime(2024, 10, 15), datetime(2024, 10, 16)]
     sko_zilina_times = [time(9, 0), time(11, 0)]
-    sko_zilina_event_dates = create_event_dates(sko_zilina_event.id, sko_zilina_dates, sko_zilina_times)
+    sko_zilina_event_dates = create_event_dates(sko_zilina_event.id, sko_zilina_dates, sko_zilina_times, sko_zilina_event.capacity)
     db.add_all(sko_zilina_event_dates)
 
     # Štátna filharmónia Košice event
@@ -294,7 +295,7 @@ def seed_events():
     db.flush()
 
     sfk_dates = [datetime(2024, 12, 11), datetime(2024, 12, 12), datetime(2024, 12, 13)]
-    sfk_event_dates = create_event_dates(sfk_event.id, sfk_dates, [time(9, 0), time(11, 0)])
+    sfk_event_dates = create_event_dates(sfk_event.id, sfk_dates, [time(9, 0), time(11, 0)], sfk_event.capacity)
     db.add_all(sfk_event_dates)
 
     # Štátna opera event
@@ -320,7 +321,7 @@ def seed_events():
     db.flush()
 
     statna_opera_dates = [datetime(2024, 10, 24), datetime(2024, 10, 25)]
-    statna_opera_event_dates = create_event_dates(statna_opera_event.id, statna_opera_dates, [time(10, 30)])
+    statna_opera_event_dates = create_event_dates(statna_opera_event.id, statna_opera_dates, [time(10, 30)], statna_opera_event.capacity)
     db.add_all(statna_opera_event_dates)
 
     # Divadlo Nová scéna event
@@ -348,7 +349,7 @@ def seed_events():
 
     # Add event dates (1x monthly from September to December 2024)
     punk_rock_dates = [datetime(2024, m, 1) for m in range(9, 13)]
-    punk_rock_event_dates = create_event_dates(nova_scena_punk_rock.id, punk_rock_dates, [time(10, 30)])
+    punk_rock_event_dates = create_event_dates(nova_scena_punk_rock.id, punk_rock_dates, [time(10, 30)], nova_scena_punk_rock.capacity)
     db.add_all(punk_rock_event_dates)
 
 
@@ -372,7 +373,7 @@ def seed_events():
     db.flush()
 
     nova_scena_dates = [datetime(2024, m, 1) for m in range(9, 13) for _ in range(2)]
-    nova_scena_event_dates = create_event_dates(nova_scena_event.id, nova_scena_dates, [time(10, 30)])
+    nova_scena_event_dates = create_event_dates(nova_scena_event.id, nova_scena_dates, [time(10, 30)], nova_scena_event.capacity)
     db.add_all(nova_scena_event_dates)
 
     # Národné divadlo Košice events
@@ -403,7 +404,7 @@ def seed_events():
         (datetime(2024, 10, 27), time(16, 0)), (datetime(2024, 10, 28), time(10, 0)),
         (datetime(2024, 11, 24), time(16, 0)), (datetime(2024, 11, 25), time(10, 0))
     ]
-    nd_kosice_event1_dates = [EventDate(event_id=nd_kosice_event1.id, date=datetime.combine(d, t), time=datetime.combine(d, t)) for d, t in nd_kosice_event1_dates]
+    nd_kosice_event1_dates = [EventDate(event_id=nd_kosice_event1.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=131) for d, t in nd_kosice_event1_dates]
     db.add_all(nd_kosice_event1_dates)
 
     # Národné divadlo Košice events (continuation)
@@ -433,7 +434,7 @@ def seed_events():
         (datetime(2024, 12, 1), time(16, 0)),
         (datetime(2024, 12, 2), time(10, 0))
     ]
-    nd_kosice_event2_dates = [EventDate(event_id=nd_kosice_event2.id, date=datetime.combine(d, t), time=datetime.combine(d, t)) for d, t in nd_kosice_event2_dates]
+    nd_kosice_event2_dates = [EventDate(event_id=nd_kosice_event2.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=145) for d, t in nd_kosice_event2_dates]
     db.add_all(nd_kosice_event2_dates)
 
     # Amadeus
@@ -456,7 +457,7 @@ def seed_events():
     db.add(nd_kosice_event3)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event3.id, date=datetime(2024, 9, 30, 10, 0), time=datetime(2024, 9, 30, 10, 0)))
+    db.add(EventDate(event_id=nd_kosice_event3.id, date=datetime(2024, 9, 30, 10, 0), time=datetime(2024, 9, 30, 10, 0), capacity=555))
     # Pygmalion
     nd_kosice_event4 = Event(
         title="Pygmalion",
@@ -477,7 +478,7 @@ def seed_events():
     db.add(nd_kosice_event4)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event4.id, date=datetime(2024, 12, 17, 10, 0), time=datetime(2024, 12, 17, 10, 0)))
+    db.add(EventDate(event_id=nd_kosice_event4.id, date=datetime(2024, 12, 17, 10, 0), time=datetime(2024, 12, 17, 10, 0), capacity=555))
 
     # Mačka Ivanka
     nd_kosice_event5 = Event(
@@ -500,7 +501,7 @@ def seed_events():
     db.flush()
 
     nd_kosice_event5_dates = [datetime(2024, 9, 23), datetime(2024, 12, 16), datetime(2024, 12, 17)]
-    nd_kosice_event5_dates = create_event_dates(nd_kosice_event5.id, nd_kosice_event5_dates, [time(10, 0)])
+    nd_kosice_event5_dates = create_event_dates(nd_kosice_event5.id, nd_kosice_event5_dates, [time(10, 0)], capacity=nd_kosice_event5.capacity)
     db.add_all(nd_kosice_event5_dates)
 
     # Orchestríček
@@ -523,7 +524,7 @@ def seed_events():
     db.add(nd_kosice_event6)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event6.id, date=datetime(2024, 10, 15, 10, 0), time=datetime(2024, 10, 15, 10, 0)))
+    db.add(EventDate(event_id=nd_kosice_event6.id, date=datetime(2024, 10, 15, 10, 0), time=datetime(2024, 10, 15, 10, 0), capacity=145))
 
 
     # Malý princ
@@ -551,7 +552,7 @@ def seed_events():
         (datetime(2024, 11, 9), time(18, 0)),
         (datetime(2024, 11, 10), time(16, 0))
     ]
-    nd_kosice_event7_dates = [EventDate(event_id=nd_kosice_event7.id, date=datetime.combine(d, t), time=datetime.combine(d, t)) for d, t in nd_kosice_event7_dates]
+    nd_kosice_event7_dates = [EventDate(event_id=nd_kosice_event7.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=555) for d, t in nd_kosice_event7_dates]
     db.add_all(nd_kosice_event7_dates)
 
     # Luskáčik
@@ -575,7 +576,7 @@ def seed_events():
     db.flush()
 
     nd_kosice_event8_dates = [datetime(2024, 12, 4), datetime(2024, 12, 5), datetime(2024, 12, 9)]
-    nd_kosice_event8_dates = create_event_dates(nd_kosice_event8.id, nd_kosice_event8_dates, [time(10, 0)])
+    nd_kosice_event8_dates = create_event_dates(nd_kosice_event8.id, nd_kosice_event8_dates, [time(10, 0)], capacity=nd_kosice_event8.capacity)
     db.add_all(nd_kosice_event8_dates)
 
     # Slovenský ľudový umelecký kolektív events
@@ -645,9 +646,9 @@ def seed_events():
     db.flush()
 
     sluk_dates = [datetime(2024, m, 1) for m in [9, 10]]
-    sluk_event1_dates = create_event_dates(sluk_event1.id, sluk_dates, [time(9, 0), time(13, 0)])
-    sluk_event2_dates = create_event_dates(sluk_event2.id, sluk_dates, [time(9, 0), time(11, 0)])
-    sluk_event3_dates = create_event_dates(sluk_event3.id, sluk_dates, [time(9, 0), time(11, 0)])
+    sluk_event1_dates = create_event_dates(sluk_event1.id, sluk_dates, [time(9, 0), time(13, 0)], sluk_event1.capacity)
+    sluk_event2_dates = create_event_dates(sluk_event2.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event2.capacity)
+    sluk_event3_dates = create_event_dates(sluk_event3.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event3.capacity)
     db.add_all(sluk_event1_dates + sluk_event2_dates + sluk_event3_dates)
 
     # Tanečné divadlo Ifjú Szivek events
@@ -679,7 +680,7 @@ def seed_events():
         datetime(2024, 9, 23), datetime(2024, 9, 24), datetime(2024, 9, 25),
         datetime(2024, 10, 14), datetime(2024, 10, 15), datetime(2024, 10, 16)
     ]
-    ifju_szivek_event1_dates = create_event_dates(ifju_szivek_event1.id, ifju_szivek_event1_dates, [time(9, 0), time(11, 0), time(13, 0)])
+    ifju_szivek_event1_dates = create_event_dates(ifju_szivek_event1.id, ifju_szivek_event1_dates, [time(9, 0), time(11, 0), time(13, 0)], capacity=ifju_szivek_event1.capacity)
     db.add_all(ifju_szivek_event1_dates)
 
     # Kukučie vajíčko
@@ -703,7 +704,7 @@ def seed_events():
     db.flush()
 
     ifju_szivek_event2_dates = [datetime(2024, m, 1) for m in [9, 10]]
-    ifju_szivek_event2_dates = create_event_dates(ifju_szivek_event2.id, ifju_szivek_event2_dates, [time(9, 0), time(11, 0), time(13, 0)])
+    ifju_szivek_event2_dates = create_event_dates(ifju_szivek_event2.id, ifju_szivek_event2_dates, [time(9, 0), time(11, 0), time(13, 0)], ifju_szivek_event2.capacity)
     db.add_all(ifju_szivek_event2_dates)
 
     # Slovenská ústredná hvezdáreň event
@@ -729,7 +730,7 @@ def seed_events():
     db.flush()
 
     suh_dates = [datetime(2024, 9, day) for day in range(1, 31)]
-    suh_event_dates = create_event_dates(suh_event.id, suh_dates, [time(9, 0)])
+    suh_event_dates = create_event_dates(suh_event.id, suh_dates, [time(9, 0)], suh_event.capacity)
     db.add_all(suh_event_dates)
 
     # Combined events from ÚĽUV and Slovenská vedecká knižnica
@@ -757,7 +758,7 @@ def seed_events():
     db.flush()
 
     uluv_svk_event1_dates = [datetime(2024, 10, 8), datetime(2024, 10, 15), datetime(2024, 10, 22), datetime(2024, 10, 29)]
-    uluv_svk_event1_dates = create_event_dates(uluv_svk_event1.id, uluv_svk_event1_dates, [time(9, 0), time(13, 0)])
+    uluv_svk_event1_dates = create_event_dates(uluv_svk_event1.id, uluv_svk_event1_dates, [time(9, 0), time(13, 0)], uluv_svk_event1.capacity)
     db.add_all(uluv_svk_event1_dates)
 
     # Event 2: Tvorivé remeselné dielne a interaktívna výstava: Bábkarský salón
@@ -780,7 +781,7 @@ def seed_events():
     db.flush()
 
     uluv_svk_event2_dates = [datetime(2024, 10, 3), datetime(2024, 10, 10), datetime(2024, 10, 17), datetime(2024, 10, 24)]
-    uluv_svk_event2_dates = create_event_dates(uluv_svk_event2.id, uluv_svk_event2_dates, [time(9, 0), time(13, 0)])
+    uluv_svk_event2_dates = create_event_dates(uluv_svk_event2.id, uluv_svk_event2_dates, [time(9, 0), time(13, 0)], uluv_svk_event2.capacity)
     db.add_all(uluv_svk_event2_dates)
 
     db.commit()

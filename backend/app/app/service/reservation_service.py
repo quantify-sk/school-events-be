@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Union
 from sqlalchemy.orm import Session
 from app.data_adapter.reservation import Reservation
-from app.models.reservation import ReservationCreateModel
+from app.models.reservation import ReservationCreateModel, ReservationUpdateModel
 from app.models.response import GenericResponseModel, PaginationResponseDataModel
 from app.utils.response_messages import ResponseMessages
 from app.context_manager import context_id_api, context_actor_user_data
@@ -305,3 +305,102 @@ class ReservationService:
                 f"Error retrieving reservation for User ID {user_id} and Event ID {event_id}: {str(e)}"
             )
             raise
+
+
+    @staticmethod
+    def update_reservation(db: Session, reservation_id: int, reservation_data: ReservationUpdateModel) -> GenericResponseModel:
+        """
+        Update an existing reservation in the database.
+
+        This static method serves as a wrapper for the class method update_reservation.
+        It calls the class method with the provided parameters and wraps the result in a GenericResponseModel.
+
+        Args:
+            db (Session): The database session.
+            reservation_id (int): The ID of the reservation to update.
+            reservation_data (ReservationUpdateModel): A Pydantic model containing the fields to update.
+
+        Returns:
+            GenericResponseModel: A generic response model containing the updated reservation data.
+
+        Raises:
+            CustomBadRequestException: If the reservation with the given ID is not found or if there's insufficient capacity.
+
+        Note:
+            This method delegates the actual update operation to the class method.
+        """
+        try:
+            # Call the class method to update the reservation
+            updated_reservation = Reservation.update_reservation(reservation_id, reservation_data)
+
+            # Wrap the updated reservation in a GenericResponseModel
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_UPDATE_RESERVATION,
+                status_code=status.HTTP_200_OK,
+                data=updated_reservation
+            )
+        except CustomBadRequestException as e:
+            # Re-raise the exception to be handled by the caller
+            raise e
+        except Exception as e:
+            # Log the unexpected error and raise a generic exception
+            logger.error(f"Unexpected error updating reservation: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+        
+    @staticmethod
+    def get_reservations_for_user_and_event(
+        user_id: int,
+        event_id: int,
+        current_page: int = 1,
+        items_per_page: int = 10,
+        filter_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None
+    ) -> GenericResponseModel:
+        """
+        Retrieve paginated reservations for a specific user and event.
+
+        Args:
+            user_id (int): The ID of the user.
+            event_id (int): The ID of the event.
+            current_page (int): The current page number (default: 1).
+            items_per_page (int): The number of items per page (default: 10).
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
+
+        Returns:
+            GenericResponseModel: A GenericResponseModel with the list of reservations and pagination info.
+
+        Raises:
+            CustomBadRequestException: If there's an error retrieving the reservations.
+        """
+        try:
+            reservations, total_count = Reservation.get_reservations_for_user_and_event(
+                user_id,
+                event_id,
+                current_page,
+                items_per_page,
+                filter_params,
+                sorting_params
+            )
+            total_pages = math.ceil(total_count / items_per_page)
+
+            logger.info(
+                f"User reservations retrieved. User ID: {user_id}, Event ID: {event_id}, "
+                f"Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
+            )
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_USER_EVENT_RESERVATIONS,
+                status_code=status.HTTP_200_OK,
+                data=PaginationResponseDataModel(
+                    current_page=current_page,
+                    items_per_page=items_per_page,
+                    total_pages=total_pages,
+                    total_items=total_count,
+                    items=reservations,
+                ),
+            )
+        except Exception as e:
+            logger.error(f"Error retrieving reservations: {str(e)}")
+            raise CustomBadRequestException(f"Error retrieving reservations: {str(e)}")
