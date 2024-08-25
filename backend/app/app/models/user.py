@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, EmailStr, field_validator, constr
-from app.models.school import SchoolCreateModel, SchoolModel
+from app.models.school import SchoolCreateModel, SchoolModel, SchoolUpdateModel
 
 class UserStatus(str, Enum):
     ACTIVE = "active"
@@ -70,5 +70,5 @@ class UserUpdateModel(UserCreateWithoutPasswordModel):
     preferred_language: str | None = None
     profile_picture: str | None = None
     subscription: str | None = None
-    school: SchoolModel | None = None
+    school: SchoolUpdateModel | None = None
     parent_organizer_id: int | None = None  # Added this field

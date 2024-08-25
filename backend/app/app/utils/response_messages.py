@@ -66,3 +66,11 @@ class ResponseMessages:
 
     ERR_INTERNAL_SERVER_ERROR = "Internal server error"
     
+    MSG_SUCCESS_GET_ORGANIZERS = "Organizers retrieved successfully"
+
+    # Waiting list messages
+    MSG_SUCCESS_ADD_TO_WAITING_LIST = "Added to waiting list successfully"
+    MSG_SUCCESS_PROCESS_WAITING_LIST = "Processed waiting list successfully"
+
+    ERR_INVALID_WAITING_LIST_DATA = "Invalid waiting list data"
+    ERR_EVENT_DATE_LOCKED = "Event date is locked"

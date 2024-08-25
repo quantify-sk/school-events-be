@@ -1,3 +1,4 @@
+from app.utils.exceptions import CustomBadRequestException
 from sqlalchemy import (
     Column,
     Integer,
@@ -108,23 +109,43 @@ class Event(Base):
     def create_new_event(
         cls, event_data: EventCreateModel, attachments: List[Dict[str, str]] = None
     ) -> Dict[str, Any]:
-        db = get_db_session()
-        new_event = cls(**event_data.dict(exclude={"attachments", "event_dates"}))
-        new_event.available_spots = new_event.capacity
-
-        if attachments:
-            for attachment_data in attachments:
-                attachment = Attachment(**attachment_data, event=new_event)
-                db.add(attachment)
-
-        for event_date in event_data.event_dates:
-            new_event_date = EventDate(**event_date.dict(), event=new_event)
-            db.add(new_event_date)
-
-        db.add(new_event)
-        db.commit()
-        db.refresh(new_event)
-        return new_event._to_model()
+        with get_db_session() as db:
+            try:
+                # Create the Event object without event_dates
+                new_event = cls(**event_data.dict(exclude={"attachments", "event_dates"}))
+                new_event.available_spots = new_event.capacity
+    
+                # Add the new event to the session and flush to get the id
+                db.add(new_event)
+                db.flush()
+    
+                # Now create and add EventDate objects
+                for event_date in event_data.event_dates:
+                    # Combine date and time into a single datetime object
+                    combined_datetime = datetime.combine(event_date.date, event_date.time)
+                    new_event_date = EventDate(
+                        event_id=new_event.id,
+                        date=combined_datetime,  # Use the combined datetime for the date column
+                        time=combined_datetime,  # Use the combined datetime for the time column
+                        capacity=new_event.capacity,
+                    )
+                    db.add(new_event_date)
+    
+                # Handle attachments if any
+                if attachments:
+                    for attachment_data in attachments:
+                        attachment = Attachment(**attachment_data, event=new_event)
+                        db.add(attachment)
+    
+                # Commit the transaction
+                db.commit()
+                db.refresh(new_event)
+    
+                return new_event._to_model()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating event: {str(e)}")
+                raise CustomBadRequestException("Invalid data: " + str(e))
 
     @classmethod
     def update_event_by_id(
@@ -366,6 +387,8 @@ class EventDate(Base):
 
     event = relationship("Event", back_populates="event_dates")
     reservations = relationship("Reservation", back_populates="event_date")
+    waiting_list = relationship("WaitingList", back_populates="event_date")
+    lock_time = Column(DateTime, nullable=False)
 
     def __init__(self, event_id: int, date: datetime, time: datetime, capacity: int):
         self.event_id = event_id
@@ -410,6 +433,11 @@ class EventDate(Base):
         """
         try:
             with get_db_session() as db:
+
+                current_time = datetime.timestamp(datetime.now())
+                if current_time >= event_date.lock_time:
+                    raise ValueError("Event date is locked and cannot be updated")
+                
                 event_date = db.query(cls).filter(cls.id == event_date_id).first()
                 return event_date
         except Exception as e:

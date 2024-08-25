@@ -15,7 +15,7 @@ from app.models.user import (
     UserRole,
 )
 from pydantic import EmailStr
-from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, ForeignKey, or_
 from sqlalchemy.orm import Mapped, relationship
 from app.data_adapter.reservation import Reservation
 from app.data_adapter.school import School
@@ -481,43 +481,28 @@ class User(Base):
 
             return [user._to_model() for user in users], total_count
 
+    
+
     @classmethod
-    def approve_user(cls, user_id: int) -> Optional[UserModel]:
+    def update_user_status(cls, user_id: int, new_status: UserStatus, reason: Optional[str] = None) -> Optional[UserModel]:
         """
-        Approve a user account.
+        Update a user's status and optionally store the reason for the status change.
 
         Args:
-            user_id (int): The ID of the user to approve.
+            user_id (int): The ID of the user to update.
+            new_status (UserStatus): The new status to set for the user.
+            reason (Optional[str]): The reason for the status change, if applicable.
 
         Returns:
             Optional[UserModel]: The updated UserModel object if found, None otherwise.
         """
-
         with get_db_session() as session:
             user = session.query(cls).filter(cls.user_id == user_id).first()
             if user:
-                user.status = UserStatus.ACTIVE
+                user.status = new_status
                 session.commit()
-            return user._to_model() if user else None
-
-    @classmethod
-    def reject_user(cls, user_id: int) -> Optional[UserModel]:
-        """
-        Reject a user account.
-
-        Args:
-            user_id (int): The ID of the user to reject.
-
-        Returns:
-            Optional[UserModel]: The updated UserModel object if found, None otherwise.
-        """
-
-        with get_db_session() as session:
-            user = session.query(cls).filter(cls.user_id == user_id).first()
-            if user:
-                user.status = UserStatus.REJECTED
-                session.commit()
-            return user._to_model() if user else None
+                return user._to_model()
+            return None
 
     @classmethod
     def get_employees(cls, organizer_id: int) -> List[UserModel]:
@@ -594,3 +579,46 @@ class User(Base):
                 ]
                 return organizer_data
             return None
+        
+    @classmethod
+    def search_organizers(
+        cls,
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Any]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None,
+    ) -> tuple[List[UserModel], int]:
+        """
+        Search organizers with pagination, filtering, and sorting.
+    
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Any]]): The filters to apply.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
+    
+        Returns:
+            Tuple[List[Dict[str, Any]], int]: A tuple containing a list of organizer dictionaries and the total count.
+        """
+        with get_db_session() as session:
+            query = session.query(cls).filter(cls.role == UserRole.ORGANIZER)
+    
+            # Apply filters and sorting using ParameterValidator
+            query = ParameterValidator.apply_filters_and_sorting(
+                query,
+                cls,
+                filter_params,
+                None
+            )
+    
+            # Get total count
+            total_count = query.count()
+    
+            # Apply pagination
+            organizers = (
+                query.offset((current_page - 1) * items_per_page)
+                .limit(items_per_page)
+                .all()
+            )
+    
+            return [organizer._to_model() for organizer in organizers], total_count

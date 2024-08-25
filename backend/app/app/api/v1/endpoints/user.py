@@ -503,3 +503,68 @@ async def reject_user(
     """
     response: GenericResponseModel = UserService.reject_user(user_id, reason)
     return build_api_response(response)
+
+
+
+@router.get(
+    "/organizers/",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Search organizers.",
+    description="Search organizers with pagination, filtering, and sorting.",
+    responses={
+        200: {
+            "model": GenericResponseModel[PaginationResponseDataModel[list[UserModel]]],
+            "description": "Successful search of organizers",
+        },
+        401: {
+            "model": GenericResponseModel,
+            "description": "Invalid authentication token",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def search_organizers(
+    current_page: int = Query(1, description="Page number of the results"),
+    items_per_page: int = Query(10, description="Number of results per page"),
+    filter_params: Optional[str] = Query(None, alias="filter_params"),
+    sorting_params: Optional[str] = Query(None, alias="sorting_params"),
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+):
+    """
+    Search organizers.
+
+    This endpoint searches for organizers in the database. It supports pagination, filtering, and sorting.
+
+    Parameters:
+        - current_page (int): The page number of the results. Default is 1.
+        - items_per_page (int): The number of results per page. Default is 10.
+        - filter_params (Optional[str]): The filter parameters for the query.
+        - sorting_params (Optional[str]): The sorting parameters for the query.
+        - auth (Depends): The authentication token.
+        - _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: A GenericResponseModel containing the result of the operation.
+            The response model is PaginationResponseDataModel[list[UserModel]].
+
+    Responses:
+        - 200: Successful search of organizers. The model is GenericResponseModel.
+        - 401: Invalid authentication token. The model is GenericResponseModel.
+        - 500: Internal Server Error. The model is GenericResponseModel.
+    """
+    # Parse filter_params and sorting_params
+    filters = parse_json_params(filter_params) if filter_params else None
+    sorting = parse_json_params(sorting_params) if sorting_params else None
+
+    # Call the search_organizers method of the UserService class
+    response: GenericResponseModel = UserService.search_organizers(
+        current_page, items_per_page, filters, sorting
+    )
+
+    # Return the response after adding the request context
+    return build_api_response(response)

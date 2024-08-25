@@ -1,4 +1,4 @@
-from app.api.v1.endpoints import auth, user, event, reservation
+from app.api.v1.endpoints import auth, user, event, reservation, waiting_list
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -26,4 +26,10 @@ api_router.include_router(
     reservation.router,
     prefix="/reservation",
     tags=["Reservation"],
+)
+
+api_router.include_router(
+    waiting_list.router,
+    prefix="/waiting-list",
+    tags=["Waiting List"],
 )

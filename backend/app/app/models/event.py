@@ -55,8 +55,6 @@ class EventCreateModel(BaseModel):
     institution_name: str
     address: str
     city: str
-    district: str  # Added district
-    region: str  # Added region
     capacity: int
     description: Optional[str] = None
     annotation: Optional[str] = None

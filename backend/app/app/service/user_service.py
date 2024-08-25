@@ -23,7 +23,7 @@ from app.utils.exceptions import (
 from app.utils.response_messages import ResponseMessages
 from fastapi import status
 from app.data_adapter.school import School
-from typing import List, Dict, Optional
+from typing import Any, List, Dict, Optional
 
 
 class UserService:
@@ -388,7 +388,7 @@ class UserService:
             GenericResponseModel: A response model containing the result of the operation.
         """
         logger.info(f"Approving school representative with ID: {user_id}")
-        user = User.approve_user(user_id)
+        user = User.update_user_status(user_id, UserStatus.ACTIVE)
 
         if user:
             logger.info(
@@ -423,7 +423,7 @@ class UserService:
             GenericResponseModel: A response model containing the result of the operation.
         """
         logger.info(f"Rejecting school representative with ID: {user_id}")
-        user = User.update_user_status(user_id, UserStatus.REJECTED, reason)
+        user = User.update_user_status(user_id, UserStatus.INACTIVE, reason)
 
         if user:
             logger.info(
@@ -442,3 +442,47 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 error=ResponseMessages.ERR_USER_NOT_FOUND,
             )
+
+    @staticmethod
+    def search_organizers(
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Any]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None,
+    ) -> GenericResponseModel:
+        """
+        Search organizers with pagination, filtering, and sorting.
+    
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Any]]): The filters to apply.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
+    
+        Returns:
+            GenericResponseModel: A GenericResponseModel containing the paginated search results.
+        """
+        try:
+            organizers, total_count = User.search_organizers(
+                current_page, items_per_page, filter_params, sorting_params
+            )
+    
+            total_pages = math.ceil(total_count / items_per_page)
+    
+            pagination_data = PaginationResponseDataModel(
+                current_page=current_page,
+                items_per_page=items_per_page,
+                total_pages=total_pages,
+                total_items=total_count,
+                items=organizers,
+            )
+    
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_ORGANIZERS,
+                status_code=status.HTTP_200_OK,
+                data=pagination_data,
+            )
+        except Exception as e:
+            logger.error(f"Error searching organizers: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)

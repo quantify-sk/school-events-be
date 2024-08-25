@@ -22,6 +22,7 @@ from typing import Optional, List, Dict, Union
 from pydantic import Json
 from app.utils.exceptions import CustomBadRequestException
 from app.logger import logger
+from pydantic import ValidationError
 
 router = APIRouter()
 
@@ -48,24 +49,23 @@ router = APIRouter()
     },
 )
 async def create_event(
-    title: str = Form("Debug Event"),
-    institution_name: str = Form("Debug Institution"),
-    address: str = Form("Debug Address"),
-    city: str = Form("Debug City"),
-    capacity: int = Form(100),
-    description: str = Form("This is a debug event description"),
-    annotation: str = Form("Short debug annotation"),
-    parent_info: str = Form("Debug Parent Info"),
-    target_group: TargetGroup = Form(TargetGroup.ALL),
-    age_from: int = Form(0),
+    title: str = Form(...),
+    address: str = Form(...),
+    city: str = Form(...),
+    capacity: int = Form(...),
+    description: str = Form(...),
+    annotation: str = Form(...),
+    parent_info: str = Form(...),
+    target_group: TargetGroup = Form(...),
+    age_from: int = Form(...),
     age_to: Optional[int] = Form(None),
-    event_type: EventType = Form(EventType.CONCERT),
-    duration: int = Form(120),  # Duration in minutes
+    event_type: EventType = Form(...),
+    duration: int = Form(...),  # Duration in minutes
     more_info_url: Optional[str] = Form(None),
-    organizer_id: int = Form(1),
-    ztp_access: bool = Form(False),
-    parking_spaces: int = Form(0),
-    event_dates: str = Form("[]"),
+    organizer_id: int = Form(...),
+    ztp_access: bool = Form(...),
+    parking_spaces: int = Form(...),
+    event_dates: str = Form(...),
     attachments: List[UploadFile] = File(None),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
@@ -77,34 +77,39 @@ async def create_event(
         parsed_event_dates = json.loads(event_dates)
         event_date_models = [
             EventDateModel(
-                date=datetime.fromisoformat(date['date']).date(),
-                time=datetime.fromisoformat(date['time']).time()
+                id=0,  # Temporary ID, will be replaced by the database
+                event_id=0,  # Temporary event_id, will be replaced by the database
+                date=datetime.strptime(date['date'], '%Y-%m-%d').date(),
+                time=datetime.strptime(date['time'], '%H:%M').time(),
+                capacity=capacity,
+                available_spots=capacity
             )
             for date in parsed_event_dates
         ]
-    except (json.JSONDecodeError, ValueError):
-        raise CustomBadRequestException(ResponseMessages.ERR_INVALID_DATA)
+    except (json.JSONDecodeError, ValueError) as e:
+        raise CustomBadRequestException(f"Invalid event dates: {str(e)}")
 
-    event_data = EventCreateModel(
-        title=title,
-        institution_name=institution_name,
-        address=address,
-        city=city,
-        capacity=capacity,
-        description=description,
-        annotation=annotation,
-        parent_info=parent_info,
-        target_group=target_group,
-        age_from=age_from,
-        age_to=age_to,
-        event_type=event_type,
-        duration=duration,
-        more_info_url=more_info_url,
-        organizer_id=organizer_id,
-        ztp_access=ztp_access,
-        parking_spaces=parking_spaces,
-        event_dates=event_date_models
-    )
+    try:
+        event_data = EventCreateModel(
+            title=title,
+            institution_name="Default Institution",  # You can replace this with a default value or get it from somewhere else
+            address=address,
+            city=city,
+            capacity=capacity,
+            description=description,
+            annotation=annotation,
+            parent_info=parent_info,
+            target_group=target_group,
+            age_from=age_from,
+            age_to=age_to,
+            event_type=event_type,
+            duration=duration,
+            more_info_url=more_info_url,
+            organizer_id=organizer_id,
+            event_dates=event_date_models
+        )
+    except ValidationError as e:
+        raise CustomBadRequestException(f"Invalid event data: {str(e)}")
 
     response: GenericResponseModel = await EventService.create_event(
         event_data, attachments
