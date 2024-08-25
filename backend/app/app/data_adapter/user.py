@@ -65,6 +65,7 @@ class User(Base):
     parent_organizer_id = Column(Integer, ForeignKey("user.user_id"), nullable=True)
     employees = relationship("User", backref="parent_organizer", remote_side=[user_id])
     reservations = relationship("Reservation", back_populates="user")
+    waiting_list = relationship("WaitingList", back_populates="user")
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(

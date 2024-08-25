@@ -71,6 +71,15 @@ class ResponseMessages:
     # Waiting list messages
     MSG_SUCCESS_ADD_TO_WAITING_LIST = "Added to waiting list successfully"
     MSG_SUCCESS_PROCESS_WAITING_LIST = "Processed waiting list successfully"
+    MSG_SUCCESS_GET_USER_WAITING_LIST  = "User waiting list entries retrieved successfully"
+    MSG_SUCCESS_UPDATE_WAITING_LIST_ENTRY = "Waiting list entry updated successfully"
+    MSG_SUCCESS_DELETE_WAITING_LIST_ENTRY = "Waiting list entry deleted successfully"
+    MSG_SUCCESS_GET_WAITING_LIST_ENTRIES = "Waiting list entries retrieved successfully"
+    MSG_SUCCESS_GET_WAITING_LIST = "Waiting list retrieved successfully"
+    MSG_SUCCESS_GET_WAITING_LIST_ENTRY = "Waiting list entry retrieved successfully"
 
     ERR_INVALID_WAITING_LIST_DATA = "Invalid waiting list data"
     ERR_EVENT_DATE_LOCKED = "Event date is locked"
+    MSG_NO_WAITING_LIST_ENTRIES = "No waiting list entries found"
+    ERR_WAITING_LIST_ENTRY_NOT_FOUND = "Waiting list entry not found"
+    

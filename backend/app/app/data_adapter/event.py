@@ -1,3 +1,4 @@
+import app.api.v1.endpoints
 from app.utils.exceptions import CustomBadRequestException
 from sqlalchemy import (
     Column,
@@ -13,7 +14,7 @@ from sqlalchemy import (
     Boolean
 )
 from sqlalchemy.orm import relationship, joinedload
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.database import Base
 from app.models.event import (
     EventCreateModel,
@@ -26,6 +27,7 @@ from app.context_manager import get_db_session
 from app.models.get_params import ParameterValidator
 from typing import Dict, Any, List, Optional, Tuple, Union
 from app.data_adapter.attachment import Attachment
+from app.data_adapter.waiting_list  import WaitingList
 
 
 class Event(Base):
@@ -63,6 +65,7 @@ class Event(Base):
         "EventDate", back_populates="event", cascade="all, delete-orphan"
     )
     reservations = relationship("Reservation", back_populates="event")
+    waiting_list = relationship("WaitingList", back_populates="event")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -384,24 +387,40 @@ class EventDate(Base):
     time = Column(DateTime, nullable=False)
     capacity = Column(Integer, nullable=False)
     available_spots = Column(Integer, nullable=False)
+    lock_time_hours = Column(Integer, nullable=False, default=48)  # Store lock time as hours
 
     event = relationship("Event", back_populates="event_dates")
     reservations = relationship("Reservation", back_populates="event_date")
     waiting_list = relationship("WaitingList", back_populates="event_date")
-    lock_time = Column(DateTime, nullable=False)
 
-    def __init__(self, event_id: int, date: datetime, time: datetime, capacity: int):
+    def __init__(self, event_id: int, date: datetime, time: datetime, capacity: int, lock_time_hours: int = 48):
         self.event_id = event_id
         self.date = date
         self.time = time
         self.capacity = capacity
         self.available_spots = capacity
+        self.lock_time_hours = lock_time_hours
+
+    def calculate_lock_time(self) -> datetime:
+        """
+        Calculate the lock time dynamically based on the event's date, time, and lock_time_hours.
+        """
+        event_datetime = datetime.combine(self.date, self.time.time())
+        return event_datetime - timedelta(hours=self.lock_time_hours)
+
+    def is_locked(self) -> bool:
+        """
+        Check if the event date is locked based on the current time and calculated lock time.
+        """
+        current_time = datetime.now()
+        return current_time >= self.calculate_lock_time()
 
     def book_seats(self, seats: int) -> bool:
         if self.available_spots >= seats:
             self.available_spots -= seats
             return True
         return False
+    
 
     def _to_model(self) -> Dict[str, Any]:
         return {
@@ -411,6 +430,7 @@ class EventDate(Base):
             "time": self.time,
             "capacity": self.capacity,
             "available_spots": self.available_spots,
+            "is_locked": self.is_locked(),
         }
     
     @classmethod
@@ -418,27 +438,19 @@ class EventDate(Base):
         """
         Retrieve an event date by its ID.
 
-        This class method queries the database to find an EventDate instance
-        with the given ID. If found, it returns the EventDate object;
-        otherwise, it returns None.
-
         Args:
             event_date_id (int): The unique identifier of the event date to retrieve.
 
         Returns:
             Optional[EventDate]: The EventDate object if found, None otherwise.
-
-        Raises:
-            Exception: If there's an error during the database query.
         """
         try:
             with get_db_session() as db:
-
-                current_time = datetime.timestamp(datetime.now())
-                if current_time >= event_date.lock_time:
-                    raise ValueError("Event date is locked and cannot be updated")
-                
                 event_date = db.query(cls).filter(cls.id == event_date_id).first()
+
+                if event_date and event_date.is_locked():
+                    raise ValueError("Event date is locked and cannot be updated")
+
                 return event_date
         except Exception as e:
             # Log the error here if you have a logging system

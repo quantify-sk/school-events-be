@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+import threading
 from typing import List, Optional
 from datetime import datetime, time, date
 from enum import Enum
@@ -45,6 +46,7 @@ class EventDateModel(BaseModel):
     time: time
     capacity: int
     available_spots: int
+    lock_time: Optional[datetime] = None
 
     class Config:
         from_attributes = True
