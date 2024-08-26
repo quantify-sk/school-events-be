@@ -254,6 +254,7 @@ async def update_user(
     """
 
     # Call the update_user method of the UserService class to update the user
+    print(user_data)
     response: GenericResponseModel = UserService.update_user(user_id, user_data)
 
     # Return the response after adding the request context

@@ -30,7 +30,8 @@ class Reservation(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     local_reservation_code = Column(String(20), nullable=False, unique=True)
-
+    cancelled_at = Column(DateTime, nullable=True)
+    
     event = relationship("Event", back_populates="reservations")
     event_date = relationship("EventDate", back_populates="reservations")
     user = relationship("User", back_populates="reservations")
@@ -190,13 +191,13 @@ class Reservation(Base):
     @classmethod
     def delete_reservation(cls, reservation_id: int) -> Dict[str, int]:
         """
-        Delete a reservation by its ID.
+        Cancel a reservation by changing its status to CANCELLED.
 
         Args:
-            reservation_id (int): The ID of the reservation to delete.
+            reservation_id (int): The ID of the reservation to cancel.
 
         Returns:
-            Dict[str, int]: A dictionary containing the ID of the deleted reservation.
+            Dict[str, Any]: A dictionary containing the updated reservation details.
 
         Raises:
             CustomBadRequestException: If the reservation is not found.
@@ -206,14 +207,23 @@ class Reservation(Base):
             if not reservation:
                 raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
 
+            # Check if the reservation is already cancelled
+            if reservation.status == ReservationStatus.CANCELLED:
+                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_ALREADY_CANCELLED)
+
             # Update available spots for the event date
             event_date = session.query(EventDate).filter_by(id=reservation.event_date_id).first()
             if event_date:
                 event_date.available_spots += (reservation.number_of_students + reservation.number_of_teachers)
 
-            session.delete(reservation)
+            # Change the reservation status to CANCELLED
+            reservation.status = ReservationStatus.CANCELLED
+
+            # Add a timestamp for when the reservation was cancelled
+            reservation.cancelled_at = datetime.utcnow()
+
             session.commit()
-            return {"reservation_id": reservation_id}
+            return reservation._to_model()
 
     @classmethod
     def get_reservations(

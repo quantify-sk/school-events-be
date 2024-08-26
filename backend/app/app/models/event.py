@@ -70,6 +70,8 @@ class EventCreateModel(BaseModel):
     more_info_url: Optional[str] = None  # Added more info URL
     attachments: Optional[List[AttachmentModel]] = None
     event_dates: List[EventDateModel]
+    parking_spaces: Optional[int] = None  # Added parking spaces
+    ztp_access: Optional[bool] = None  # Added ZTP access
 
 
 class EventUpdateModel(BaseModel):

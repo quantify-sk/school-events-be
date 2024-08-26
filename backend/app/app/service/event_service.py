@@ -118,6 +118,7 @@ class EventService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         existing_event = Event.get_event_by_id(event_id)
+        print("EVENT", existing_event)
         if not existing_event:
             logger.error(f"Event not found for update: {event_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)

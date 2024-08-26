@@ -56,6 +56,8 @@ class ResponseMessages:
     ERR_INVALID_NUMBER_OF_SEATS = (
         "Invalid number of seats. The number of seats must be greater than zero."
     )
+    ERR_RESERVATION_ALREADY_CANCELLED = "Reservation already cancelled"
+    ERR_UPDATE_EVENT = "Error updating event"
     MSG_SUCCESS_GET_RESERVATIONS_BY_EVENT = "Reservations retrieved successfully"
     ERR_EVENT_DATE_NOT_FOUND = "The specified event date was not found or does not belong to the event."
     MSG_SUCCESS_GET_EVENT_DATE = "Event date retrieved successfully"
@@ -82,4 +84,11 @@ class ResponseMessages:
     ERR_EVENT_DATE_LOCKED = "Event date is locked"
     MSG_NO_WAITING_LIST_ENTRIES = "No waiting list entries found"
     ERR_WAITING_LIST_ENTRY_NOT_FOUND = "Waiting list entry not found"
+
+    # Report messages
+    MSG_SUCCESS_GENERATE_REPORT = "Report generated successfully"
+    MSG_SUCCESS_GET_ALL_REPORTS = "All reports retrieved successfully"
+    MSG_SUCCESS_GET_REPORT = "Report retrieved successfully"
+
+    ERR_REPORT_NOT_FOUND = "Report not found"
     

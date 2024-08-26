@@ -21,9 +21,15 @@ from app.data_adapter.reservation import Reservation
 from app.data_adapter.school import School
 import app.context_manager
 from app.context_manager import get_db_session
-
+from app.data_adapter.report import Report, ReportType
 if TYPE_CHECKING:
     from app.data_adapter.notification import Notification
+    
+
+from app.logger import logger
+from app.models.user import UserModel
+from app.models.school import SchoolUpdateModel
+from sqlalchemy.orm import joinedload
 
 
 class User(Base):
@@ -66,6 +72,7 @@ class User(Base):
     employees = relationship("User", backref="parent_organizer", remote_side=[user_id])
     reservations = relationship("Reservation", back_populates="user")
     waiting_list = relationship("WaitingList", back_populates="user")
+    reports = relationship("Report", back_populates="user")
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
@@ -235,85 +242,87 @@ class User(Base):
     @classmethod
     def delete_user_by_id(cls, user_id: int) -> bool:
         """
-        Delete a user by ID.
+        Delete a user by ID from the database.
+
+        This method will permanently remove the user from the database. It will also
+        delete any related data that has a foreign key relationship with CASCADE delete.
 
         Args:
             user_id (int): The ID of the user to delete.
 
         Returns:
-            bool: True if the user was deleted successfully, False otherwise.
+            bool: True if the user was deleted successfully, False if the user was not found.
+
+        Raises:
+            SQLAlchemyError: If there's an error during the database operation.
         """
         from app.context_manager import get_db_session
 
-        db = get_db_session()
-        user = db.query(cls).filter(cls.user_id == user_id).first()
-        if user:
-            user.status = UserStatus.DELETED
-            db.commit()
-            db.refresh(user)
-            return True
-
-        return False
+        try:
+            with get_db_session() as db:
+                user = db.query(cls).filter(cls.user_id == user_id).first()
+                if user:
+                    db.delete(user)
+                    db.commit()
+                    logger.info(f"User with ID {user_id} has been deleted successfully.")
+                    return True
+                else:
+                    logger.warning(f"Attempted to delete non-existent user with ID {user_id}.")
+                    return False
+        except SQLAlchemyError as e:
+            logger.error(f"Error deleting user with ID {user_id}: {str(e)}")
+            raise
 
     @classmethod
-    def update_user_by_id(
-        cls, user_id: int, user_data: UserUpdateModel
-    ) -> UserModel | None:
+    def update_user_by_id(cls, user_id: int, user_data: UserUpdateModel) -> Optional[UserModel]:
         """
-        Update a user by ID.
+        Update a user by ID, including school data for school representatives.
+
+        This method updates the user's information and, if the user is a school representative,
+        also updates the associated school information.
 
         Args:
             user_id (int): The ID of the user to update.
-            user_data (UserUpdateModel): The data of the user to update.
+            user_data (UserUpdateModel): The data of the user to update, including school data.
 
         Returns:
-            UserModel | None: The updated user model if found, otherwise None.
+            Optional[UserModel]: The updated user model if found and updated successfully, otherwise None.
+
+        Raises:
+            SQLAlchemyError: If there's an error during the database operation.
         """
         from app.context_manager import get_db_session
 
-        db = get_db_session()
-        user = db.query(cls).filter(cls.user_id == user_id).first()
-        if user:
-            user.first_name = (
-                user_data.first_name if user_data.first_name else user.first_name
-            )
-            user.last_name = (
-                user_data.last_name if user_data.last_name else user.last_name
-            )
-            user.user_email = (
-                user_data.user_email if user_data.user_email else user.user_email
-            )
-            user.status = user_data.status if user_data.status else user.status
-            user.role = user_data.role if user_data.role else user.role
-            user.email_verified = (
-                user_data.email_verified
-                if user_data.email_verified
-                else user.email_verified
-            )
-            user.preferred_language = (
-                user_data.preferred_language
-                if user_data.preferred_language
-                else user.preferred_language
-            )
-            user.profile_picture = (
-                user_data.profile_picture
-                if user_data.profile_picture
-                else user.profile_picture
-            )
-            user.subscription = (
-                user_data.subscription if user_data.subscription else user.subscription
-            )
-            user.parent_organizer_id = (
-                user_data.parent_organizer_id
-                if user_data.parent_organizer_id
-                else user.parent_organizer_id
-            )
+        try:
+            with get_db_session() as db:
+                user = db.query(cls).options(joinedload(cls.school)).filter(cls.user_id == user_id).first()
+                if not user:
+                    logger.warning(f"Attempted to update non-existent user with ID {user_id}.")
+                    return None
 
-            db.commit()
-            db.refresh(user)
-            return user._to_model()
+                # Update user fields
+                for field, value in user_data.dict(exclude_unset=True).items():
+                    if field != 'school' and hasattr(user, field):
+                        setattr(user, field, value)
 
-        return None
+                # Update school data if user is a school representative
+                if user.role == UserRole.SCHOOL_REPRESENTATIVE and user_data.school:
+                    if not user.school:
+                        user.school = School()
+                    
+                    school_data: SchoolUpdateModel = user_data.school
+                    for field, value in school_data.dict(exclude_unset=True).items():
+                        setattr(user.school, field, value)
+
+                db.commit()
+                db.refresh(user)
+                logger.info(f"User with ID {user_id} has been updated successfully.")
+                return user._to_model()
+
+        except SQLAlchemyError as e:
+            db.rollback()
+            logger.error(f"Error updating user with ID {user_id}: {str(e)}")
+            raise
 
     @classmethod
     def get_users(

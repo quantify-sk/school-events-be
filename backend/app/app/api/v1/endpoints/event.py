@@ -55,7 +55,7 @@ async def create_event(
     capacity: int = Form(...),
     description: str = Form(...),
     annotation: str = Form(...),
-    parent_info: str = Form(...),
+    parent_info: str = Form(None),
     target_group: TargetGroup = Form(...),
     age_from: int = Form(...),
     age_to: Optional[int] = Form(None),
@@ -63,8 +63,8 @@ async def create_event(
     duration: int = Form(...),  # Duration in minutes
     more_info_url: Optional[str] = Form(None),
     organizer_id: int = Form(...),
-    ztp_access: bool = Form(...),
-    parking_spaces: int = Form(...),
+    ztp_access: bool = Form(None),
+    parking_spaces: int = Form(None),
     event_dates: str = Form(...),
     attachments: List[UploadFile] = File(None),
     auth=Depends(authenticate_user_token),
@@ -90,6 +90,7 @@ async def create_event(
         raise CustomBadRequestException(f"Invalid event dates: {str(e)}")
 
     try:
+        print(parking_spaces, ztp_access)
         event_data = EventCreateModel(
             title=title,
             institution_name="Default Institution",  # You can replace this with a default value or get it from somewhere else
@@ -106,7 +107,9 @@ async def create_event(
             duration=duration,
             more_info_url=more_info_url,
             organizer_id=organizer_id,
-            event_dates=event_date_models
+            event_dates=event_date_models,
+            parking_spaces=parking_spaces,
+            ztp_access=ztp_access,
         )
     except ValidationError as e:
         raise CustomBadRequestException(f"Invalid event data: {str(e)}")
@@ -194,6 +197,7 @@ async def update_event(
         raise CustomBadRequestException(ResponseMessages.ERR_INVALID_DATA)
 
     event_update_model = EventUpdateModel(**event_data)
+    print(event_data)
 
     response: GenericResponseModel = await EventService.update_event(
         event_id, event_update_model, existing_attachment_ids, new_attachments
