@@ -100,8 +100,12 @@ class ResponseMessages:
     MSG_SUCCESS_GENERATE_REPORT = "Report generated successfully"
     MSG_SUCCESS_GET_ALL_REPORTS = "All reports retrieved successfully"
     MSG_SUCCESS_GET_REPORT = "Report retrieved successfully"
+    MSG_SUCCESS_EXPORT_REPORT = "Report exported successfully"
+    MSG_SUCCESS_SAVE_REPORT = "Report saved successfully"
+    MSG_SUCCESS_DELETE_REPORT = "Report deleted successfully"
 
     ERR_REPORT_NOT_FOUND = "Report not found"
+    ERR_INVALID_REPORT_INPUT = "Invalid input for report generation"
 
     #Event claims
     MSG_SUCCESS_CREATE_CLAIM = "Claim created successfully"

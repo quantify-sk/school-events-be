@@ -1,3 +1,5 @@
+import fastapi.responses
+from http.client import HTTPException
 import app.api.v1.endpoints
 import app.logger
 from datetime import datetime, timedelta
@@ -17,14 +19,16 @@ from app.models.event import (
 from app.utils.response_messages import ResponseMessages
 from app.models.get_params import parse_json_params
 from app.dependencies import authenticate_user_token
-from app.context_manager import build_request_context
-from typing import Optional, List, Dict, Union
+import app.context_manager
+from typing import Any, Optional, List, Dict, Union
 from pydantic import Json
 from app.utils.exceptions import CustomBadRequestException
 from app.logger import logger
 from pydantic import ValidationError
 from app.service.report_service import ReportService
 from app.models.report import ReportFilters, ReportModel, ReportResponse
+from fastapi.responses import StreamingResponse
+from app.context_manager import build_request_context
 
 router = APIRouter()
 
@@ -142,3 +146,127 @@ async def get_all_reports(
     """
     response = ReportService.get_all_reports()
     return build_api_response(response)
+
+
+@router.post(
+    "/save",
+    response_model=ReportResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Save a generated report",
+    description="Save a generated report to the database.",
+    responses={
+        200: {"model": ReportResponse, "description": "Successfully saved report"},
+        500: {"model": GenericResponseModel, "description": "Internal Server Error"},
+    },
+)
+
+async def save_report(
+    report_data: Dict[str, Any],
+    auth: dict = Depends(authenticate_user_token),
+    _: None = Depends(build_request_context),
+) -> ReportResponse:
+    """
+    Save a generated report to the database.
+
+    This endpoint allows authenticated users to save a generated report to the database.
+
+    Args:
+        report_data (Dict[str, Any]): The report data to save.
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        ReportResponse: The details of the saved report.
+        
+    Raises:
+        HTTPException:
+            - 500: If there's an internal server error during the process.
+    """
+    response = ReportService.save_report(report_data)
+    return build_api_response(response)
+
+# @router.post(
+#     "/email",
+#     response_model=GenericResponseModel,
+#     status_code=status.HTTP_200_OK,
+#     summary="Email a generated report",
+#     description="Send a generated report via email.",
+#     responses={
+#         200: {"model": GenericResponseModel, "description": "Successfully sent report via email"},
+#         500: {"model": GenericResponseModel, "description": "Internal Server Error"},
+#     },
+# )
+# async def email_report(
+#     report_data: Dict[str, Any],
+#     background_tasks: BackgroundTasks,
+#     auth: dict = Depends(authenticate_user_token),
+#     _: None = Depends(build_request_context),
+# ) -> GenericResponseModel:
+#     """
+#     Send a generated report via email.
+
+#     This endpoint allows authenticated users to send a generated report via email.
+
+#     Args:
+#         report_data (Dict[str, Any]): The report data to send.
+#         background_tasks (BackgroundTasks): The background task manager.
+#         auth (dict): The authenticated user's information (injected by dependency).
+#         _ (None): Placeholder for request context building (injected by dependency).
+
+#     Returns:
+#         GenericResponseModel: A response indicating that the email task has been queued.
+
+#     Raises:
+#         HTTPException:
+#             - 500: If there's an internal server error during the process.
+#     """
+
+#     background_tasks.add_task(ReportService.email_report, report_data, auth['user_id'])
+#     return build_api_response({"message": "Report email task has been queued"})
+
+@router.post(
+    "/export/{format}",
+    response_model=GenericResponseModel,
+    status_code=status.HTTP_200_OK,
+    summary="Export a generated report",
+    description="Export a generated report in the specified format (PDF, Excel, CSV).",
+    responses={
+        200: {"model": GenericResponseModel, "description": "Successfully exported report"},
+        500: {"model": GenericResponseModel, "description": "Internal Server Error"},
+    },
+)
+async def export_report(
+    format: str,
+    report_data: Dict[str, Any],
+    auth: dict = Depends(authenticate_user_token),
+    _: None = Depends(build_request_context),
+) -> StreamingResponse:
+    """
+    Export a generated report in the specified format (PDF, Excel, CSV).
+
+    This endpoint allows authenticated users to export a generated report in the specified format.
+
+    Args:
+        format (str): The export format (PDF, Excel, CSV).
+        report_data (Dict[str, Any]): The report data to export.
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A response indicating that the report has been successfully exported.
+
+    Raises:
+        HTTPException:
+            - 400: If the export format is invalid.
+            - 500: If there's an internal server error during the process.
+    """
+    format = report_data.get('format', format)
+    print("FORMAT: ", format)
+    try:
+        if format not in ['pdf', 'excel', 'csv']:
+            raise HTTPException(status_code=400, detail="Invalid export format")
+    
+        return ReportService.export_report(report_data, format)
+    except Exception as e:
+        logger.error(f"Unexpected error exporting report: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")

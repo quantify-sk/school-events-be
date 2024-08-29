@@ -332,11 +332,14 @@ class Event(Base):
                             if value == "asc"
                             else date_subquery.c.min_date.desc()
                         )
-                    else:
+                    elif hasattr(cls, key):
                         column = getattr(cls, key)
                         query = query.order_by(
                             column.asc() if value == "asc" else column.desc()
                         )
+                    else:
+                        # Skip invalid sorting keys
+                        continue
         else:
             # Default sorting by earliest date
             query = query.order_by(date_subquery.c.min_date.asc())
