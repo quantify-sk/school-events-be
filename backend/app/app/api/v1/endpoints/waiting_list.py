@@ -2,7 +2,11 @@ import app.api.v1.endpoints
 import app.logger
 from datetime import datetime, timedelta
 import json
-from app.models.waiting_list import WaitingListModel, WaitingListCreateModel, WaitingListUpdateModel
+from app.models.waiting_list import (
+    WaitingListModel,
+    WaitingListCreateModel,
+    WaitingListUpdateModel,
+)
 from app.service.waiting_list_service import WaitingListService
 from fastapi import APIRouter, Depends, Query, status, File, Form, UploadFile
 from app.service.event_service import EventService
@@ -27,6 +31,7 @@ from app.logger import logger
 from pydantic import ValidationError
 
 router = APIRouter()
+
 
 @router.post(
     "/",
@@ -68,7 +73,7 @@ async def add_to_waiting_list(
         GenericResponseModel: A generic response model containing the created waiting list entry details.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 400: If there's an error in the provided data.
             - 500: If there's an internal server error during the process.
 
@@ -76,8 +81,11 @@ async def add_to_waiting_list(
         - This endpoint requires user authentication.
         - The response includes detailed information about the created waiting list entry.
     """
-    response: GenericResponseModel = WaitingListService.add_to_waiting_list(waiting_list_entry)
+    response: GenericResponseModel = WaitingListService.add_to_waiting_list(
+        waiting_list_entry
+    )
     return build_api_response(response)
+
 
 @router.get(
     "/{event_date_id}",
@@ -148,6 +156,7 @@ async def get_waiting_list(
     )
     return build_api_response(response)
 
+
 @router.put(
     "/{waiting_list_id}",
     status_code=status.HTTP_200_OK,
@@ -190,7 +199,7 @@ async def update_waiting_list_entry(
         GenericResponseModel: A generic response model containing the updated waiting list entry details.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the waiting list entry is not found.
             - 500: If there's an internal server error during the process.
 
@@ -198,8 +207,11 @@ async def update_waiting_list_entry(
         - This endpoint requires user authentication.
         - The response includes the updated waiting list entry details.
     """
-    response: GenericResponseModel = WaitingListService.update_waiting_list_entry(waiting_list_id, waiting_list_update)
+    response: GenericResponseModel = WaitingListService.update_waiting_list_entry(
+        waiting_list_id, waiting_list_update
+    )
     return build_api_response(response)
+
 
 @router.post(
     "/{event_date_id}/process",
@@ -243,7 +255,7 @@ async def process_waiting_list(
         GenericResponseModel: A generic response model containing the number of processed entries.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the event date is not found.
             - 500: If there's an internal server error during the process.
 
@@ -251,7 +263,9 @@ async def process_waiting_list(
         - This endpoint requires user authentication.
         - The response includes the number of waiting list entries that were processed.
     """
-    response: GenericResponseModel = WaitingListService.process_waiting_list(event_date_id)
+    response: GenericResponseModel = WaitingListService.process_waiting_list(
+        event_date_id
+    )
     return build_api_response(response)
 
 
@@ -295,7 +309,7 @@ async def get_user_waiting_list_entries(
         GenericResponseModel: A generic response model containing the list of waiting list entries for the user.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the user is not found.
             - 500: If there's an internal server error during the process.
 
@@ -303,9 +317,10 @@ async def get_user_waiting_list_entries(
         - This endpoint requires user authentication.
         - The response includes a list of all waiting list entries for the specified user.
     """
-    response: GenericResponseModel = WaitingListService.get_user_waiting_list_entries(user_id)
+    response: GenericResponseModel = WaitingListService.get_user_waiting_list_entries(
+        user_id
+    )
     return build_api_response(response)
-
 
 
 @router.delete(
@@ -348,7 +363,7 @@ async def delete_waiting_list_entry(
         GenericResponseModel: A generic response model confirming the deletion.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the waiting list entry is not found.
             - 500: If there's an internal server error during the process.
 
@@ -356,7 +371,9 @@ async def delete_waiting_list_entry(
         - This endpoint requires user authentication.
         - The response confirms the successful deletion of the waiting list entry.
     """
-    response: GenericResponseModel = WaitingListService.delete_waiting_list_entry(waiting_list_id)
+    response: GenericResponseModel = WaitingListService.delete_waiting_list_entry(
+        waiting_list_id
+    )
     return build_api_response(response)
 
 
@@ -403,15 +420,20 @@ async def get_waiting_list_entry_by_event_date_and_user(
         WaitingListResponseModel: A response model containing the waiting list entry details.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the waiting list entry is not found.
             - 500: If there's an internal server error during the process.
 
     Note:
         - This endpoint requires user authentication.
     """
-    response: WaitingListModel = WaitingListService.get_waiting_list_entry_by_event_date_and_user(event_date_id, user_id)
+    response: WaitingListModel = (
+        WaitingListService.get_waiting_list_entry_by_event_date_and_user(
+            event_date_id, user_id
+        )
+    )
     return build_api_response(response)
+
 
 @router.get(
     "/entry/{waiting_list_id}",
@@ -454,12 +476,14 @@ async def get_waiting_list_entry_by_id(
         WaitingListResponseModel: A response model containing the waiting list entry details.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the waiting list entry is not found.
             - 500: If there's an internal server error during the process.
 
     Note:
         - This endpoint requires user authentication.
     """
-    response: WaitingListModel = WaitingListService.get_waiting_list_entry_by_id(waiting_list_id)
+    response: WaitingListModel = WaitingListService.get_waiting_list_entry_by_id(
+        waiting_list_id
+    )
     return build_api_response(response)

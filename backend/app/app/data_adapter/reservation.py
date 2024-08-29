@@ -13,8 +13,6 @@ from app.utils.response_messages import ResponseMessages
 from app.models.get_params import ParameterValidator
 
 
-
-
 class Reservation(Base):
     __tablename__ = "reservation"
 
@@ -26,12 +24,14 @@ class Reservation(Base):
     number_of_teachers = Column(Integer, nullable=False)
     special_requirements = Column(Text, nullable=True)
     contact_info = Column(String(255), nullable=False)
-    status = Column(Enum(ReservationStatus), nullable=False, default=ReservationStatus.PENDING)
+    status = Column(
+        Enum(ReservationStatus), nullable=False, default=ReservationStatus.PENDING
+    )
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     local_reservation_code = Column(String(20), nullable=False, unique=True)
     cancelled_at = Column(DateTime, nullable=True)
-    
+
     event = relationship("Event", back_populates="reservations")
     event_date = relationship("EventDate", back_populates="reservations")
     user = relationship("User", back_populates="reservations")
@@ -59,7 +59,9 @@ class Reservation(Base):
         }
 
     @classmethod
-    def create_reservation(cls, reservation_data: ReservationCreateModel) -> Dict[str, Any]:
+    def create_reservation(
+        cls, reservation_data: ReservationCreateModel
+    ) -> Dict[str, Any]:
         """
         Create a new reservation for an event.
 
@@ -79,14 +81,24 @@ class Reservation(Base):
                 raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
             # Check if the event date exists and belongs to the event
-            event_date = session.query(EventDate).filter_by(
-                id=reservation_data.event_date_id, event_id=reservation_data.event_id
-            ).first()
+            event_date = (
+                session.query(EventDate)
+                .filter_by(
+                    id=reservation_data.event_date_id,
+                    event_id=reservation_data.event_id,
+                )
+                .first()
+            )
             if not event_date:
-                raise CustomBadRequestException(ResponseMessages.ERR_EVENT_DATE_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_EVENT_DATE_NOT_FOUND
+                )
 
             # Calculate total seats and check if booking is possible
-            total_seats = reservation_data.number_of_students + reservation_data.number_of_teachers
+            total_seats = (
+                reservation_data.number_of_students
+                + reservation_data.number_of_teachers
+            )
             if event_date.book_seats(total_seats):
                 # Create new reservation
                 new_reservation = cls(
@@ -97,34 +109,38 @@ class Reservation(Base):
                     number_of_teachers=reservation_data.number_of_teachers,
                     special_requirements=reservation_data.special_requirements,
                     contact_info=reservation_data.contact_info,
-                    status=ReservationStatus.CONFIRMED,
-                    local_reservation_code=cls.generate_local_code(session)
+                    status=ReservationStatus.PENDING,
+                    local_reservation_code=cls.generate_local_code(session),
                 )
                 session.add(new_reservation)
                 session.commit()
                 return new_reservation._to_model()
             else:
-                raise CustomBadRequestException(ResponseMessages.ERR_INSUFFICIENT_CAPACITY)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_INSUFFICIENT_CAPACITY
+                )
 
     @classmethod
-    def update_reservation(cls, reservation_id: int, reservation_data: ReservationUpdateModel) -> Dict[str, Any]:
+    def update_reservation(
+        cls, reservation_id: int, reservation_data: ReservationUpdateModel
+    ) -> Dict[str, Any]:
         """
         Update an existing reservation in the database.
-    
+
         This method updates a reservation with the given ID using the provided data.
         It checks for capacity changes and updates event dates accordingly.
-    
+
         Args:
             reservation_id (int): The ID of the reservation to update.
             reservation_data (ReservationUpdateModel): A Pydantic model containing the fields to update.
-    
+
         Returns:
             Dict[str, Any]: A dictionary representation of the updated reservation.
-    
+
         Raises:
             CustomBadRequestException: If the reservation is not found, event date is invalid,
                                        or there's insufficient capacity.
-    
+
         Note:
             This method uses SQLAlchemy's ORM to update the reservation object.
             It handles capacity changes and updates related event dates.
@@ -132,40 +148,62 @@ class Reservation(Base):
         with get_db_session() as session:
             reservation = session.query(cls).filter_by(id=reservation_id).first()
             if not reservation:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
-    
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+
             # Check if the event date exists and belongs to the event
-            new_event_date = session.query(EventDate).filter_by(
-                id=reservation_data.event_date_id, event_id=reservation_data.event_id
-            ).first()
+            new_event_date = (
+                session.query(EventDate)
+                .filter_by(
+                    id=reservation_data.event_date_id,
+                    event_id=reservation_data.event_id,
+                )
+                .first()
+            )
             if not new_event_date:
-                raise CustomBadRequestException(ResponseMessages.ERR_EVENT_DATE_NOT_FOUND)
-    
-            old_event_date = session.query(EventDate).filter_by(id=reservation.event_date_id).first()
-    
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_EVENT_DATE_NOT_FOUND
+                )
+
+            old_event_date = (
+                session.query(EventDate).filter_by(id=reservation.event_date_id).first()
+            )
+
             # Calculate the change in seats
-            old_total_seats = reservation.number_of_students + reservation.number_of_teachers
-            new_total_seats = reservation_data.number_of_students + reservation_data.number_of_teachers
-    
+            old_total_seats = (
+                reservation.number_of_students + reservation.number_of_teachers
+            )
+            new_total_seats = (
+                reservation_data.number_of_students
+                + reservation_data.number_of_teachers
+            )
+
             # Handle capacity changes
             if reservation.event_date_id != reservation_data.event_date_id:
                 if not new_event_date.book_seats(new_total_seats):
-                    raise CustomBadRequestException(ResponseMessages.ERR_INSUFFICIENT_CAPACITY)
+                    raise CustomBadRequestException(
+                        ResponseMessages.ERR_INSUFFICIENT_CAPACITY
+                    )
                 old_event_date.available_spots += old_total_seats
             else:
                 seats_difference = new_total_seats - old_total_seats
-                if seats_difference > 0 and not new_event_date.book_seats(seats_difference):
-                    raise CustomBadRequestException(ResponseMessages.ERR_INSUFFICIENT_CAPACITY)
+                if seats_difference > 0 and not new_event_date.book_seats(
+                    seats_difference
+                ):
+                    raise CustomBadRequestException(
+                        ResponseMessages.ERR_INSUFFICIENT_CAPACITY
+                    )
                 elif seats_difference < 0:
                     new_event_date.available_spots -= seats_difference
-    
+
             # Update the reservation object with the new data
             for key, value in reservation_data.dict(exclude_unset=True).items():
                 setattr(reservation, key, value)
-    
+
             session.commit()
             session.refresh(reservation)
-    
+
             return reservation._to_model()
 
     @classmethod
@@ -185,7 +223,9 @@ class Reservation(Base):
         with get_db_session() as session:
             reservation = session.query(cls).filter_by(id=reservation_id).first()
             if not reservation:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
             return reservation._to_model()
 
     @classmethod
@@ -205,16 +245,24 @@ class Reservation(Base):
         with get_db_session() as session:
             reservation = session.query(cls).filter_by(id=reservation_id).first()
             if not reservation:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
 
             # Check if the reservation is already cancelled
             if reservation.status == ReservationStatus.CANCELLED:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_ALREADY_CANCELLED)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_ALREADY_CANCELLED
+                )
 
             # Update available spots for the event date
-            event_date = session.query(EventDate).filter_by(id=reservation.event_date_id).first()
+            event_date = (
+                session.query(EventDate).filter_by(id=reservation.event_date_id).first()
+            )
             if event_date:
-                event_date.available_spots += (reservation.number_of_students + reservation.number_of_teachers)
+                event_date.available_spots += (
+                    reservation.number_of_students + reservation.number_of_teachers
+                )
 
             # Change the reservation status to CANCELLED
             reservation.status = ReservationStatus.CANCELLED
@@ -249,7 +297,9 @@ class Reservation(Base):
             query = session.query(cls)
 
             # Apply filters and sorting
-            query = ParameterValidator.apply_filters_and_sorting(query, cls, filter_params, sorting_params)
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, sorting_params
+            )
 
             total_count = query.count()
 
@@ -259,7 +309,9 @@ class Reservation(Base):
                 .all()
             )
 
-            return [reservation._to_model() for reservation in reservations], total_count
+            return [
+                reservation._to_model() for reservation in reservations
+            ], total_count
 
     @classmethod
     def get_reservations_by_event_id(
@@ -286,7 +338,9 @@ class Reservation(Base):
         with get_db_session() as session:
             query = session.query(cls).filter(cls.event_id == event_id)
 
-            query = ParameterValidator.apply_filters_and_sorting(query, cls, filter_params, sorting_params)
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, sorting_params
+            )
 
             total_count = query.count()
 
@@ -296,7 +350,9 @@ class Reservation(Base):
                 .all()
             )
 
-            return [reservation._to_model() for reservation in reservations], total_count
+            return [
+                reservation._to_model() for reservation in reservations
+            ], total_count
 
     @classmethod
     def get_reservations_by_user_id(cls, user_id: int) -> List[Dict[str, Any]]:
@@ -314,7 +370,9 @@ class Reservation(Base):
             return [reservation._to_model() for reservation in reservations]
 
     @classmethod
-    def get_reservation_by_user_and_event(cls, user_id: int, event_id: int) -> Dict[str, Any]:
+    def get_reservation_by_user_and_event(
+        cls, user_id: int, event_id: int
+    ) -> Dict[str, Any]:
         """
         Retrieve a reservation for a specific user and event from the database.
 
@@ -329,9 +387,13 @@ class Reservation(Base):
             CustomBadRequestException: If the reservation is not found.
         """
         with get_db_session() as session:
-            reservation = session.query(cls).filter_by(user_id=user_id, event_id=event_id).first()
+            reservation = (
+                session.query(cls).filter_by(user_id=user_id, event_id=event_id).first()
+            )
             if not reservation:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
             return reservation._to_model()
 
     @staticmethod
@@ -349,8 +411,12 @@ class Reservation(Base):
         import string
 
         while True:
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-            if not session.query(Reservation).filter_by(local_reservation_code=code).first():
+            code = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            if (
+                not session.query(Reservation)
+                .filter_by(local_reservation_code=code)
+                .first()
+            ):
                 return code
 
     @classmethod
@@ -370,12 +436,18 @@ class Reservation(Base):
         with get_db_session() as session:
             reservation = session.query(cls).filter_by(id=reservation_id).first()
             if not reservation:
-                raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
 
             # Update available spots for the event date
-            event_date = session.query(EventDate).filter_by(id=reservation.event_date_id).first()
+            event_date = (
+                session.query(EventDate).filter_by(id=reservation.event_date_id).first()
+            )
             if event_date:
-                event_date.available_spots += (reservation.number_of_students + reservation.number_of_teachers)
+                event_date.available_spots += (
+                    reservation.number_of_students + reservation.number_of_teachers
+                )
 
             reservation.status = ReservationStatus.CANCELLED
 
@@ -383,9 +455,11 @@ class Reservation(Base):
             session.refresh(reservation)
 
             return reservation._to_model()
-        
+
     @classmethod
-    def get_reservations_for_user_and_event(cls, user_id: int, event_id: int, page: int = 1, items_per_page: int = 100) -> Tuple[List[Dict[str, Any]], int]:
+    def get_reservations_for_user_and_event(
+        cls, user_id: int, event_id: int, page: int = 1, items_per_page: int = 100
+    ) -> Tuple[List[Dict[str, Any]], int]:
         """
         Retrieve paginated reservations for a specific user and event from the database.
 
@@ -404,16 +478,70 @@ class Reservation(Base):
         try:
             with get_db_session() as session:
                 query = session.query(cls).filter(
-                    cls.user_id == user_id,
-                    cls.event_id == event_id
+                    cls.user_id == user_id, cls.event_id == event_id
                 )
 
                 total_count = query.count()
 
-                reservations = query.offset((page - 1) * items_per_page).limit(items_per_page).all()
+                reservations = (
+                    query.offset((page - 1) * items_per_page)
+                    .limit(items_per_page)
+                    .all()
+                )
 
-                return [reservation._to_model() for reservation in reservations], total_count
+                return [
+                    reservation._to_model() for reservation in reservations
+                ], total_count
         except Exception as e:
             # Log the error here
             raise CustomBadRequestException(f"Error retrieving reservations: {str(e)}")
-        
+
+    @classmethod
+    def find_by_code(cls, reservation_code: str) -> Optional[Dict[str, Any]]:
+        """
+        Find a reservation by its local reservation code.
+
+        Args:
+            reservation_code (str): The local reservation code to search for.
+
+        Returns:
+            Optional[Dict[str, Any]]: A dictionary containing the reservation details,
+                                      or None if no reservation is found.
+        """
+        with get_db_session() as session:
+            reservation = (
+                session.query(cls)
+                .filter(cls.local_reservation_code == reservation_code)
+                .first()
+            )
+            if reservation:
+                return reservation._to_model()
+            return None
+
+    @classmethod
+    def confirm_reservation(cls, reservation_id: int) -> Dict[str, Any]:
+        """
+        Confirm a reservation by its ID.
+
+        Args:
+            reservation_id (int): The ID of the reservation to confirm.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the confirmed Reservation.
+
+        Raises:
+            CustomBadRequestException: If the reservation is not found.
+        """
+        with get_db_session() as session:
+            reservation = session.query(cls).filter_by(id=reservation_id).first()
+            if not reservation:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+
+            reservation.status = ReservationStatus.CONFIRMED
+
+            session.commit()
+            session.refresh(reservation)
+
+            return reservation._to_model()

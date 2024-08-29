@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, Query, status, File, Form, UploadFile
 from app.service.event_service import EventService
 from app.models.response import GenericResponseModel, build_api_response
 from app.models.event import (
+    ClaimStatus,
+    EventClaimCreateModel,
+    EventClaimModel,
     EventCreateModel,
     EventDateModel,
     EventStatus,
@@ -79,10 +82,10 @@ async def create_event(
             EventDateModel(
                 id=0,  # Temporary ID, will be replaced by the database
                 event_id=0,  # Temporary event_id, will be replaced by the database
-                date=datetime.strptime(date['date'], '%Y-%m-%d').date(),
-                time=datetime.strptime(date['time'], '%H:%M').time(),
+                date=datetime.strptime(date["date"], "%Y-%m-%d").date(),
+                time=datetime.strptime(date["time"], "%H:%M").time(),
                 capacity=capacity,
-                available_spots=capacity
+                available_spots=capacity,
             )
             for date in parsed_event_dates
         ]
@@ -172,32 +175,65 @@ async def update_event(
         for k, v in locals().items()
         if v is not None
         and k
-        not in ["event_id", "new_attachments", "existing_attachment_ids", "event_dates", "auth", "_"]
+        not in [
+            "event_id",
+            "new_attachments",
+            "existing_attachment_ids",
+            "event_dates",
+            "auth",
+            "_",
+        ]
     }
+    print("Event data:", event_data)
 
     # Parse the existing attachment IDs
     try:
-        existing_attachment_ids = json.loads(existing_attachment_ids) if existing_attachment_ids else []
+        existing_attachment_ids = (
+            json.loads(existing_attachment_ids) if existing_attachment_ids else []
+        )
     except json.JSONDecodeError:
         raise CustomBadRequestException(ResponseMessages.ERR_INVALID_DATA)
 
+    print("Existing attachments:", existing_attachment_ids)
+
+    print("Event dates:", event_dates)
     # Parse the event dates
     try:
         parsed_event_dates = json.loads(event_dates) if event_dates else []
-        event_date_models = [
-            EventDateModel(
-                id=date.get('id'),
-                date=datetime.fromisoformat(date['date']).date(),
-                time=datetime.fromisoformat(date['time']).time()
-            )
-            for date in parsed_event_dates
-        ]
-        event_data['event_dates'] = event_date_models
-    except (json.JSONDecodeError, ValueError):
-        raise CustomBadRequestException(ResponseMessages.ERR_INVALID_DATA)
+        event_date_models = []
+        for date_item in parsed_event_dates:
+            # Parse date
+            date_obj = datetime.strptime(date_item["date"], "%Y-%m-%d").date()
 
-    event_update_model = EventUpdateModel(**event_data)
-    print(event_data)
+            # Parse time
+            time_obj = datetime.strptime(date_item["time"], "%H:%M").time()
+
+            event_date_models.append(
+                EventDateModel(
+                    id=date_item.get("id"),
+                    event_id=event_id,
+                    date=date_obj,
+                    time=time_obj,
+                    capacity=date_item.get("capacity"),
+                    available_spots=date_item.get("available_spots"),
+                    lock_time=date_item.get("lock_time"),
+                )
+            )
+        event_data["event_dates"] = event_date_models
+    except (json.JSONDecodeError, ValueError, KeyError) as e:
+        print(f"Error parsing event dates: {str(e)}")
+        print(f"Problematic date item: {date_item}")
+        raise CustomBadRequestException(f"Invalid event date format: {str(e)}")
+
+    print("Event dates parsing:", event_date_models)
+
+    try:
+        event_update_model = EventUpdateModel(**event_data)
+    except ValidationError as e:
+        print(f"Validation error: {str(e)}")
+        raise CustomBadRequestException(f"Invalid event data: {str(e)}")
+
+    print("Event update model:", event_update_model)
 
     response: GenericResponseModel = await EventService.update_event(
         event_id, event_update_model, existing_attachment_ids, new_attachments
@@ -343,6 +379,7 @@ async def get_all_events(
     )
     return build_api_response(response)
 
+
 @router.get(
     "/organizer/{organizer_id}/events",
     status_code=status.HTTP_200_OK,
@@ -416,6 +453,7 @@ async def get_organizer_events(
     )
     return build_api_response(response)
 
+
 @router.get(
     "/{event_date_id}/event-date/",
     status_code=status.HTTP_200_OK,
@@ -456,7 +494,7 @@ async def get_event_date(
         GenericResponseModel: A generic response model containing the event date details.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the event date with the given ID is not found.
             - 500: If there's an internal server error during the process.
 
@@ -466,4 +504,121 @@ async def get_event_date(
           date, time, capacity, and available spots.
     """
     response: GenericResponseModel = EventService.get_event_date_by_id(event_date_id)
+    return build_api_response(response)
+
+
+@router.post(
+    "/claims",
+    status_code=status.HTTP_201_CREATED,
+    response_model=GenericResponseModel,
+    summary="Create a new claim",
+    description="Create a new claim for cancelling an event date or deleting an event.",
+    responses={
+        201: {
+            "model": GenericResponseModel[EventClaimModel],
+            "description": "Successful creation of claim",
+        },
+        400: {
+            "model": GenericResponseModel,
+            "description": "Bad request",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def create_claim(
+    claim_data: EventClaimCreateModel,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Create a new claim for an event or event date.
+
+    Args:
+        claim_data (EventClaimCreateModel): Data for creating the claim.
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A response containing the created claim data.
+    """
+    response: GenericResponseModel = await EventService.create_claim(claim_data)
+    return build_api_response(response)
+
+@router.get(
+    "/claims/pending",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get pending claims",
+    description="Retrieve all pending claims for events.",
+    responses={
+        200: {
+            "model": GenericResponseModel[List[EventClaimModel]],
+            "description": "Successful retrieval of pending claims",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_pending_claims(
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Retrieve all pending claims.
+
+    Args:
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A response containing a list of pending claims.
+    """
+    response: GenericResponseModel = await EventService.get_pending_claims()
+    return build_api_response(response)
+
+@router.put(
+    "/claims/{claim_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Update claim status",
+    description="Update the status of a claim.",
+    responses={
+        200: {
+            "model": GenericResponseModel[EventClaimModel],
+            "description": "Successful update of claim status",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Claim not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def update_claim_status(
+    claim_id: int,
+    new_status: ClaimStatus,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Update the status of a claim.
+
+    Args:
+        claim_id (int): The ID of the claim to update.
+        new_status (ClaimStatus): The new status to set for the claim.
+        auth (dict): The authenticated user's information (injected by dependency).
+        _ (None): Placeholder for request context building (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A response containing the updated claim data.
+    """
+    response: GenericResponseModel = await EventService.update_claim_status(claim_id, new_status)
     return build_api_response(response)

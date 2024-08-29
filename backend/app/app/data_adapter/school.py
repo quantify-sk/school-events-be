@@ -37,11 +37,22 @@ class School(Base):
     region = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    number_of_students = Column(Integer, default=0)
+    number_of_employees = Column(Integer, default=0)
 
     # Relationship with User (school representatives)
     representatives = relationship("User", back_populates="school")
 
-    def __init__(self, name: str, ico: str, address: str, district: str, region: str):
+    def __init__(
+        self,
+        name: str,
+        ico: str,
+        address: str,
+        district: str,
+        region: str,
+        number_of_students: int = 0,
+        number_of_employees: int = 0,
+    ):
         """
         Initialize a new School instance.
 
@@ -57,6 +68,10 @@ class School(Base):
         self.address = address
         self.district = district
         self.region = region
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
+        self.number_of_students = number_of_students
+        self.number_of_employees = number_of_employees
 
     def _to_model(self) -> Dict[str, Any]:
         """
@@ -74,6 +89,8 @@ class School(Base):
             "region": self.region,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "number_of_students": self.number_of_students,
+            "number_of_employees": self.number_of_employees,
         }
 
     @classmethod

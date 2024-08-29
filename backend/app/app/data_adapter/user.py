@@ -22,14 +22,16 @@ from app.data_adapter.school import School
 import app.context_manager
 from app.context_manager import get_db_session
 from app.data_adapter.report import Report, ReportType
+
 if TYPE_CHECKING:
     from app.data_adapter.notification import Notification
-    
+
 
 from app.logger import logger
 from app.models.user import UserModel
 from app.models.school import SchoolUpdateModel
 from sqlalchemy.orm import joinedload
+from app.data_adapter.event import EventClaim
 
 
 class User(Base):
@@ -201,6 +203,7 @@ class User(Base):
         """
         from app.context_manager import get_db_session
 
+        print("user_data", user_data)
         db = get_db_session()
 
         new_user = User(
@@ -215,7 +218,7 @@ class User(Base):
             preferred_language=user_data.preferred_language,
             profile_picture=user_data.profile_picture,
             subscription=user_data.subscription,
-            status= UserStatus.ACTIVE if user_data.role == UserRole.ORGANIZER else UserStatus.INACTIVE,
+            status=user_data.status,
             school_id=user_data.school_id,  # This is set in the service layer if applicable
             parent_organizer_id=user_data.parent_organizer_id,  # New field for employee accounts
         )
@@ -264,17 +267,23 @@ class User(Base):
                 if user:
                     db.delete(user)
                     db.commit()
-                    logger.info(f"User with ID {user_id} has been deleted successfully.")
+                    logger.info(
+                        f"User with ID {user_id} has been deleted successfully."
+                    )
                     return True
                 else:
-                    logger.warning(f"Attempted to delete non-existent user with ID {user_id}.")
+                    logger.warning(
+                        f"Attempted to delete non-existent user with ID {user_id}."
+                    )
                     return False
         except SQLAlchemyError as e:
             logger.error(f"Error deleting user with ID {user_id}: {str(e)}")
             raise
 
     @classmethod
-    def update_user_by_id(cls, user_id: int, user_data: UserUpdateModel) -> Optional[UserModel]:
+    def update_user_by_id(
+        cls, user_id: int, user_data: UserUpdateModel
+    ) -> Optional[UserModel]:
         """
         Update a user by ID, including school data for school representatives.
 
@@ -295,21 +304,28 @@ class User(Base):
 
         try:
             with get_db_session() as db:
-                user = db.query(cls).options(joinedload(cls.school)).filter(cls.user_id == user_id).first()
+                user = (
+                    db.query(cls)
+                    .options(joinedload(cls.school))
+                    .filter(cls.user_id == user_id)
+                    .first()
+                )
                 if not user:
-                    logger.warning(f"Attempted to update non-existent user with ID {user_id}.")
+                    logger.warning(
+                        f"Attempted to update non-existent user with ID {user_id}."
+                    )
                     return None
 
                 # Update user fields
                 for field, value in user_data.dict(exclude_unset=True).items():
-                    if field != 'school' and hasattr(user, field):
+                    if field != "school" and hasattr(user, field):
                         setattr(user, field, value)
 
                 # Update school data if user is a school representative
                 if user.role == UserRole.SCHOOL_REPRESENTATIVE and user_data.school:
                     if not user.school:
                         user.school = School()
-                    
+
                     school_data: SchoolUpdateModel = user_data.school
                     for field, value in school_data.dict(exclude_unset=True).items():
                         setattr(user.school, field, value)
@@ -491,10 +507,10 @@ class User(Base):
 
             return [user._to_model() for user in users], total_count
 
-    
-
     @classmethod
-    def update_user_status(cls, user_id: int, new_status: UserStatus, reason: Optional[str] = None) -> Optional[UserModel]:
+    def update_user_status(
+        cls, user_id: int, new_status: UserStatus, reason: Optional[str] = None
+    ) -> Optional[UserModel]:
         """
         Update a user's status and optionally store the reason for the status change.
 
@@ -589,7 +605,7 @@ class User(Base):
                 ]
                 return organizer_data
             return None
-        
+
     @classmethod
     def search_organizers(
         cls,
@@ -600,35 +616,56 @@ class User(Base):
     ) -> tuple[List[UserModel], int]:
         """
         Search organizers with pagination, filtering, and sorting.
-    
+
         Args:
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Any]]): The filters to apply.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
-    
+
         Returns:
             Tuple[List[Dict[str, Any]], int]: A tuple containing a list of organizer dictionaries and the total count.
         """
         with get_db_session() as session:
             query = session.query(cls).filter(cls.role == UserRole.ORGANIZER)
-    
+
             # Apply filters and sorting using ParameterValidator
             query = ParameterValidator.apply_filters_and_sorting(
-                query,
-                cls,
-                filter_params,
-                None
+                query, cls, filter_params, None
             )
-    
+
             # Get total count
             total_count = query.count()
-    
+
             # Apply pagination
             organizers = (
                 query.offset((current_page - 1) * items_per_page)
                 .limit(items_per_page)
                 .all()
             )
-    
+
             return [organizer._to_model() for organizer in organizers], total_count
+
+    @classmethod
+    def get_parent_organizer(cls, user_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get the parent organizer of a user by their ID.
+
+        Args:
+            user_id (int): The ID of the user whose parent organizer we want to retrieve.
+
+        Returns:
+            Optional[Dict[str, Any]]: A dictionary containing the parent organizer's details,
+                                      or None if no parent organizer is found.
+        """
+        with get_db_session() as session:
+            user = session.query(cls).filter(cls.user_id == user_id).first()
+            if user and user.parent_organizer_id:
+                parent_organizer = (
+                    session.query(cls)
+                    .filter(cls.user_id == user.parent_organizer_id)
+                    .first()
+                )
+                if parent_organizer:
+                    return parent_organizer._to_model().dict()
+            return None

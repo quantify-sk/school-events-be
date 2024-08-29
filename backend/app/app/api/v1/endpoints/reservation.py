@@ -6,10 +6,15 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from app.service.reservation_service import ReservationService
 from app.models.response import GenericResponseModel
-from app.models.reservation import ReservationCreateModel, ReservationModel, ReservationUpdateModel
+from app.models.reservation import (
+    ReservationCreateModel,
+    ReservationModel,
+    ReservationUpdateModel,
+)
 from app.dependencies import get_db, authenticate_user_token
 from app.context_manager import build_request_context
 from app.models.response import build_api_response
+
 
 router = APIRouter()
 
@@ -338,6 +343,7 @@ async def get_reservation_for_user_and_event(
     )
     return response
 
+
 @router.put(
     "/{reservation_id}",
     status_code=status.HTTP_200_OK,
@@ -379,7 +385,9 @@ async def update_reservation(
     Returns:
         GenericResponseModel: The response containing the updated reservation.
     """
-    response = ReservationService.update_reservation(db, reservation_id, reservation_data)
+    response = ReservationService.update_reservation(
+        db, reservation_id, reservation_data
+    )
     return build_api_response(response)
 
 
@@ -424,12 +432,77 @@ async def get_reservations_for_user_and_event(
             response.status_code = status.HTTP_404_NOT_FOUND
         return build_api_response(response)
     except CustomBadRequestException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
+
+@router.get(
+    "/code/{reservation_code}",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Find Reservation by Code",
+    description="Find a reservation by its local reservation code.",
+)
+async def find_reservation_by_code(
+    reservation_code: str,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+):
+    """
+    Find a reservation by its local reservation code.
+
+    This endpoint requires authentication and returns the reservation details.
+
+    Args:
+        reservation_code (str): The local reservation code to search for.
+
+    Returns:
+        GenericResponseModel: A response model containing the reservation details.
+    """
+    response = ReservationService.find_reservation_by_code(reservation_code)
+    return response
+
+
+@router.put(
+    "/{reservation_id}/confirm/",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Confirm Reservation",
+    description="Confirm a reservation by its ID.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Reservation confirmed",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Reservation not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def confirm_reservation(
+    reservation_id: int,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Confirm a reservation by its ID.
+
+    Args:
+        reservation_id (int): ID of the reservation to confirm.
+        db (Session): Database session.
+        auth (Depends): The authentication token.
+        _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: The response confirming the reservation.
+    """
+    response = ReservationService.confirm_reservation(reservation_id)
+    return build_api_response(response)

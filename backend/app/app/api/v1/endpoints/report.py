@@ -28,6 +28,7 @@ from app.models.report import ReportFilters, ReportModel, ReportResponse
 
 router = APIRouter()
 
+
 @router.post(
     "/generate",
     response_model=ReportResponse,
@@ -59,11 +60,12 @@ async def generate_report(
         ReportResponse: The generated report's details and metadata.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 500: If there's an internal server error during the process.
     """
     response = ReportService.generate_report(filters.report_type, filters)
     return build_api_response(response)
+
 
 @router.get(
     "/{report_id}",
@@ -96,12 +98,13 @@ async def get_report(
         ReportResponse: The details of the retrieved report.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 404: If the report with the given ID is not found.
             - 500: If there's an internal server error during the process.
     """
     response = ReportService.get_report_by_id(report_id)
     return build_api_response(response)
+
 
 @router.get(
     "/",
@@ -110,7 +113,10 @@ async def get_report(
     summary="Get all reports",
     description="Retrieve a list of all available reports.",
     responses={
-        200: {"model": List[ReportModel], "description": "Successfully retrieved all reports"},
+        200: {
+            "model": List[ReportModel],
+            "description": "Successfully retrieved all reports",
+        },
         500: {"model": GenericResponseModel, "description": "Internal Server Error"},
     },
 )
@@ -131,7 +137,7 @@ async def get_all_reports(
         List[ReportModel]: A list containing all available reports.
 
     Raises:
-        HTTPException: 
+        HTTPException:
             - 500: If there's an internal server error during the process.
     """
     response = ReportService.get_all_reports()

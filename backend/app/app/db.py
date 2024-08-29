@@ -64,6 +64,8 @@ def seed_users():
                 "address": "Majerská cesta 68, 974 01 Banská Bystrica",
                 "district": "Banská Bystrica",
                 "region": "Banskobystrický kraj",
+                "number_of_students": 500,
+                "number_of_employees": 50,
             },
         ),
         (
@@ -77,6 +79,8 @@ def seed_users():
                 "address": "1. mája 170/2, 911 35 Trenčín",
                 "district": "Trenčín",
                 "region": "Trenčiansky kraj",
+                "number_of_students": 800,
+                "number_of_employees": 80,
             },
         ),
     ]
@@ -91,6 +95,8 @@ def seed_users():
                 address=school_data["address"],
                 district=school_data["district"],
                 region=school_data["region"],
+                number_of_students=school_data["number_of_students"],
+                number_of_employees=school_data["number_of_employees"],
             )
             db.add(school)
             db.flush()  # This will assign an ID to the school without committing the transaction
@@ -153,7 +159,7 @@ def seed_events():
         db.flush()
 
         return organizer
-    
+
     def create_event_dates(event_id, dates, times, capacity):
         event_dates = []
         for date in dates:
@@ -162,7 +168,7 @@ def seed_events():
                     event_id=event_id,
                     date=datetime.combine(date, t),
                     time=datetime.combine(date, t),
-                    capacity=capacity
+                    capacity=capacity,
                 )
                 event_dates.append(event_date)
         return event_dates
@@ -218,28 +224,54 @@ def seed_events():
         ),
     ]
 
-
-
     kino_lumiere_dates = [
-        datetime(2024, 9, 10), datetime(2024, 9, 11), datetime(2024, 9, 12),
-        datetime(2024, 9, 17), datetime(2024, 9, 18), datetime(2024, 9, 24),
-        datetime(2024, 9, 25), datetime(2024, 9, 26), datetime(2024, 10, 1),
-        datetime(2024, 10, 2), datetime(2024, 10, 3), datetime(2024, 10, 8),
-        datetime(2024, 10, 15), datetime(2024, 10, 16), datetime(2024, 10, 22),
-        datetime(2024, 10, 23), datetime(2024, 10, 24), datetime(2024, 10, 29),
-        datetime(2024, 10, 30), datetime(2024, 10, 31), datetime(2024, 11, 5),
-        datetime(2024, 11, 6), datetime(2024, 11, 7), datetime(2024, 11, 12),
-        datetime(2024, 11, 13), datetime(2024, 11, 19), datetime(2024, 11, 20),
-        datetime(2024, 11, 21), datetime(2024, 11, 26), datetime(2024, 11, 27),
-        datetime(2024, 11, 28), datetime(2024, 12, 3), datetime(2024, 12, 4),
-        datetime(2024, 12, 5), datetime(2024, 12, 10), datetime(2024, 12, 11),
-        datetime(2024, 12, 12), datetime(2024, 12, 17), datetime(2024, 12, 18)
+        datetime(2024, 9, 10),
+        datetime(2024, 9, 11),
+        datetime(2024, 9, 12),
+        datetime(2024, 9, 17),
+        datetime(2024, 9, 18),
+        datetime(2024, 9, 24),
+        datetime(2024, 9, 25),
+        datetime(2024, 9, 26),
+        datetime(2024, 10, 1),
+        datetime(2024, 10, 2),
+        datetime(2024, 10, 3),
+        datetime(2024, 10, 8),
+        datetime(2024, 10, 15),
+        datetime(2024, 10, 16),
+        datetime(2024, 10, 22),
+        datetime(2024, 10, 23),
+        datetime(2024, 10, 24),
+        datetime(2024, 10, 29),
+        datetime(2024, 10, 30),
+        datetime(2024, 10, 31),
+        datetime(2024, 11, 5),
+        datetime(2024, 11, 6),
+        datetime(2024, 11, 7),
+        datetime(2024, 11, 12),
+        datetime(2024, 11, 13),
+        datetime(2024, 11, 19),
+        datetime(2024, 11, 20),
+        datetime(2024, 11, 21),
+        datetime(2024, 11, 26),
+        datetime(2024, 11, 27),
+        datetime(2024, 11, 28),
+        datetime(2024, 12, 3),
+        datetime(2024, 12, 4),
+        datetime(2024, 12, 5),
+        datetime(2024, 12, 10),
+        datetime(2024, 12, 11),
+        datetime(2024, 12, 12),
+        datetime(2024, 12, 17),
+        datetime(2024, 12, 18),
     ]
 
     for event in kino_lumiere_events:
         db.add(event)
         db.flush()
-        event_dates = create_event_dates(event.id, kino_lumiere_dates, [time(9, 0)], event.capacity)
+        event_dates = create_event_dates(
+            event.id, kino_lumiere_dates, [time(9, 0)], event.capacity
+        )
         db.add_all(event_dates)
 
     # Štátny komorný orchester Žilina event
@@ -261,7 +293,7 @@ def seed_events():
         event_type=EventType.CONCERT,
         duration=60,
         organizer_id=sko_zilina.user_id,
-        more_info_url="https://skozilina.sk/"
+        more_info_url="https://skozilina.sk/",
     )
     db.add(sko_zilina_event)
     db.flush()
@@ -269,7 +301,12 @@ def seed_events():
     # Add event dates
     sko_zilina_dates = [datetime(2024, 10, 15), datetime(2024, 10, 16)]
     sko_zilina_times = [time(9, 0), time(11, 0)]
-    sko_zilina_event_dates = create_event_dates(sko_zilina_event.id, sko_zilina_dates, sko_zilina_times, sko_zilina_event.capacity)
+    sko_zilina_event_dates = create_event_dates(
+        sko_zilina_event.id,
+        sko_zilina_dates,
+        sko_zilina_times,
+        sko_zilina_event.capacity,
+    )
     db.add_all(sko_zilina_event_dates)
 
     # Štátna filharmónia Košice event
@@ -289,13 +326,15 @@ def seed_events():
         event_type=EventType.CONCERT,
         duration=60,
         organizer_id=sfk.user_id,
-        more_info_url="https://www.sfk.sk/koncerty-pre-deti-a-mladez"
+        more_info_url="https://www.sfk.sk/koncerty-pre-deti-a-mladez",
     )
     db.add(sfk_event)
     db.flush()
 
     sfk_dates = [datetime(2024, 12, 11), datetime(2024, 12, 12), datetime(2024, 12, 13)]
-    sfk_event_dates = create_event_dates(sfk_event.id, sfk_dates, [time(9, 0), time(11, 0)], sfk_event.capacity)
+    sfk_event_dates = create_event_dates(
+        sfk_event.id, sfk_dates, [time(9, 0), time(11, 0)], sfk_event.capacity
+    )
     db.add_all(sfk_event_dates)
 
     # Štátna opera event
@@ -315,18 +354,22 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=120,
         organizer_id=statna_opera.user_id,
-        more_info_url="https://www.stateopera.sk/sk/program"
+        more_info_url="https://www.stateopera.sk/sk/program",
     )
     db.add(statna_opera_event)
     db.flush()
 
     statna_opera_dates = [datetime(2024, 10, 24), datetime(2024, 10, 25)]
-    statna_opera_event_dates = create_event_dates(statna_opera_event.id, statna_opera_dates, [time(10, 30)], statna_opera_event.capacity)
+    statna_opera_event_dates = create_event_dates(
+        statna_opera_event.id,
+        statna_opera_dates,
+        [time(10, 30)],
+        statna_opera_event.capacity,
+    )
     db.add_all(statna_opera_event_dates)
 
     # Divadlo Nová scéna event
     nova_scena = create_organizer_and_employee("Divadlo Nová scéna", "nova_scena")
-
 
     nova_scena_punk_rock = Event(
         title="PUNK ROCK",
@@ -342,16 +385,20 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=130,  # 100 minutes performance + 30 minutes discussion
         organizer_id=nova_scena.user_id,
-        more_info_url="https://www.novascena.sk/repertoar"
+        more_info_url="https://www.novascena.sk/repertoar",
     )
     db.add(nova_scena_punk_rock)
     db.flush()
 
     # Add event dates (1x monthly from September to December 2024)
     punk_rock_dates = [datetime(2024, m, 1) for m in range(9, 13)]
-    punk_rock_event_dates = create_event_dates(nova_scena_punk_rock.id, punk_rock_dates, [time(10, 30)], nova_scena_punk_rock.capacity)
+    punk_rock_event_dates = create_event_dates(
+        nova_scena_punk_rock.id,
+        punk_rock_dates,
+        [time(10, 30)],
+        nova_scena_punk_rock.capacity,
+    )
     db.add_all(punk_rock_event_dates)
-
 
     nova_scena_event = Event(
         title="Nepovinne po víne",
@@ -367,13 +414,15 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=60,
         organizer_id=nova_scena.user_id,
-        more_info_url="https://www.novascena.sk/repertoar"
+        more_info_url="https://www.novascena.sk/repertoar",
     )
     db.add(nova_scena_event)
     db.flush()
 
     nova_scena_dates = [datetime(2024, m, 1) for m in range(9, 13) for _ in range(2)]
-    nova_scena_event_dates = create_event_dates(nova_scena_event.id, nova_scena_dates, [time(10, 30)], nova_scena_event.capacity)
+    nova_scena_event_dates = create_event_dates(
+        nova_scena_event.id, nova_scena_dates, [time(10, 30)], nova_scena_event.capacity
+    )
     db.add_all(nova_scena_event_dates)
 
     # Národné divadlo Košice events
@@ -394,17 +443,28 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=90,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event1)
     db.flush()
 
     nd_kosice_event1_dates = [
-        (datetime(2024, 9, 15), time(16, 0)), (datetime(2024, 9, 16), time(10, 0)),
-        (datetime(2024, 10, 27), time(16, 0)), (datetime(2024, 10, 28), time(10, 0)),
-        (datetime(2024, 11, 24), time(16, 0)), (datetime(2024, 11, 25), time(10, 0))
+        (datetime(2024, 9, 15), time(16, 0)),
+        (datetime(2024, 9, 16), time(10, 0)),
+        (datetime(2024, 10, 27), time(16, 0)),
+        (datetime(2024, 10, 28), time(10, 0)),
+        (datetime(2024, 11, 24), time(16, 0)),
+        (datetime(2024, 11, 25), time(10, 0)),
     ]
-    nd_kosice_event1_dates = [EventDate(event_id=nd_kosice_event1.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=131) for d, t in nd_kosice_event1_dates]
+    nd_kosice_event1_dates = [
+        EventDate(
+            event_id=nd_kosice_event1.id,
+            date=datetime.combine(d, t),
+            time=datetime.combine(d, t),
+            capacity=131,
+        )
+        for d, t in nd_kosice_event1_dates
+    ]
     db.add_all(nd_kosice_event1_dates)
 
     # Národné divadlo Košice events (continuation)
@@ -424,7 +484,7 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=90,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event2)
     db.flush()
@@ -432,9 +492,17 @@ def seed_events():
     nd_kosice_event2_dates = [
         (datetime(2024, 10, 20), time(10, 0)),
         (datetime(2024, 12, 1), time(16, 0)),
-        (datetime(2024, 12, 2), time(10, 0))
+        (datetime(2024, 12, 2), time(10, 0)),
     ]
-    nd_kosice_event2_dates = [EventDate(event_id=nd_kosice_event2.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=145) for d, t in nd_kosice_event2_dates]
+    nd_kosice_event2_dates = [
+        EventDate(
+            event_id=nd_kosice_event2.id,
+            date=datetime.combine(d, t),
+            time=datetime.combine(d, t),
+            capacity=145,
+        )
+        for d, t in nd_kosice_event2_dates
+    ]
     db.add_all(nd_kosice_event2_dates)
 
     # Amadeus
@@ -452,12 +520,19 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=140,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event3)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event3.id, date=datetime(2024, 9, 30, 10, 0), time=datetime(2024, 9, 30, 10, 0), capacity=555))
+    db.add(
+        EventDate(
+            event_id=nd_kosice_event3.id,
+            date=datetime(2024, 9, 30, 10, 0),
+            time=datetime(2024, 9, 30, 10, 0),
+            capacity=555,
+        )
+    )
     # Pygmalion
     nd_kosice_event4 = Event(
         title="Pygmalion",
@@ -473,12 +548,19 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=150,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event4)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event4.id, date=datetime(2024, 12, 17, 10, 0), time=datetime(2024, 12, 17, 10, 0), capacity=555))
+    db.add(
+        EventDate(
+            event_id=nd_kosice_event4.id,
+            date=datetime(2024, 12, 17, 10, 0),
+            time=datetime(2024, 12, 17, 10, 0),
+            capacity=555,
+        )
+    )
 
     # Mačka Ivanka
     nd_kosice_event5 = Event(
@@ -495,13 +577,22 @@ def seed_events():
         event_type=EventType.OPERA,
         duration=90,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event5)
     db.flush()
 
-    nd_kosice_event5_dates = [datetime(2024, 9, 23), datetime(2024, 12, 16), datetime(2024, 12, 17)]
-    nd_kosice_event5_dates = create_event_dates(nd_kosice_event5.id, nd_kosice_event5_dates, [time(10, 0)], capacity=nd_kosice_event5.capacity)
+    nd_kosice_event5_dates = [
+        datetime(2024, 9, 23),
+        datetime(2024, 12, 16),
+        datetime(2024, 12, 17),
+    ]
+    nd_kosice_event5_dates = create_event_dates(
+        nd_kosice_event5.id,
+        nd_kosice_event5_dates,
+        [time(10, 0)],
+        capacity=nd_kosice_event5.capacity,
+    )
     db.add_all(nd_kosice_event5_dates)
 
     # Orchestríček
@@ -519,13 +610,19 @@ def seed_events():
         event_type=EventType.CONCERT,
         duration=60,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event6)
     db.flush()
 
-    db.add(EventDate(event_id=nd_kosice_event6.id, date=datetime(2024, 10, 15, 10, 0), time=datetime(2024, 10, 15, 10, 0), capacity=145))
-
+    db.add(
+        EventDate(
+            event_id=nd_kosice_event6.id,
+            date=datetime(2024, 10, 15, 10, 0),
+            time=datetime(2024, 10, 15, 10, 0),
+            capacity=145,
+        )
+    )
 
     # Malý princ
     nd_kosice_event7 = Event(
@@ -542,7 +639,7 @@ def seed_events():
         event_type=EventType.BALLET,
         duration=108,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event7)
     db.flush()
@@ -550,9 +647,17 @@ def seed_events():
     nd_kosice_event7_dates = [
         (datetime(2024, 10, 31), time(18, 0)),
         (datetime(2024, 11, 9), time(18, 0)),
-        (datetime(2024, 11, 10), time(16, 0))
+        (datetime(2024, 11, 10), time(16, 0)),
     ]
-    nd_kosice_event7_dates = [EventDate(event_id=nd_kosice_event7.id, date=datetime.combine(d, t), time=datetime.combine(d, t), capacity=555) for d, t in nd_kosice_event7_dates]
+    nd_kosice_event7_dates = [
+        EventDate(
+            event_id=nd_kosice_event7.id,
+            date=datetime.combine(d, t),
+            time=datetime.combine(d, t),
+            capacity=555,
+        )
+        for d, t in nd_kosice_event7_dates
+    ]
     db.add_all(nd_kosice_event7_dates)
 
     # Luskáčik
@@ -570,13 +675,22 @@ def seed_events():
         event_type=EventType.BALLET,
         duration=80,
         organizer_id=nd_kosice.user_id,
-        more_info_url="http://www.sdke.sk/sk/divadlo/program"
+        more_info_url="http://www.sdke.sk/sk/divadlo/program",
     )
     db.add(nd_kosice_event8)
     db.flush()
 
-    nd_kosice_event8_dates = [datetime(2024, 12, 4), datetime(2024, 12, 5), datetime(2024, 12, 9)]
-    nd_kosice_event8_dates = create_event_dates(nd_kosice_event8.id, nd_kosice_event8_dates, [time(10, 0)], capacity=nd_kosice_event8.capacity)
+    nd_kosice_event8_dates = [
+        datetime(2024, 12, 4),
+        datetime(2024, 12, 5),
+        datetime(2024, 12, 9),
+    ]
+    nd_kosice_event8_dates = create_event_dates(
+        nd_kosice_event8.id,
+        nd_kosice_event8_dates,
+        [time(10, 0)],
+        capacity=nd_kosice_event8.capacity,
+    )
     db.add_all(nd_kosice_event8_dates)
 
     # Slovenský ľudový umelecký kolektív events
@@ -597,12 +711,10 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=60,
         organizer_id=sluk.user_id,
-        more_info_url="https://www.sluk.sk/predstavenia/gasparko/"
+        more_info_url="https://www.sluk.sk/predstavenia/gasparko/",
     )
     db.add(sluk_event1)
     db.flush()
-
-    
 
     # Zvuky nie sú muky
     sluk_event2 = Event(
@@ -619,11 +731,10 @@ def seed_events():
         event_type=EventType.THEATER,
         duration=60,
         organizer_id=sluk.user_id,
-        more_info_url="https://www.sluk.sk/predstavenia/zvuky-nie-su-muky/"
+        more_info_url="https://www.sluk.sk/predstavenia/zvuky-nie-su-muky/",
     )
     db.add(sluk_event2)
     db.flush()
-
 
     # Slovensko
     sluk_event3 = Event(
@@ -640,15 +751,21 @@ def seed_events():
         event_type=EventType.PERFORMANCE,
         duration=80,
         organizer_id=sluk.user_id,
-        more_info_url="https://www.sluk.sk/predstavenia/slovensko/"
+        more_info_url="https://www.sluk.sk/predstavenia/slovensko/",
     )
     db.add(sluk_event3)
     db.flush()
 
     sluk_dates = [datetime(2024, m, 1) for m in [9, 10]]
-    sluk_event1_dates = create_event_dates(sluk_event1.id, sluk_dates, [time(9, 0), time(13, 0)], sluk_event1.capacity)
-    sluk_event2_dates = create_event_dates(sluk_event2.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event2.capacity)
-    sluk_event3_dates = create_event_dates(sluk_event3.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event3.capacity)
+    sluk_event1_dates = create_event_dates(
+        sluk_event1.id, sluk_dates, [time(9, 0), time(13, 0)], sluk_event1.capacity
+    )
+    sluk_event2_dates = create_event_dates(
+        sluk_event2.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event2.capacity
+    )
+    sluk_event3_dates = create_event_dates(
+        sluk_event3.id, sluk_dates, [time(9, 0), time(11, 0)], sluk_event3.capacity
+    )
     db.add_all(sluk_event1_dates + sluk_event2_dates + sluk_event3_dates)
 
     # Tanečné divadlo Ifjú Szivek events
@@ -671,16 +788,25 @@ def seed_events():
         event_type=EventType.DANCE,
         duration=50,
         organizer_id=ifju_szivek.user_id,
-        more_info_url="https://ifjuszivek.sk/sk/repertoar/skola-madarskeho-tanca"
+        more_info_url="https://ifjuszivek.sk/sk/repertoar/skola-madarskeho-tanca",
     )
     db.add(ifju_szivek_event1)
     db.flush()
 
     ifju_szivek_event1_dates = [
-        datetime(2024, 9, 23), datetime(2024, 9, 24), datetime(2024, 9, 25),
-        datetime(2024, 10, 14), datetime(2024, 10, 15), datetime(2024, 10, 16)
+        datetime(2024, 9, 23),
+        datetime(2024, 9, 24),
+        datetime(2024, 9, 25),
+        datetime(2024, 10, 14),
+        datetime(2024, 10, 15),
+        datetime(2024, 10, 16),
     ]
-    ifju_szivek_event1_dates = create_event_dates(ifju_szivek_event1.id, ifju_szivek_event1_dates, [time(9, 0), time(11, 0), time(13, 0)], capacity=ifju_szivek_event1.capacity)
+    ifju_szivek_event1_dates = create_event_dates(
+        ifju_szivek_event1.id,
+        ifju_szivek_event1_dates,
+        [time(9, 0), time(11, 0), time(13, 0)],
+        capacity=ifju_szivek_event1.capacity,
+    )
     db.add_all(ifju_szivek_event1_dates)
 
     # Kukučie vajíčko
@@ -698,13 +824,18 @@ def seed_events():
         event_type=EventType.DANCE,
         duration=45,
         organizer_id=ifju_szivek.user_id,
-        more_info_url="https://ifjuszivek.sk/sk/repertoar/kukucie-vajicko-0"
+        more_info_url="https://ifjuszivek.sk/sk/repertoar/kukucie-vajicko-0",
     )
     db.add(ifju_szivek_event2)
     db.flush()
 
     ifju_szivek_event2_dates = [datetime(2024, m, 1) for m in [9, 10]]
-    ifju_szivek_event2_dates = create_event_dates(ifju_szivek_event2.id, ifju_szivek_event2_dates, [time(9, 0), time(11, 0), time(13, 0)], ifju_szivek_event2.capacity)
+    ifju_szivek_event2_dates = create_event_dates(
+        ifju_szivek_event2.id,
+        ifju_szivek_event2_dates,
+        [time(9, 0), time(11, 0), time(13, 0)],
+        ifju_szivek_event2.capacity,
+    )
     db.add_all(ifju_szivek_event2_dates)
 
     # Slovenská ústredná hvezdáreň event
@@ -724,13 +855,15 @@ def seed_events():
         event_type=EventType.EXHIBITION,
         duration=90,
         organizer_id=suh.user_id,
-        more_info_url="https://www.suh.sk/navstivte-nas-menu/filmy-v-planetariu/"
+        more_info_url="https://www.suh.sk/navstivte-nas-menu/filmy-v-planetariu/",
     )
     db.add(suh_event)
     db.flush()
 
     suh_dates = [datetime(2024, 9, day) for day in range(1, 31)]
-    suh_event_dates = create_event_dates(suh_event.id, suh_dates, [time(9, 0)], suh_event.capacity)
+    suh_event_dates = create_event_dates(
+        suh_event.id, suh_dates, [time(9, 0)], suh_event.capacity
+    )
     db.add_all(suh_event_dates)
 
     # Combined events from ÚĽUV and Slovenská vedecká knižnica
@@ -757,8 +890,18 @@ def seed_events():
     db.add(uluv_svk_event1)
     db.flush()
 
-    uluv_svk_event1_dates = [datetime(2024, 10, 8), datetime(2024, 10, 15), datetime(2024, 10, 22), datetime(2024, 10, 29)]
-    uluv_svk_event1_dates = create_event_dates(uluv_svk_event1.id, uluv_svk_event1_dates, [time(9, 0), time(13, 0)], uluv_svk_event1.capacity)
+    uluv_svk_event1_dates = [
+        datetime(2024, 10, 8),
+        datetime(2024, 10, 15),
+        datetime(2024, 10, 22),
+        datetime(2024, 10, 29),
+    ]
+    uluv_svk_event1_dates = create_event_dates(
+        uluv_svk_event1.id,
+        uluv_svk_event1_dates,
+        [time(9, 0), time(13, 0)],
+        uluv_svk_event1.capacity,
+    )
     db.add_all(uluv_svk_event1_dates)
 
     # Event 2: Tvorivé remeselné dielne a interaktívna výstava: Bábkarský salón
@@ -780,8 +923,18 @@ def seed_events():
     db.add(uluv_svk_event2)
     db.flush()
 
-    uluv_svk_event2_dates = [datetime(2024, 10, 3), datetime(2024, 10, 10), datetime(2024, 10, 17), datetime(2024, 10, 24)]
-    uluv_svk_event2_dates = create_event_dates(uluv_svk_event2.id, uluv_svk_event2_dates, [time(9, 0), time(13, 0)], uluv_svk_event2.capacity)
+    uluv_svk_event2_dates = [
+        datetime(2024, 10, 3),
+        datetime(2024, 10, 10),
+        datetime(2024, 10, 17),
+        datetime(2024, 10, 24),
+    ]
+    uluv_svk_event2_dates = create_event_dates(
+        uluv_svk_event2.id,
+        uluv_svk_event2_dates,
+        [time(9, 0), time(13, 0)],
+        uluv_svk_event2.capacity,
+    )
     db.add_all(uluv_svk_event2_dates)
 
     db.commit()

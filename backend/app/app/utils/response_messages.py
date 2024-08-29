@@ -29,7 +29,10 @@ class ResponseMessages:
     MSG_SUCCESS_GET_RESERVATION = "Reservation retrieved successfully"
     MSG_SUCCESS_GET_ALL_RESERVATIONS = "All reservations retrieved successfully"
     MSG_SUCCESS_GET_USER_RESERVATIONS = "User reservations retrieved successfully"
-    MSG_SUCCESS_GET_USER_EVENT_RESERVATIONS = "User event reservations retrieved successfully"
+    MSG_SUCCESS_GET_USER_EVENT_RESERVATIONS = (
+        "User event reservations retrieved successfully"
+    )
+    MSG_SUCCESS_GET_PARENT_ORGANIZER = "Parent organizer retrieved successfully"
 
     # Error messages
     ERR_USER_NOT_FOUND = "User not found"
@@ -56,24 +59,32 @@ class ResponseMessages:
     ERR_INVALID_NUMBER_OF_SEATS = (
         "Invalid number of seats. The number of seats must be greater than zero."
     )
+    MSG_SUCCESS_FIND_RESERVATION = "Reservation found"
+    MSG_NO_PARENT_ORGANIZER_FOUND = "No parent organizer found"
     ERR_RESERVATION_ALREADY_CANCELLED = "Reservation already cancelled"
     ERR_UPDATE_EVENT = "Error updating event"
     MSG_SUCCESS_GET_RESERVATIONS_BY_EVENT = "Reservations retrieved successfully"
-    ERR_EVENT_DATE_NOT_FOUND = "The specified event date was not found or does not belong to the event."
+    MSG_SUCCESS_CONFIRM_RESERVATION = "Reservation confirmed successfully"
+    ERR_EVENT_DATE_NOT_FOUND = (
+        "The specified event date was not found or does not belong to the event."
+    )
     MSG_SUCCESS_GET_EVENT_DATE = "Event date retrieved successfully"
 
     # School messages
     ERR_MISSING_SCHOOL_DATA = "Missing school data"
+    ERR_SCHOOL_ALREADY_REGISTERED = "School already registered"
     SCHOOL_CREATION_FAILED = "School creation failed"
 
     ERR_INTERNAL_SERVER_ERROR = "Internal server error"
-    
+
     MSG_SUCCESS_GET_ORGANIZERS = "Organizers retrieved successfully"
 
     # Waiting list messages
     MSG_SUCCESS_ADD_TO_WAITING_LIST = "Added to waiting list successfully"
     MSG_SUCCESS_PROCESS_WAITING_LIST = "Processed waiting list successfully"
-    MSG_SUCCESS_GET_USER_WAITING_LIST  = "User waiting list entries retrieved successfully"
+    MSG_SUCCESS_GET_USER_WAITING_LIST = (
+        "User waiting list entries retrieved successfully"
+    )
     MSG_SUCCESS_UPDATE_WAITING_LIST_ENTRY = "Waiting list entry updated successfully"
     MSG_SUCCESS_DELETE_WAITING_LIST_ENTRY = "Waiting list entry deleted successfully"
     MSG_SUCCESS_GET_WAITING_LIST_ENTRIES = "Waiting list entries retrieved successfully"
@@ -91,4 +102,13 @@ class ResponseMessages:
     MSG_SUCCESS_GET_REPORT = "Report retrieved successfully"
 
     ERR_REPORT_NOT_FOUND = "Report not found"
-    
+
+    #Event claims
+    MSG_SUCCESS_CREATE_CLAIM = "Claim created successfully"
+    MSG_SUCCESS_GET_PENDING_CLAIMS = "Pending claims retrieved successfully"
+
+    ERR_GET_PENDING_CLAIMS = "Error getting pending claims"
+    ERR_CREATE_CLAIM = "Error creating claim"
+    ERR_CLAIM_NOT_FOUND = "Claim not found"
+    ERR_UPDATE_CLAIM = "Error updating claim"
+    MSG_SUCCESS_UPDATE_CLAIM = "Claim updated successfully"

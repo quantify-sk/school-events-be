@@ -3,8 +3,15 @@ import math
 from pathlib import Path
 from typing import List, Tuple, Optional, Dict, Union
 from uuid import uuid4
-from app.data_adapter.event import Event, EventDate
-from app.models.event import EventCreateModel, EventDateModel, EventUpdateModel, EventModel
+from app.data_adapter.event import Event, EventClaim, EventDate
+from app.models.event import (
+    ClaimStatus,
+    EventClaimCreateModel,
+    EventCreateModel,
+    EventDateModel,
+    EventUpdateModel,
+    EventModel,
+)
 from app.utils.exceptions import (
     CustomBadRequestException,
     CustomInternalServerErrorException,
@@ -218,13 +225,13 @@ class EventService:
     ) -> GenericResponseModel:
         """
         Retrieve all events with pagination, filtering, and sorting.
-    
+
         Args:
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-    
+
         Returns:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
         """
@@ -234,9 +241,9 @@ class EventService:
             filter_params,
             sorting_params,
         )
-    
+
         total_pages = math.ceil(total_count / items_per_page)
-    
+
         logger.info(
             f"Events retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )
@@ -252,7 +259,7 @@ class EventService:
                 items=events,
             ),
         )
-    
+
     @staticmethod
     def get_organizer_events(
         organizer_id: int,
@@ -263,14 +270,14 @@ class EventService:
     ) -> GenericResponseModel:
         """
         Retrieve events for a specific organizer with pagination, filtering, and sorting.
-    
+
         Args:
             organizer_id (int): The ID of the organizer.
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-    
+
         Returns:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
         """
@@ -281,9 +288,9 @@ class EventService:
             filter_params,
             sorting_params,
         )
-    
+
         total_pages = math.ceil(total_count / items_per_page)
-    
+
         logger.info(
             f"Organizer events retrieved. Organizer ID: {organizer_id}, Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
         )
@@ -299,7 +306,7 @@ class EventService:
                 items=events,
             ),
         )
-    
+
     @staticmethod
     def get_event_date_by_id(event_date_id: int) -> GenericResponseModel:
         try:
@@ -307,19 +314,21 @@ class EventService:
 
             if not event_date:
                 logger.warning(f"Event date not found. ID: {event_date_id}")
-                raise CustomBadRequestException(ResponseMessages.ERR_EVENT_DATE_NOT_FOUND)
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_EVENT_DATE_NOT_FOUND
+                )
 
             logger.info(f"Event date retrieved successfully. ID: {event_date_id}")
             event_date_dict = event_date._to_model()
-            
+
             # Convert datetime to date and time
-            if isinstance(event_date_dict['date'], datetime):
-                event_date_dict['date'] = event_date_dict['date'].date()
-            if isinstance(event_date_dict['time'], datetime):
-                event_date_dict['time'] = event_date_dict['time'].time()
+            if isinstance(event_date_dict["date"], datetime):
+                event_date_dict["date"] = event_date_dict["date"].date()
+            if isinstance(event_date_dict["time"], datetime):
+                event_date_dict["time"] = event_date_dict["time"].time()
 
             print(event_date_dict)
-            
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_GET_EVENT_DATE,
@@ -328,12 +337,99 @@ class EventService:
             )
 
         except ValidationError as e:
-            logger.error(f"Validation error for event date. ID: {event_date_id}. Error: {str(e)}")
-            raise CustomBadRequestException(ResponseMessages.ERR_INVALID_EVENT_DATE_DATA)
+            logger.error(
+                f"Validation error for event date. ID: {event_date_id}. Error: {str(e)}"
+            )
+            raise CustomBadRequestException(
+                ResponseMessages.ERR_INVALID_EVENT_DATE_DATA
+            )
 
         except CustomBadRequestException as e:
             raise e
 
         except Exception as e:
-            logger.error(f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)}")
+            logger.error(
+                f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)}"
+            )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    async def create_claim(claim_data: EventClaimCreateModel) -> GenericResponseModel:
+        """
+        Create a new claim for an event or event date.
+
+        Args:
+            claim_data (EventClaimCreateModel): Data for creating the claim.
+
+        Returns:
+            GenericResponseModel: A response containing the created claim data.
+
+        Raises:
+            CustomInternalServerErrorException: If there's an error creating the claim.
+        """
+        try:
+            new_claim = EventClaim.create_claim(claim_data.dict())
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_CREATE_CLAIM,
+                status_code=status.HTTP_201_CREATED,
+                data=new_claim._to_model(),
+            )
+        except Exception as e:
+            logger.error(f"Error creating claim: {str(e)}")
+            raise CustomInternalServerErrorException(ResponseMessages.ERR_CREATE_CLAIM)
+
+    @staticmethod
+    async def get_pending_claims() -> GenericResponseModel:
+        """
+        Retrieve all pending claims.
+
+        Returns:
+            GenericResponseModel: A response containing a list of pending claims.
+
+        Raises:
+            CustomInternalServerErrorException: If there's an error retrieving the claims.
+        """
+        try:
+            pending_claims = EventClaim.get_pending_claims()
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_GET_PENDING_CLAIMS,
+                status_code=status.HTTP_200_OK,
+                data=[claim._to_model() for claim in pending_claims],
+            )
+        except Exception as e:
+            logger.error(f"Error retrieving pending claims: {str(e)}")
+            raise CustomInternalServerErrorException(ResponseMessages.ERR_GET_PENDING_CLAIMS)
+
+    @staticmethod
+    async def update_claim_status(claim_id: int, new_status: ClaimStatus) -> GenericResponseModel:
+        """
+        Update the status of a claim.
+
+        Args:
+            claim_id (int): The ID of the claim to update.
+            new_status (ClaimStatus): The new status to set for the claim.
+
+        Returns:
+            GenericResponseModel: A response containing the updated claim data.
+
+        Raises:
+            CustomNotFoundException: If the claim is not found.
+            CustomInternalServerErrorException: If there's an error updating the claim.
+        """
+        try:
+            updated_claim = EventClaim.update_claim_status(claim_id, new_status)
+            if not updated_claim:
+                raise CustomBadRequestException(ResponseMessages.ERR_CLAIM_NOT_FOUND)
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_UPDATE_CLAIM,
+                status_code=status.HTTP_200_OK,
+                data=updated_claim._to_model(),
+            )
+        except CustomBadRequestException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error updating claim status: {str(e)}")
+            raise CustomInternalServerErrorException(ResponseMessages.ERR_UPDATE_CLAIM)

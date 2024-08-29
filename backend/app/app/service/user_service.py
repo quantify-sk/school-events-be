@@ -36,7 +36,8 @@ class UserService:
         1. Checks if the email is already taken
         2. For school representatives:
            - Validates school data
-           - Checks for existing school or creates a new one
+           - Checks if the school already exists and raises an exception if it does
+           - Creates a new school
            - Associates the school with the user
         3. Creates the new user
         4. Creates a notification for the new user
@@ -48,7 +49,8 @@ class UserService:
             GenericResponseModel: A response model containing the created user data or error information.
 
         Raises:
-            CustomBadRequestException: If the email is already taken or school data is missing for representatives.
+            CustomBadRequestException: If the email is already taken, school data is missing for representatives,
+                                       or the school is already registered.
             CustomInternalServerErrorException: If there's an unexpected error during user creation.
         """
         try:
@@ -69,15 +71,15 @@ class UserService:
                 # Check if the school already exists
                 existing_school = School.get_school_by_ico(user_data.school.ico)
                 if existing_school:
-                    school = existing_school
-                else:
-                    # Create a new school
-                    school = School.create_new_school(user_data.school)
+                    raise CustomBadRequestException(
+                        ResponseMessages.ERR_SCHOOL_ALREADY_REGISTERED
+                    )
+
+                # Create a new school
+                school = School.create_new_school(user_data.school)
 
                 # Associate the school with the user data
-                user_data.school_id = school.id if hasattr(school, 'id') else school['id']
-
-        
+                user_data.school_id = school.id
 
             # Create a new user
             new_user = User.create_new_user(user_data)
@@ -452,13 +454,13 @@ class UserService:
     ) -> GenericResponseModel:
         """
         Search organizers with pagination, filtering, and sorting.
-    
+
         Args:
             current_page (int): The current page number.
             items_per_page (int): The number of items per page.
             filter_params (Optional[Dict[str, Any]]): The filters to apply.
             sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters to apply.
-    
+
         Returns:
             GenericResponseModel: A GenericResponseModel containing the paginated search results.
         """
@@ -466,9 +468,9 @@ class UserService:
             organizers, total_count = User.search_organizers(
                 current_page, items_per_page, filter_params, sorting_params
             )
-    
+
             total_pages = math.ceil(total_count / items_per_page)
-    
+
             pagination_data = PaginationResponseDataModel(
                 current_page=current_page,
                 items_per_page=items_per_page,
@@ -476,7 +478,7 @@ class UserService:
                 total_items=total_count,
                 items=organizers,
             )
-    
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_GET_ORGANIZERS,
@@ -485,4 +487,36 @@ class UserService:
             )
         except Exception as e:
             logger.error(f"Error searching organizers: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def get_parent_organizer(user_id: int) -> GenericResponseModel:
+        """
+        Get the parent organizer of a user by their ID.
+
+        Args:
+            user_id (int): The ID of the user whose parent organizer we want to retrieve.
+
+        Returns:
+            GenericResponseModel: A response model containing the parent organizer.
+        """
+        try:
+            parent_organizer = User.get_parent_organizer(user_id)
+
+            if parent_organizer:
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.MSG_SUCCESS_GET_PARENT_ORGANIZER,
+                    status_code=status.HTTP_200_OK,
+                    data=parent_organizer,
+                )
+            else:
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.MSG_NO_PARENT_ORGANIZER_FOUND,
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    data=None,
+                )
+        except Exception as e:
+            logger.error(f"Error getting parent organizer: {str(e)}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)

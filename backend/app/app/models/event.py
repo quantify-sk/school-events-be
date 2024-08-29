@@ -25,6 +25,14 @@ class EventType(str, Enum):
     BALLET = "ballet"
     OTHER = "other"
 
+class ClaimType(str, Enum):
+    CANCEL_DATE = "cancel_date"
+    DELETE_EVENT = "delete_event"
+
+class ClaimStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 class TargetGroup(str, Enum):
     ELEMENTARY_SCHOOL = "elementary_school"
@@ -95,6 +103,7 @@ class EventUpdateModel(BaseModel):
     more_info_url: Optional[str] = None  # Added more info URL
     attachments: Optional[List[AttachmentModel]] = None
     event_dates: Optional[List[EventDateModel]] = None
+    
 
 
 class EventModel(BaseModel):
@@ -122,6 +131,7 @@ class EventModel(BaseModel):
     created_at: datetime
     updated_at: datetime
     organizer_id: int
+    claims: Optional[List["EventClaimModel"]] = None
 
 
 class EventFilterParams(BaseModel):
@@ -141,3 +151,27 @@ class EventFilterParams(BaseModel):
 class EventSortParams(BaseModel):
     field: str
     order: str = "asc"
+
+class EventClaimCreateModel(BaseModel):
+    """
+    Pydantic model for creating a new event claim.
+    """
+    event_id: int
+    event_date_id: Optional[int] = None
+    organizer_id: int
+    claim_type: ClaimType
+    reason: str
+
+class EventClaimModel(BaseModel):
+    """
+    Pydantic model for representing an event claim.
+    """
+    id: int
+    event_id: int
+    event_date_id: Optional[int]
+    organizer_id: int
+    claim_type: ClaimType
+    reason: str
+    status: ClaimStatus
+    created_at: datetime
+    updated_at: datetime

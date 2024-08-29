@@ -1,13 +1,16 @@
 from datetime import datetime
 from enum import Enum
+import fastapi
 from pydantic import BaseModel, EmailStr, field_validator, constr
 from app.models.school import SchoolCreateModel, SchoolModel, SchoolUpdateModel
+
 
 class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     DELETED = "deleted"
     REJECTED = "rejected"
+
 
 class UserRole(str, Enum):
     ADMIN = "admin"
@@ -17,8 +20,10 @@ class UserRole(str, Enum):
     USER = "user"
     EMPLOYEE = "employee"
 
+
 class UserTokenData(BaseModel):
     user_id: int
+
 
 class UserModel(BaseModel):
     user_id: int
@@ -42,6 +47,7 @@ class UserModel(BaseModel):
             user_id=self.user_id,
         )
 
+
 class UserCreateWithoutPasswordModel(BaseModel):
     first_name: str
     last_name: str
@@ -54,6 +60,8 @@ class UserCreateWithoutPasswordModel(BaseModel):
     school_id: int | None = None
     school: SchoolCreateModel | None = None
     parent_organizer_id: int | None = None  # Added this field
+    status: UserStatus = UserStatus.INACTIVE
+
 
 class UserCreateModel(UserCreateWithoutPasswordModel):
     password_hash: str
@@ -61,7 +69,9 @@ class UserCreateModel(UserCreateWithoutPasswordModel):
     @field_validator("password_hash")
     def password_validator(cls, password):
         from app.dependencies import get_password_hash
+
         return get_password_hash(password)
+
 
 class UserUpdateModel(UserCreateWithoutPasswordModel):
     status: UserStatus | None = None

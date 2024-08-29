@@ -1,3 +1,4 @@
+import app.api.v1.endpoints
 from typing import Dict, List, Optional, Union
 from sqlalchemy.orm import Session
 from app.data_adapter.reservation import Reservation
@@ -306,9 +307,10 @@ class ReservationService:
             )
             raise
 
-
     @staticmethod
-    def update_reservation(db: Session, reservation_id: int, reservation_data: ReservationUpdateModel) -> GenericResponseModel:
+    def update_reservation(
+        db: Session, reservation_id: int, reservation_data: ReservationUpdateModel
+    ) -> GenericResponseModel:
         """
         Update an existing reservation in the database.
 
@@ -331,14 +333,16 @@ class ReservationService:
         """
         try:
             # Call the class method to update the reservation
-            updated_reservation = Reservation.update_reservation(reservation_id, reservation_data)
+            updated_reservation = Reservation.update_reservation(
+                reservation_id, reservation_data
+            )
 
             # Wrap the updated reservation in a GenericResponseModel
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_UPDATE_RESERVATION,
                 status_code=status.HTTP_200_OK,
-                data=updated_reservation
+                data=updated_reservation,
             )
         except CustomBadRequestException as e:
             # Re-raise the exception to be handled by the caller
@@ -347,7 +351,7 @@ class ReservationService:
             # Log the unexpected error and raise a generic exception
             logger.error(f"Unexpected error updating reservation: {str(e)}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
-        
+
     @staticmethod
     def get_reservations_for_user_and_event(
         user_id: int,
@@ -355,7 +359,7 @@ class ReservationService:
         current_page: int = 1,
         items_per_page: int = 10,
         filter_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        sorting_params: Optional[List[Dict[str, str]]] = None
+        sorting_params: Optional[List[Dict[str, str]]] = None,
     ) -> GenericResponseModel:
         """
         Retrieve paginated reservations for a specific user and event.
@@ -381,7 +385,7 @@ class ReservationService:
                 current_page,
                 items_per_page,
                 filter_params,
-                sorting_params
+                sorting_params,
             )
             total_pages = math.ceil(total_count / items_per_page)
 
@@ -404,3 +408,58 @@ class ReservationService:
         except Exception as e:
             logger.error(f"Error retrieving reservations: {str(e)}")
             raise CustomBadRequestException(f"Error retrieving reservations: {str(e)}")
+
+    @staticmethod
+    def find_reservation_by_code(reservation_code: str) -> GenericResponseModel:
+        """
+        Find a reservation by its local reservation code.
+
+        Args:
+            reservation_code (str): The local reservation code to search for.
+
+        Returns:
+            GenericResponseModel: A response model containing the reservation details.
+        """
+        try:
+            reservation = Reservation.find_by_code(reservation_code)
+
+            if reservation:
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.MSG_SUCCESS_FIND_RESERVATION,
+                    status_code=status.HTTP_200_OK,
+                    data=reservation,
+                )
+            else:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+        except Exception as e:
+            logger.error(f"Error finding reservation: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
+
+    @staticmethod
+    def confirm_reservation(reservation_id: int) -> GenericResponseModel:
+        """
+        Confirm a reservation by setting its status to 'confirmed'.
+
+        Args:
+            reservation_id (int): The ID of the reservation to confirm.
+
+        Returns:
+            GenericResponseModel: A response model containing the updated reservation details.
+        """
+        try:
+            updated_reservation = Reservation.confirm_reservation(reservation_id)
+
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_CONFIRM_RESERVATION,
+                status_code=status.HTTP_200_OK,
+                data=updated_reservation,
+            )
+        except CustomBadRequestException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error confirming reservation: {str(e)}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)

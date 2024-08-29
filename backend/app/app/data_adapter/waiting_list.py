@@ -19,16 +19,17 @@ from sqlalchemy import (
     func,
     asc,
     desc,
-    Boolean
+    Boolean,
 )
+
 
 class WaitingList(Base):
     __tablename__ = "waiting_list"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    event_date_id = Column(Integer, ForeignKey('event_date.id'), nullable=False)
-    event_id = Column(Integer, ForeignKey('event.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
+    event_date_id = Column(Integer, ForeignKey("event_date.id"), nullable=False)
+    event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     number_of_students = Column(Integer, nullable=False)
     number_of_teachers = Column(Integer, nullable=False)
     special_requirements = Column(String(255), nullable=True)
@@ -53,21 +54,28 @@ class WaitingList(Base):
             "contact_info": self.contact_info,
             "created_at": self.created_at,
             "status": self.status,
-            "position": self.position  # Add this line
+            "position": self.position,  # Add this line
         }
-    
+
     @classmethod
-    def add_to_waiting_list(cls, waiting_list_entry: Dict[str, Any]) -> Optional['WaitingList']:
+    def add_to_waiting_list(
+        cls, waiting_list_entry: Dict[str, Any]
+    ) -> Optional["WaitingList"]:
         try:
             with get_db_session() as db:
                 # Get the current highest position for this event date
-                highest_position = db.query(func.max(cls.position)).filter(
-                    cls.event_date_id == waiting_list_entry['event_date_id'],
-                    cls.status == WaitingListStatus.WAITING
-                ).scalar() or 0
+                highest_position = (
+                    db.query(func.max(cls.position))
+                    .filter(
+                        cls.event_date_id == waiting_list_entry["event_date_id"],
+                        cls.status == WaitingListStatus.WAITING,
+                    )
+                    .scalar()
+                    or 0
+                )
 
                 # Assign the next position
-                waiting_list_entry['position'] = highest_position + 1
+                waiting_list_entry["position"] = highest_position + 1
 
                 new_entry = cls(**waiting_list_entry)
                 db.add(new_entry)
@@ -78,9 +86,10 @@ class WaitingList(Base):
             print(f"Error adding to waiting list: {str(e)}")
             raise
 
-
     @classmethod
-    def update_status(cls, entry_id: int, new_status: WaitingListStatus) -> Optional['WaitingList']:
+    def update_status(
+        cls, entry_id: int, new_status: WaitingListStatus
+    ) -> Optional["WaitingList"]:
         try:
             with get_db_session() as db:
                 entry = db.query(cls).filter(cls.id == entry_id).first()
@@ -90,7 +99,10 @@ class WaitingList(Base):
                     db.commit()
                     db.refresh(entry)
 
-                    if old_status == WaitingListStatus.WAITING or new_status == WaitingListStatus.WAITING:
+                    if (
+                        old_status == WaitingListStatus.WAITING
+                        or new_status == WaitingListStatus.WAITING
+                    ):
                         cls.reorder_positions(entry.event_date_id)
 
                 return entry
@@ -99,7 +111,7 @@ class WaitingList(Base):
             raise
 
     @classmethod
-    def get_user_waiting_list_entries(cls, user_id: int) -> List['WaitingList']:
+    def get_user_waiting_list_entries(cls, user_id: int) -> List["WaitingList"]:
         try:
             with get_db_session() as db:
                 return db.query(cls).filter(cls.user_id == user_id).all()
@@ -118,11 +130,16 @@ class WaitingList(Base):
                     db.delete(entry)
 
                     # Reorder positions for remaining entries
-                    remaining_entries = db.query(cls).filter(
-                        cls.event_date_id == event_date_id,
-                        cls.position > position,
-                        cls.status == WaitingListStatus.WAITING
-                    ).order_by(cls.position).all()
+                    remaining_entries = (
+                        db.query(cls)
+                        .filter(
+                            cls.event_date_id == event_date_id,
+                            cls.position > position,
+                            cls.status == WaitingListStatus.WAITING,
+                        )
+                        .order_by(cls.position)
+                        .all()
+                    )
 
                     for remaining_entry in remaining_entries:
                         remaining_entry.position -= 1
@@ -138,10 +155,15 @@ class WaitingList(Base):
     def reorder_positions(cls, event_date_id: int):
         try:
             with get_db_session() as db:
-                entries = db.query(cls).filter(
-                    cls.event_date_id == event_date_id,
-                    cls.status == WaitingListStatus.WAITING
-                ).order_by(cls.position).all()
+                entries = (
+                    db.query(cls)
+                    .filter(
+                        cls.event_date_id == event_date_id,
+                        cls.status == WaitingListStatus.WAITING,
+                    )
+                    .order_by(cls.position)
+                    .all()
+                )
 
                 for i, entry in enumerate(entries, start=1):
                     entry.position = i
@@ -159,7 +181,7 @@ class WaitingList(Base):
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
-    ) -> Tuple[List['WaitingList'], int]:
+    ) -> Tuple[List["WaitingList"], int]:
         """
         Retrieve the waiting list for a specific event date with pagination, filtering, and sorting.
 
@@ -177,7 +199,7 @@ class WaitingList(Base):
             with get_db_session() as db:
                 query = db.query(cls).filter(
                     cls.event_date_id == event_date_id,
-                    cls.status == WaitingListStatus.WAITING
+                    cls.status == WaitingListStatus.WAITING,
                 )
 
                 # Apply filters
@@ -194,7 +216,7 @@ class WaitingList(Base):
                     for sort_param in sorting_params:
                         for key, direction in sort_param.items():
                             if hasattr(cls, key):
-                                if direction.lower() == 'desc':
+                                if direction.lower() == "desc":
                                     query = query.order_by(desc(getattr(cls, key)))
                                 else:
                                     query = query.order_by(asc(getattr(cls, key)))
@@ -203,7 +225,9 @@ class WaitingList(Base):
                 total_count = query.count()
 
                 # Apply pagination
-                query = query.offset((current_page - 1) * items_per_page).limit(items_per_page)
+                query = query.offset((current_page - 1) * items_per_page).limit(
+                    items_per_page
+                )
 
                 # Execute query
                 waiting_list_entries = query.all()
@@ -211,23 +235,30 @@ class WaitingList(Base):
                 return waiting_list_entries, total_count
 
         except Exception as e:
-            logger.error(f"Error retrieving waiting list for event date {event_date_id}: {str(e)}")
+            logger.error(
+                f"Error retrieving waiting list for event date {event_date_id}: {str(e)}"
+            )
             raise
 
     @classmethod
-    def get_by_event_date_and_user(cls, event_date_id: int, user_id: int) -> Optional['WaitingList']:
+    def get_by_event_date_and_user(
+        cls, event_date_id: int, user_id: int
+    ) -> Optional["WaitingList"]:
         try:
             with get_db_session() as db:
-                return db.query(cls).filter(
-                    cls.event_date_id == event_date_id,
-                    cls.user_id == user_id
-                ).first()
+                return (
+                    db.query(cls)
+                    .filter(cls.event_date_id == event_date_id, cls.user_id == user_id)
+                    .first()
+                )
         except Exception as e:
-            logger.error(f"Error retrieving waiting list entry by event date and user: {str(e)}")
+            logger.error(
+                f"Error retrieving waiting list entry by event date and user: {str(e)}"
+            )
             raise
 
     @classmethod
-    def get_by_id(cls, waiting_list_id: int) -> Optional['WaitingList']:
+    def get_by_id(cls, waiting_list_id: int) -> Optional["WaitingList"]:
         try:
             print("WaitingList.get_by_id", waiting_list_id)
             with get_db_session() as db:

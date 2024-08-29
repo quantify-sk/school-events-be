@@ -76,6 +76,34 @@ async def create_user(
 
 
 @router.get(
+    "/{user_id}/parent-organizer",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get Parent Organizer",
+    description="Retrieve the parent organizer of a user by their ID.",
+)
+async def get_parent_organizer(
+    user_id: int,
+    auth=Depends(authenticate_user_token),  # The authentication token.
+    _=Depends(build_request_context),  # Build the request context.
+):
+    """
+    Get the parent organizer of a user by their ID.
+
+    This endpoint requires authentication and returns the parent organizer of the specified user.
+
+    Args:
+        user_id (int): The ID of the user whose parent organizer we want to retrieve.
+        current_user (UserModel): The currently authenticated user (injected by dependency).
+
+    Returns:
+        GenericResponseModel: A response model containing the parent organizer.
+    """
+    response = UserService.get_parent_organizer(user_id)
+    return response
+
+
+@router.get(
     "/{user_id}/role",
     status_code=status.HTTP_200_OK,
     response_model=GenericResponseModel,
@@ -504,7 +532,6 @@ async def reject_user(
     """
     response: GenericResponseModel = UserService.reject_user(user_id, reason)
     return build_api_response(response)
-
 
 
 @router.get(

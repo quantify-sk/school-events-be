@@ -30,6 +30,8 @@ class SchoolModel(BaseModel):
     created_at: datetime
     updated_at: datetime
     representatives: Optional[List["UserModel"]] = None
+    number_of_students: Optional[int] = 0
+    number_of_employees: Optional[int] = 0
 
     class Config:
         from_attributes = True
@@ -74,6 +76,8 @@ class SchoolCreateModel(BaseModel):
     address: str
     district: str
     region: str
+    number_of_students: Optional[int] = 0
+    number_of_employees: Optional[int] = 0
 
 
 class SchoolUpdateModel(BaseModel):
@@ -95,6 +99,8 @@ class SchoolUpdateModel(BaseModel):
     address: Optional[str] = None
     district: Optional[str] = None
     region: Optional[str] = None
+    number_of_students: Optional[int] = None
+    number_of_employees: Optional[int] = None
 
 
 # This import is used for type hinting purposes only

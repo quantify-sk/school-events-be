@@ -12,10 +12,12 @@ from app.data_adapter.reservation import Reservation
 import json
 from app.models.reservation import ReservationStatus
 
+
 class ReportType(PyEnum):
     EVENT_SUMMARY = "event_summary"
     ATTENDANCE = "attendance"
     RESERVATION = "reservation"
+
 
 class Report(Base):
     __tablename__ = "report"
@@ -45,11 +47,18 @@ class Report(Base):
         raise TypeError(f"Type {type(obj)} not serializable")
 
     @classmethod
-    def create_report(cls, report_type: ReportType, generated_by: int, filters: dict, data: dict) -> Dict[str, Any]:
+    def create_report(
+        cls, report_type: ReportType, generated_by: int, filters: dict, data: dict
+    ) -> Dict[str, Any]:
         with get_db_session() as session:
             serialized_filters = json.dumps(filters, default=cls.serialize_datetime)
             serialized_data = json.dumps(data, default=cls.serialize_datetime)
-            report = cls(report_type=report_type, generated_by=generated_by, filters=serialized_filters, data=serialized_data)
+            report = cls(
+                report_type=report_type,
+                generated_by=generated_by,
+                filters=serialized_filters,
+                data=serialized_data,
+            )
             session.add(report)
             session.commit()
             return report._to_model()
@@ -74,21 +83,21 @@ class Report(Base):
             query = session.query(Event).join(EventDate)
 
             date_filter = []
-            if filters.get('start_date'):
-                start_date = cls.ensure_utc(filters['start_date'])
+            if filters.get("start_date"):
+                start_date = cls.ensure_utc(filters["start_date"])
                 date_filter.append(EventDate.date >= start_date)
-            if filters.get('end_date'):
-                end_date = cls.ensure_utc(filters['end_date'])
+            if filters.get("end_date"):
+                end_date = cls.ensure_utc(filters["end_date"])
                 date_filter.append(EventDate.date <= end_date)
 
             if date_filter:
                 query = query.filter(and_(*date_filter))
 
             # Add any other filters you might need
-            if filters.get('city'):
-                query = query.filter(Event.city == filters['city'])
-            if filters.get('event_type'):
-                query = query.filter(Event.event_type == filters['event_type'])
+            if filters.get("city"):
+                query = query.filter(Event.city == filters["city"])
+            if filters.get("event_type"):
+                query = query.filter(Event.event_type == filters["event_type"])
 
             # Use distinct to avoid duplicate events
             events = query.distinct().all()
@@ -98,11 +107,18 @@ class Report(Base):
                 event_model = event._to_model()
                 # Filter event dates based on the date range
                 filtered_dates = [
-                    date for date in event_model['event_dates']
-                    if (not filters.get('start_date') or cls.ensure_utc(date['date']) >= start_date) and
-                       (not filters.get('end_date') or cls.ensure_utc(date['date']) <= end_date)
+                    date
+                    for date in event_model["event_dates"]
+                    if (
+                        not filters.get("start_date")
+                        or cls.ensure_utc(date["date"]) >= start_date
+                    )
+                    and (
+                        not filters.get("end_date")
+                        or cls.ensure_utc(date["date"]) <= end_date
+                    )
                 ]
-                event_model['event_dates'] = filtered_dates
+                event_model["event_dates"] = filtered_dates
                 event_summaries.append(event_model)
 
             return event_summaries
@@ -115,42 +131,47 @@ class Report(Base):
             return dt.replace(tzinfo=timezone.utc)
         return dt.astimezone(timezone.utc)
 
-
-
     @classmethod
     def generate_attendance_report(cls, filters: dict) -> List[Dict[str, Any]]:
         with get_db_session() as session:
             query = session.query(Reservation).join(EventDate).join(Event)
-            if filters.get('start_date'):
-                query = query.filter(EventDate.date >= filters['start_date'])
-            if filters.get('end_date'):
-                query = query.filter(EventDate.date <= filters['end_date'])
+            if filters.get("start_date"):
+                query = query.filter(EventDate.date >= filters["start_date"])
+            if filters.get("end_date"):
+                query = query.filter(EventDate.date <= filters["end_date"])
             reservations = query.all()
             return [reservation._to_model() for reservation in reservations]
-        
+
     @classmethod
     def generate_reservation_report(cls, filters: dict) -> List[Dict[str, Any]]:
         with get_db_session() as session:
-            query = session.query(Reservation).join(EventDate).join(Event).join(Reservation.user)
+            query = (
+                session.query(Reservation)
+                .join(EventDate)
+                .join(Event)
+                .join(Reservation.user)
+            )
 
             date_filter = []
-            if filters.get('start_date'):
-                start_date = cls.ensure_utc(filters['start_date'])
+            if filters.get("start_date"):
+                start_date = cls.ensure_utc(filters["start_date"])
                 date_filter.append(EventDate.date >= start_date)
-            if filters.get('end_date'):
-                end_date = cls.ensure_utc(filters['end_date'])
+            if filters.get("end_date"):
+                end_date = cls.ensure_utc(filters["end_date"])
                 date_filter.append(EventDate.date <= end_date)
 
             if date_filter:
                 query = query.filter(and_(*date_filter))
 
             # Add any other filters you might need
-            if filters.get('city'):
-                query = query.filter(Event.city == filters['city'])
-            if filters.get('event_type'):
-                query = query.filter(Event.event_type == filters['event_type'])
-            if filters.get('status'):
-                query = query.filter(Reservation.status == ReservationStatus(filters['status']))
+            if filters.get("city"):
+                query = query.filter(Event.city == filters["city"])
+            if filters.get("event_type"):
+                query = query.filter(Event.event_type == filters["event_type"])
+            if filters.get("status"):
+                query = query.filter(
+                    Reservation.status == ReservationStatus(filters["status"])
+                )
 
             reservations = query.all()
 
@@ -177,12 +198,14 @@ class Report(Base):
                         "available_spots": event_date_model["available_spots"],
                     },
                     "user": {
-                        "id": getattr(user_model, 'id', None),
-                        "name": getattr(user_model, 'name', None),
-                        "email": getattr(user_model, 'email', None),
+                        "id": getattr(user_model, "id", None),
+                        "name": getattr(user_model, "name", None),
+                        "email": getattr(user_model, "email", None),
                     },
                     "status": reservation.status.value,
-                    "cancelled_at": reservation.cancelled_at.isoformat() if reservation.cancelled_at else None,
+                    "cancelled_at": reservation.cancelled_at.isoformat()
+                    if reservation.cancelled_at
+                    else None,
                 }
                 reservation_summaries.append(reservation_summary)
 

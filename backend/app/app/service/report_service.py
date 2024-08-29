@@ -28,9 +28,12 @@ from app.models.school import SchoolCreateModel, SchoolModel, SchoolUpdateModel
 from app.data_adapter.report import Report, ReportType
 from app.models.report import ReportFilters
 
+
 class ReportService:
     @staticmethod
-    def generate_report(report_type: str, filters: ReportFilters) -> GenericResponseModel:
+    def generate_report(
+        report_type: str, filters: ReportFilters
+    ) -> GenericResponseModel:
         try:
             report_data = None
             if report_type == ReportType.EVENT_SUMMARY.value:
@@ -45,19 +48,23 @@ class ReportService:
                 report_type=ReportType(report_type),
                 generated_by=filters.user_id,
                 filters=filters.dict(),
-                data=report_data
+                data=report_data,
             )
 
-            logger.info(f"Generated report of type {report_type} for user ID: {filters.user_id}")
+            logger.info(
+                f"Generated report of type {report_type} for user ID: {filters.user_id}"
+            )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_GENERATE_REPORT,
                 status_code=status.HTTP_200_OK,
-                data=report
+                data=report,
             )
 
         except Exception as e:
-            logger.error(f"Unexpected error generating report. Type: {report_type}. Error: {str(e)}")
+            logger.error(
+                f"Unexpected error generating report. Type: {report_type}. Error: {str(e)}"
+            )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
     @staticmethod
@@ -68,12 +75,14 @@ class ReportService:
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_GET_REPORT,
                 status_code=status.HTTP_200_OK,
-                data=report
+                data=report,
             )
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
-            logger.error(f"Unexpected error getting report. ID: {report_id}. Error: {str(e)}")
+            logger.error(
+                f"Unexpected error getting report. ID: {report_id}. Error: {str(e)}"
+            )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
     @staticmethod
@@ -84,7 +93,7 @@ class ReportService:
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_GET_ALL_REPORTS,
                 status_code=status.HTTP_200_OK,
-                data=reports
+                data=reports,
             )
         except Exception as e:
             logger.error(f"Unexpected error getting all reports. Error: {str(e)}")

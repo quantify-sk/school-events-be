@@ -32,9 +32,9 @@ def create_new_engine(uri: str):
     def checkout(dbapi_connection, connection_record, connection_proxy):
         pid = os.getpid()
         if connection_record.info["pid"] != pid:
-            connection_record.dbapi_connection = connection_proxy.dbapi_connection = (
-                None
-            )
+            connection_record.dbapi_connection = (
+                connection_proxy.dbapi_connection
+            ) = None
             raise exc.DisconnectionError(
                 f"Connection record belongs to pid {connection_record.info['pid']}, "
                 f"attempting to check out in pid {pid}"
