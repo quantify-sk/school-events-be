@@ -198,37 +198,39 @@ async def update_event(
 
     print("Event dates:", event_dates)
     # Parse the event dates
-    try:
-        parsed_event_dates = json.loads(event_dates) if event_dates else []
-        event_date_models = []
-        for date_item in parsed_event_dates:
-            # Parse date
-            date_obj = datetime.strptime(date_item["date"], "%Y-%m-%d").date()
+    if event_dates:
+        try:
+            parsed_event_dates = json.loads(event_dates)
+            event_date_models = []
+            for date_item in parsed_event_dates:
+                # Parse date
+                date_obj = datetime.strptime(date_item["date"], "%Y-%m-%d").date()
 
-            # Parse time
-            time_obj = datetime.strptime(date_item["time"], "%H:%M").time()
+                # Parse time
+                time_obj = datetime.strptime(date_item["time"], "%H:%M").time()
 
-            event_date_models.append(
-                EventDateModel(
-                    id=date_item.get("id"),
-                    event_id=event_id,
-                    date=date_obj,
-                    time=time_obj,
-                    capacity=date_item.get("capacity"),
-                    available_spots=date_item.get("available_spots"),
-                    lock_time=date_item.get("lock_time"),
+                event_date_models.append(
+                    EventDateModel(
+                        id=date_item.get("id"),
+                        event_id=event_id,
+                        date=date_obj,
+                        time=time_obj,
+                        capacity=date_item.get("capacity"),
+                        available_spots=date_item.get("available_spots"),
+                        lock_time=date_item.get("lock_time"),
+                    )
                 )
-            )
-        event_data["event_dates"] = event_date_models
-    except (json.JSONDecodeError, ValueError, KeyError) as e:
-        print(f"Error parsing event dates: {str(e)}")
-        print(f"Problematic date item: {date_item}")
-        raise CustomBadRequestException(f"Invalid event date format: {str(e)}")
+            event_data["event_dates"] = event_date_models
+        except (json.JSONDecodeError, ValueError, KeyError) as e:
+            print(f"Error parsing event dates: {str(e)}")
+            print(f"Problematic date item: {date_item}")
+            raise CustomBadRequestException(f"Invalid event date format: {str(e)}")
 
-    print("Event dates parsing:", event_date_models)
+        print("Event dates parsing:", event_date_models)
 
     try:
         event_update_model = EventUpdateModel(**event_data)
+        print("ENDPOINT EVENT UPDATE MODEL", event_update_model)
     except ValidationError as e:
         print(f"Validation error: {str(e)}")
         raise CustomBadRequestException(f"Invalid event data: {str(e)}")
@@ -264,7 +266,6 @@ async def update_event(
 )
 async def get_event(
     event_id: int,
-    auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
@@ -477,7 +478,6 @@ async def get_organizer_events(
 )
 async def get_event_date(
     event_date_id: int,
-    auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """

@@ -35,6 +35,7 @@ class ReservationService:
         if reservation_data.user_id != context_actor_user_data.get().user_id:
             raise CustomBadRequestException(ResponseMessages.ERR_INVALID_USER_ID)
 
+
         try:
             new_reservation = Reservation.create_reservation(reservation_data)
             logger.info(

@@ -12,6 +12,8 @@ from sqlalchemy import (
     asc,
     desc,
     Boolean,
+    text,
+    select
 )
 from sqlalchemy.orm import relationship, joinedload
 from datetime import date, datetime, time, timedelta
@@ -32,6 +34,7 @@ from app.data_adapter.attachment import Attachment
 from app.data_adapter.waiting_list import WaitingList
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from sqlalchemy.exc import SQLAlchemyError
+
 
 
 class Event(Base):
@@ -98,14 +101,14 @@ class Event(Base):
             "available_spots": self.available_spots,
             "description": self.description,
             "annotation": self.annotation,
-            "parent_info": self.parent_info,
+            "parent_info": None if self.parent_info is "null" else self.parent_info,
             "target_group": self.target_group,
             "age_from": self.age_from,
             "age_to": self.age_to,
             "status": self.status,
             "event_type": self.event_type,
             "duration": self.duration,
-            "more_info_url": self.more_info_url,
+            "more_info_url": None if self.more_info_url is "null" else self.more_info_url,
             "attachments": [attachment._to_model() for attachment in self.attachments],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -115,6 +118,9 @@ class Event(Base):
             "event_dates": [event_date._to_model() for event_date in self.event_dates],
             "claims": [claim._to_model() for claim in self.claims],
         }
+
+
+    Reservation = None
 
     @classmethod
     def create_new_event(
@@ -171,76 +177,84 @@ class Event(Base):
         new_attachments: List[Dict[str, str]],
     ) -> Optional[Dict[str, Any]]:
         db = get_db_session()
-        print("EXISTING ATTACHMENT IDS:", existing_attachment_ids)
-        print("NEW ATTACHMENTS:", new_attachments)
-        print("EVENT DATA:", event_data.dict(exclude_unset=True))
         try:
-            event = db.query(cls).filter(cls.id == event_id).first()
+            event = db.query(cls).filter(cls.id == event_id).with_for_update().first()
             if not event:
                 return None
 
             update_data = event_data.dict(exclude_unset=True)
-            print("UPDATE DATA:", update_data)
 
             # Handle attachments
-            existing_attachments = (
-                db.query(Attachment).filter(Attachment.event_id == event_id).all()
-            )
-
+            existing_attachments = db.query(Attachment).filter(Attachment.event_id == event_id).all()
             for attachment in existing_attachments:
                 if attachment.id not in existing_attachment_ids:
                     db.delete(attachment)
-
             for attachment_data in new_attachments:
                 new_attachment = Attachment(**attachment_data, event_id=event_id)
                 db.add(new_attachment)
 
-            # Update event dates
+            # Handle event dates
             if "event_dates" in update_data:
-                db.query(EventDate).filter(EventDate.event_id == event_id).delete()
-                for event_date in update_data["event_dates"]:
+                existing_dates = db.query(EventDate).filter(EventDate.event_id == event_id).all()
+                existing_date_ids = {date.id for date in existing_dates}
+                update_date_ids = {date['id'] for date in update_data["event_dates"] if 'id' in date}
+
+                # Update existing dates and add new ones
+                for date_data in update_data["event_dates"]:
                     try:
-                        if isinstance(event_date["date"], (datetime, date)):
-                            date_obj = event_date["date"]
-                        else:
-                            date_obj = datetime.strptime(
-                                event_date["date"], "%Y-%m-%d"
-                            ).date()
-
-                        if isinstance(event_date["time"], time):
-                            time_obj = event_date["time"]
-                        else:
-                            time_obj = datetime.strptime(
-                                event_date["time"], "%H:%M"
-                            ).time()
-
+                        date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d").date() if isinstance(date_data["date"], str) else date_data["date"]
+                        time_obj = datetime.strptime(date_data["time"], "%H:%M").time() if isinstance(date_data["time"], str) else date_data["time"]
                         combined_datetime = datetime.combine(date_obj, time_obj)
-                        new_event_date = EventDate(
-                            event_id=event_id,
-                            date=combined_datetime,
-                            time=combined_datetime,
-                            capacity=event.capacity,
-                        )
-                        db.add(new_event_date)
+
+                        if 'id' in date_data and date_data['id'] in existing_date_ids:
+                            # Update existing date
+                            db.query(EventDate).filter(EventDate.id == date_data['id']).update({
+                                'date': combined_datetime,
+                                'time': combined_datetime,
+                                'capacity': event.capacity,
+                                'available_spots': date_data.get('available_spots', event.capacity),
+                            })
+                        else:
+                            # Add new date
+                            new_event_date = EventDate(
+                                event_id=event_id,
+                                date=combined_datetime,
+                                time=combined_datetime,
+                                capacity=event.capacity,
+                                available_spots=date_data.get('available_spots', event.capacity),
+                            )
+                            db.add(new_event_date)
                     except (ValueError, TypeError) as e:
                         print(f"Error parsing date or time: {str(e)}")
-                        raise CustomBadRequestException(
-                            f"Invalid date or time format: {str(e)}"
-                        )
+                        raise CustomBadRequestException(f"Invalid date or time format: {str(e)}")
 
-            # Update other fields
+                # Remove dates that are no longer in the update data
+                for date in existing_dates:
+                    if date.id not in update_date_ids:
+                        # Check if there are any reservations for this date
+                        reservation_count = db.execute(
+                            select(text("COUNT(*)"))
+                            .select_from(text("reservation"))
+                            .where(text("event_date_id = :date_id")),
+                            {"date_id": date.id}
+                        ).scalar()
+
+                        if reservation_count == 0:
+                            db.delete(date)
+                        else:
+                            print(f"Cannot delete event date (ID: {date.id}) as it has existing reservations.")
+
+            # Update other fields only if they exist in the update_data and are not None
             for field, value in update_data.items():
-                if field not in ["attachments", "event_dates"]:
-                    if value is not None:  # Only update non-null values
-                        setattr(event, field, value)
+                if field not in ["attachments", "event_dates"] and value is not None:
+                    setattr(event, field, value)
 
-            if "capacity" in update_data:
-                spots_taken = event.capacity - event.available_spots
-                event.available_spots = max(0, update_data["capacity"] - spots_taken)
+            db.flush()
+            db.refresh(event)
+            result = event._to_model()
 
             db.commit()
-            db.refresh(event)
-            return event._to_model()
+            return result
 
         except SQLAlchemyError as e:
             db.rollback()
@@ -252,6 +266,8 @@ class Event(Base):
             raise CustomBadRequestException(f"Error updating event: {str(e)}")
         finally:
             db.close()
+
+
 
     @classmethod
     def delete_event_by_id(cls, event_id: int) -> bool:
@@ -277,86 +293,64 @@ class Event(Base):
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
     ) -> Tuple[List[Dict[str, Any]], int]:
-        """
-        Retrieve events with pagination, filtering, and sorting.
-
-        Args:
-            current_page (int): The current page number.
-            items_per_page (int): The number of items per page.
-            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
-            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-
-        Returns:
-            Tuple[List[Dict[str, Any]], int]: A tuple containing the list of events and the total count.
-        """
         db = get_db_session()
 
-        # Start with a subquery to get the earliest date for each event
-        date_subquery = (
-            db.query(EventDate.event_id, func.min(EventDate.date).label("min_date"))
-            .group_by(EventDate.event_id)
-            .subquery()
-        )
+        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id)
 
-        # Main query
-        query = db.query(cls).join(date_subquery, cls.id == date_subquery.c.event_id)
-
-        # Apply date range filter if provided
-        if filter_params and "event_dates" in filter_params:
-            date_filters = filter_params.pop("event_dates")
-            if "date_from" in date_filters:
-                query = query.filter(
-                    date_subquery.c.min_date >= date_filters["date_from"]
-                )
-            if "date_to" in date_filters:
-                query = query.filter(
-                    date_subquery.c.min_date <= date_filters["date_to"]
-                )
-
-        # Apply additional filters using ParameterValidator
         if filter_params:
+            if "event_dates" in filter_params:
+                date_filters = filter_params["event_dates"]
+                if "date_from" in date_filters:
+                    query = query.filter(EventDate.date >= datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date())
+                if "date_to" in date_filters:
+                    # Add one day to the end date to include the entire last day
+                    end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
+                    query = query.filter(EventDate.date < end_date)
+
             query = ParameterValidator.apply_filters_and_sorting(
                 query,
                 cls,
-                filter_params,
-                None,  # We'll handle sorting separately
+                {k: v for k, v in filter_params.items() if k != "event_dates"},
+                None,
             )
 
-        # Apply sorting
         if sorting_params:
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
                         query = query.order_by(
-                            date_subquery.c.min_date.asc()
-                            if value == "asc"
-                            else date_subquery.c.min_date.desc()
+                            EventDate.date.asc(), EventDate.time.asc() if value == "asc" 
+                            else EventDate.date.desc(), EventDate.time.desc()
                         )
                     elif hasattr(cls, key):
                         column = getattr(cls, key)
                         query = query.order_by(
                             column.asc() if value == "asc" else column.desc()
                         )
-                    else:
-                        # Skip invalid sorting keys
-                        continue
         else:
-            # Default sorting by earliest date
-            query = query.order_by(date_subquery.c.min_date.asc())
+            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
 
-        # Get total count of distinct events
         total_count = query.count()
 
-        # Apply pagination
-        query = query.offset((current_page - 1) * items_per_page).limit(items_per_page)
+        all_results = query.all()
 
-        # Load related event_dates
-        query = query.options(joinedload(cls.event_dates))
+        all_events = []
+        for event, event_date in all_results:
+            event_dict = event._to_model()
+            event_dict['event_date'] = event_date.date
+            event_dict['event_time'] = event_date.time
+            event_dict['current_event_date_id'] = event_date.id
+            event_dict['is_current_event_date_locked'] = event_date.is_locked() 
+            all_events.append(event_dict)
 
-        # Execute query and convert to model
-        events = query.all()
-        return [event._to_model() for event in events], total_count
+        sorted_events = sorted(all_events, key=lambda x: (x['event_date'], x['event_time']))
 
+        start_index = (current_page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        paginated_events = sorted_events[start_index:end_index]
+
+        return paginated_events, total_count
+    
     @classmethod
     def get_organizer_events(
         cls,
@@ -465,7 +459,7 @@ class EventDate(Base):
     event = relationship("Event", back_populates="event_dates")
     reservations = relationship("Reservation", back_populates="event_date")
     waiting_list = relationship("WaitingList", back_populates="event_date")
-    claims = relationship("EventClaim", back_populates="event_date")
+    claims = relationship("EventClaim", back_populates="event_date", cascade="all, delete-orphan")
 
     def __init__(
         self,
@@ -474,6 +468,7 @@ class EventDate(Base):
         time: datetime,
         capacity: int,
         lock_time_hours: int = 48,
+        available_spots: Optional[int] = None,
     ):
         self.event_id = event_id
         self.date = date
@@ -481,6 +476,7 @@ class EventDate(Base):
         self.capacity = capacity
         self.available_spots = capacity
         self.lock_time_hours = lock_time_hours
+        self.available_spots = available_spots if available_spots is not None else capacity
 
     def calculate_lock_time(self) -> datetime:
         """
@@ -516,7 +512,7 @@ class EventDate(Base):
     @classmethod
     def get_event_date_by_id(cls, event_date_id: int) -> Optional["EventDate"]:
         """
-        Retrieve an event date by its ID.
+        Retrieve an event date by its ID, including locked event dates.
 
         Args:
             event_date_id (int): The unique identifier of the event date to retrieve.
@@ -527,15 +523,11 @@ class EventDate(Base):
         try:
             with get_db_session() as db:
                 event_date = db.query(cls).filter(cls.id == event_date_id).first()
-
-                if event_date and event_date.is_locked():
-                    raise ValueError("Event date is locked and cannot be updated")
-
                 return event_date
         except Exception as e:
             # Log the error here if you have a logging system
             print(f"Error retrieving event date: {str(e)}")
-            raise
+            return None
 
 
 

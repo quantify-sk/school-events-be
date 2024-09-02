@@ -198,17 +198,17 @@ class EventService:
         Raises:
             CustomBadRequestException: If the user is not authenticated or the event does not exist.
         """
-        if not context_actor_user_data.get():
-            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+        # if not context_actor_user_data.get():
+        #     raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         event = Event.get_event_by_id(event_id)
         if not event:
             logger.error(f"Event not found: {event_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
-        logger.info(
-            f"User ID {context_actor_user_data.get().user_id} retrieved event: {event_id}"
-        )
+        # logger.info(
+        #     f"User ID {context_actor_user_data.get().user_id} retrieved event: {event_id}"
+        # )
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_GET_EVENT,
