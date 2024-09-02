@@ -41,6 +41,7 @@ class UserModel(BaseModel):
     profile_picture: str | None = None
     subscription: str | None = None
     school: SchoolModel | None = None
+    phone_number: str | None = None
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
@@ -60,6 +61,7 @@ class UserCreateWithoutPasswordModel(BaseModel):
     school_id: int | None = None
     school: SchoolCreateModel | None = None
     parent_organizer_id: int | None = None  # Added this field
+    phone_number: str | None = None
     status: UserStatus = UserStatus.INACTIVE
 
 

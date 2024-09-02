@@ -92,6 +92,8 @@ class UserService:
                 [new_user.user_id],
             )
 
+            new_user = new_user._to_model()
+            
             # Return a GenericResponseModel with the created user
             return GenericResponseModel(
                 api_id=context_id_api.get(),

@@ -53,7 +53,7 @@ class Event(Base):
     target_group = Column(SAEnum(TargetGroup), nullable=False)
     age_from = Column(Integer, nullable=False)
     age_to = Column(Integer, nullable=True)
-    status = Column(SAEnum(EventStatus), nullable=False, default=EventStatus.SCHEDULED)
+    status = Column(SAEnum(EventStatus), nullable=False, default=EventStatus.PUBLISHED)
     event_type = Column(SAEnum(EventType), nullable=False)
     duration = Column(Integer, nullable=False)  # Duration in minutes
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -64,6 +64,9 @@ class Event(Base):
     )  # New field for additional information URL
     ztp_access = Column(Boolean, default=False, nullable=False)
     parking_spaces = Column(Integer, default=0, nullable=False)
+
+    district = Column(String(100), nullable=False)  # New field
+    region = Column(String(100), nullable=False)  # New field
 
     # Relationships remain the same
     attachments = relationship(
@@ -108,7 +111,7 @@ class Event(Base):
             "status": self.status,
             "event_type": self.event_type,
             "duration": self.duration,
-            "more_info_url": None if self.more_info_url is "null" else self.more_info_url,
+            "more_info_url": None if self.more_info_url == "null" else self.more_info_url,
             "attachments": [attachment._to_model() for attachment in self.attachments],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -117,6 +120,8 @@ class Event(Base):
             "parking_spaces": self.parking_spaces,
             "event_dates": [event_date._to_model() for event_date in self.event_dates],
             "claims": [claim._to_model() for claim in self.claims],
+            "district": self.district,
+            "region": self.region,
         }
 
 

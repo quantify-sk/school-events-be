@@ -32,6 +32,9 @@ class SchoolModel(BaseModel):
     representatives: Optional[List["UserModel"]] = None
     number_of_students: Optional[int] = 0
     number_of_employees: Optional[int] = 0
+    psc: Optional[str] = None
+    city: Optional[str] = None
+    
 
     class Config:
         from_attributes = True
@@ -78,6 +81,8 @@ class SchoolCreateModel(BaseModel):
     region: str
     number_of_students: Optional[int] = 0
     number_of_employees: Optional[int] = 0
+    psc: Optional[str] = None
+    city: Optional[str] = None
 
 
 class SchoolUpdateModel(BaseModel):

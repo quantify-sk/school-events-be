@@ -39,6 +39,8 @@ class School(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     number_of_students = Column(Integer, default=0)
     number_of_employees = Column(Integer, default=0)
+    psc = Column(String(10), nullable=False)
+    city = Column(String(100), nullable=False)
 
     # Relationship with User (school representatives)
     representatives = relationship("User", back_populates="school")
@@ -52,6 +54,8 @@ class School(Base):
         region: str,
         number_of_students: int = 0,
         number_of_employees: int = 0,
+        psc = "00000",
+        city = "AAAA"
     ):
         """
         Initialize a new School instance.
@@ -72,6 +76,8 @@ class School(Base):
         self.updated_at = datetime.utcnow()
         self.number_of_students = number_of_students
         self.number_of_employees = number_of_employees
+        self.psc = psc
+        self.city = city
 
     def _to_model(self) -> Dict[str, Any]:
         """
@@ -91,6 +97,8 @@ class School(Base):
             "updated_at": self.updated_at,
             "number_of_students": self.number_of_students,
             "number_of_employees": self.number_of_employees,
+            "psc": self.psc,
+            "city": self.city
         }
 
     @classmethod

@@ -6,11 +6,12 @@ from enum import Enum
 
 
 class EventStatus(str, Enum):
-    SCHEDULED = "scheduled"
+    PUBLISHED = "published"
+    UNPUBLISHED = "unpublished"
     CANCELLED = "cancelled"
     COMPLETED = "completed"
-    ARCHIVED = "archived"
-    PUBLIC = "public"
+    UNPAID = "unpaid"
+    COMPLETED_UNPAID = "completed_unpaid"
 
 
 class EventType(str, Enum):

@@ -47,6 +47,7 @@ class User(Base):
     preferred_language = Column(String(50), nullable=True)
     profile_picture = Column(String(255), nullable=True)
     subscription = Column(String(50), nullable=True)
+    phone_number = Column(String(50), nullable=True)
     status = Column(
         Enum(UserStatus), nullable=False, default=UserStatus.ACTIVE, index=True
     )
@@ -136,6 +137,7 @@ class User(Base):
             subscription=self.subscription,
             school=self.school._to_model() if self.school else None,
             parent_organizer_id=self.parent_organizer_id,
+            phone_number=self.phone_number,
         )
 
     @classmethod
@@ -191,7 +193,7 @@ class User(Base):
         return user._to_model() if user else None
 
     @classmethod
-    def create_new_user(cls, user_data: UserCreateModel) -> UserModel:
+    def create_new_user(cls, user_data: UserCreateModel) -> 'User':
         """
         Create a new user. The school association and error handling are managed in the service layer.
 
@@ -221,12 +223,13 @@ class User(Base):
             status=user_data.status,
             school_id=user_data.school_id,  # This is set in the service layer if applicable
             parent_organizer_id=user_data.parent_organizer_id,  # New field for employee accounts
+            phone_number=user_data.phone_number,
         )
 
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        return new_user._to_model()
+        return new_user
 
     @classmethod
     def get_all_users(cls) -> list[UserModel]:
