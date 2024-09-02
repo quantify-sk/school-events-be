@@ -1,0 +1,743 @@
+2024-08-31 06:56:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-31 06:56:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-08-31 07:01:54 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-31 07:01:54 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-08-31 07:02:24 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3f2df3d7-978e-4297-b22c-7d64f1d5585a unread_notification: False
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 6d0fc514-2839-49fa-82fd-9f701e4a0703 unread_notification: False
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request b39f71d2-bbd5-4e83-b53f-04cf4c0ef755 ended for path: /api/v1/event/. Duration: 247.32 ms
+2024-08-31 07:02:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request d8c68420-1825-4180-a4e9-23f840ab37fa ended for path: /api/v1/event/. Duration: 252.31 ms
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1f64e803-ed4b-4968-b3b8-348df1c6b7cc unread_notification: False
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: f7dc518a-a55e-4612-b049-9e81b4a8d78b unread_notification: False
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                dispatch() L102  Request b563272a-6363-46b4-9cd1-5ff461647b36 ended for path: /api/v1/event/. Duration: 70.86 ms
+2024-08-31 07:02:41 loglevel=INFO   logger=app.logger                dispatch() L102  Request a55addb2-32d3-4a7b-b0ee-730796821fdc ended for path: /api/v1/event/. Duration: 40.07 ms
+2024-08-31 07:12:48 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:12:48 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 6 at 31.08.2024 07:12:48 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJleHAiOjE3MjUxMTcxNjh9.-biigf0wMC3kNwVD5TrYRvk4QmaLHvdgtNBhAMfsy2YIBNwDfXewPgPcqrwIynFKu98SJ2daTXBRtDAT2nCwXg
+2024-08-31 07:12:48 loglevel=INFO   logger=app.logger                dispatch() L102  Request c3dbac08-2f0d-49c1-96a4-e87966998afb ended for path: /api/v1/auth/login_user/. Duration: 331.86 ms
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request d46703d2-fc81-4842-b6d7-4eb2186069c9 ended for path: /api/v1/user/6/role. Duration: 160.87 ms
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request bf4bbaa5-ab6c-4c09-aada-9481df0a7063 ended for path: /api/v1/user/6/role. Duration: 11.70 ms
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request 91a41081-2842-421d-bcec-35db529eb54c ended for path: /api/v1/user/6/role. Duration: 11.63 ms
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 10df1ec4-2115-4948-bef4-497f184b6174 unread_notification: False
+2024-08-31 07:12:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request 332e6eb8-a5cd-45b0-9a8b-5eda957ca671 ended for path: /api/v1/event/. Duration: 25.95 ms
+2024-08-31 07:15:03 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:03 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:15:03 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5b1ee8ca-63f2-4f6e-99ee-e4ce5c3d49af unread_notification: False
+2024-08-31 07:15:03 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9070f5cc-0616-4cb6-bf47-af9706404427 ended for path: /api/v1/event/. Duration: 37.31 ms
+2024-08-31 07:15:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:07 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:15:07 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: bd1e52f6-7224-4fda-bd72-b9808f99f775 unread_notification: False
+2024-08-31 07:15:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request da83de9f-62a5-4bc4-98d1-867b6177f9c3 ended for path: /api/v1/event/. Duration: 46.12 ms
+2024-08-31 07:15:20 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:20 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:15:20 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: ddfe8201-7746-4849-b7cc-c03e5e53353e unread_notification: False
+2024-08-31 07:15:20 loglevel=INFO   logger=app.logger                dispatch() L102  Request 72e5f415-71a8-4953-b662-db519959d939 ended for path: /api/v1/event/. Duration: 45.96 ms
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: a5c16cf2-78fd-4586-9e7e-1d5ea43521b1 unread_notification: False
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 395dfcae-e8be-4a0f-b280-1b0b5bad0603 ended for path: /api/v1/waiting-list/user/6. Duration: 24.20 ms
+2024-08-31 07:15:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request d094472b-85c0-4d60-abb2-dfa91cabb0b8 ended for path: /api/v1/reservation/user/6. Duration: 25.53 ms
+2024-08-31 07:15:46 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:46 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:15:46 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8c34d37b-77f3-4e46-9ccc-9bc142659412 ended for path: /api/v1/reservation/user/6. Duration: 10.96 ms
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request 82f4de9e-2427-4e6c-a1b9-52323900ffce ended for path: /api/v1/user/6/role. Duration: 9.88 ms
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request c816b2e0-24a1-45d9-b191-bf34733c3298 ended for path: /api/v1/user/6/role. Duration: 9.19 ms
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:15:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request a65c5f6a-a61a-4346-9d0e-29f8d6c6925f ended for path: /api/v1/reservation/user/6. Duration: 21.15 ms
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 136d28ae-7ec9-4090-aab9-9d037dc438f6 unread_notification: False
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d5aec299-927d-48b1-a783-9c84ed95fa57 unread_notification: False
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                dispatch() L102  Request acaa1e11-15d0-4f97-9121-6e8b91bafe72 ended for path: /api/v1/event/. Duration: 58.43 ms
+2024-08-31 07:15:56 loglevel=INFO   logger=app.logger                dispatch() L102  Request 398b0556-5e0e-4162-8932-393f45a2c0cb ended for path: /api/v1/event/. Duration: 59.55 ms
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 6 at 31.08.2024 07:16:14 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJleHAiOjE3MjUxMTczNzR9.gOkniVUbqsbie77UuwTuEo2QgL2uUhb1sNY86uBdpjFSvLar7VJHftEA_3GhzT2WcIPpSJt_CcauZ3vCJHebPQ
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request 486ff247-23d4-4d17-86b3-f0ce9e5be7e6 ended for path: /api/v1/auth/login_user/. Duration: 287.90 ms
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request fee188cc-7699-4f70-bee6-0b6fb73da0f4 ended for path: /api/v1/user/6/role. Duration: 10.05 ms
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request b0dd49ad-ac10-40ee-bbfd-66c9ecb3f950 ended for path: /api/v1/user/6/role. Duration: 8.54 ms
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0931a71b-b521-4e45-aa20-c63791b7fe1f ended for path: /api/v1/user/6/role. Duration: 7.89 ms
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:16:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request 13b869c3-9651-4962-8df3-937ecf39c14f ended for path: /api/v1/reservation/user/6. Duration: 12.60 ms
+2024-08-31 07:16:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:28 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:16:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request 27192c4e-e466-45b3-94ab-826e618cce9b ended for path: /api/v1/reservation/user/6. Duration: 12.25 ms
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 88553fa9-050c-4b32-9416-09e47ef7b264 ended for path: /api/v1/user/6/role. Duration: 9.78 ms
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4d349302-591f-4566-9dc3-65b7127d4f7f ended for path: /api/v1/user/6/role. Duration: 9.70 ms
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                get_user_reservations() L245  Retrieved reservations for User ID: 6
+2024-08-31 07:16:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 533d56a6-f0d8-4b23-96f8-f6b92372e48e ended for path: /api/v1/reservation/user/6. Duration: 13.95 ms
+2024-08-31 07:16:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request b5ce57b5-cc30-454d-93ef-ef47808c4196 ended for path: /api/docs. Duration: 0.86 ms
+2024-08-31 07:16:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request b1401a32-f127-4c42-9109-11ab1066bb9b ended for path: /api/openapi.json. Duration: 158.73 ms
+2024-08-31 07:16:52 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:16:52 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 1 at 31.08.2024 07:16:52 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MjUxMTc0MTJ9.mlIVA5X-oklcqYssLuHuSTPZEj3roB9EK62gr1PSdlh6oRtTVg_mGFSsarp_QBsMInfyiu5MEdfiaMrFxqTpIw
+2024-08-31 07:16:52 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0fb1cf67-4b07-4c6e-b3bf-31c357cf8d6a ended for path: /api/v1/auth/login_user/. Duration: 284.14 ms
+2024-08-31 07:17:03 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:17:03 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 92d37310-c559-4716-a900-f414ea3940b4 unread_notification: False
+2024-08-31 07:17:03 loglevel=INFO   logger=app.logger                dispatch() L102  Request b74421b7-ed47-4e1e-be14-ca8872a882d1 ended for path: /api/v1/users/. Duration: 29.28 ms
+2024-08-31 07:17:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:17:51 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Invalid user ID
+2024-08-31 07:17:51 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Invalid user ID
+2024-08-31 07:17:51 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 6ddd5e40-181e-449a-bdfe-c6dc8010c87c unread_notification: False
+2024-08-31 07:17:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0407b8c1-c75a-4b55-9e9c-792812850466 ended for path: /api/v1/reservation/. Duration: 8.12 ms
+2024-08-31 07:18:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:18:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c0c8e07d-c7ca-4127-bda8-cb868b411650 unread_notification: False
+2024-08-31 07:18:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2ae53304-3ad5-43b4-bf87-01a5cd45e4b7 ended for path: /api/v1/users/. Duration: 30.73 ms
+2024-08-31 07:18:24 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:18:24 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Invalid user ID
+2024-08-31 07:18:24 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Invalid user ID
+2024-08-31 07:18:24 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 36d84053-49c6-4783-83f3-3a0fe73679c9 unread_notification: False
+2024-08-31 07:18:24 loglevel=INFO   logger=app.logger                dispatch() L102  Request c73d69f3-0892-465d-8fe1-6ec173f60bdb ended for path: /api/v1/reservation/. Duration: 6.91 ms
+2024-08-31 07:19:52 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:19:52 loglevel=INFO   logger=app.logger                get_user_by_id() L257  Successfully retrieved user ID 6
+2024-08-31 07:19:52 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 2b116245-7ecd-459a-9a99-9952eb8bd7b5 unread_notification: False
+2024-08-31 07:19:52 loglevel=INFO   logger=app.logger                dispatch() L102  Request 83764825-b5d3-4f0c-9566-7030edfb3f7c ended for path: /api/v1/user/6. Duration: 12.06 ms
+2024-08-31 07:20:41 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-31 07:20:41 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-08-31 07:20:47 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-31 07:20:47 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-08-31 07:20:54 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:20:54 loglevel=ERROR  logger=app.logger                create_reservation() L51   Error creating reservation: 400: The specified event date was not found or does not belong to the event.
+2024-08-31 07:20:54 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: The specified event date was not found or does not belong to the event.
+2024-08-31 07:20:54 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: The specified event date was not found or does not belong to the event.
+2024-08-31 07:20:54 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 782cf4a4-01e5-4a22-b953-72648cb3d8f1 unread_notification: False
+2024-08-31 07:20:54 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2ce3475f-e23c-4908-b761-5160eb76a9f6 ended for path: /api/v1/reservation/. Duration: 78.87 ms
+2024-08-31 07:21:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:07 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 07:21:07 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 852e2737-e7ff-4c01-ac25-60370047b435 unread_notification: False
+2024-08-31 07:21:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request 87323b7f-d39b-4933-be8f-386980934b5c ended for path: /api/v1/event/. Duration: 56.27 ms
+2024-08-31 07:21:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:25 loglevel=INFO   logger=app.logger                create_reservation() L41   User ID 1 created reservation: 2
+2024-08-31 07:21:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:201 api_id: 88f40946-286f-4100-8813-ac04feb0b8ee unread_notification: False
+2024-08-31 07:21:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request d1fb75dc-3940-4e9c-9fa2-e2ec18d6f57e ended for path: /api/v1/reservation/. Duration: 43.46 ms
+2024-08-31 07:21:34 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-31 07:21:34 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2eed0cbc-6090-4ead-b81c-3df49ee322b8 ended for path: /api/v1/user/6/role. Duration: 70.34 ms
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request 75d58ed6-8937-485a-bd88-9b8e98f28070 ended for path: /api/v1/user/6/role. Duration: 10.74 ms
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9f3ca6c5-8d2e-4bbc-862f-354304894884 ended for path: /api/v1/reservation/user/6. Duration: 18.10 ms
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b034ec64-5053-44b6-b244-457376eb3d32 unread_notification: False
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request c7b9eef8-6819-41cb-8ac3-c0eb5f9ad53d ended for path: /api/v1/event/22. Duration: 30.29 ms
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d478a5da-5deb-4f42-9204-06f08f28f0de unread_notification: False
+2024-08-31 07:21:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request 164b1f01-0731-401c-96fb-10d3ee358a4b ended for path: /api/v1/event/252/event-date/. Duration: 9.13 ms
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0e5300ca-47e4-4443-a544-5692b5822ec7 ended for path: /api/v1/reservation/user/6. Duration: 13.69 ms
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: de77cf4f-10e6-4e4e-ac6e-ad72780ab851 unread_notification: False
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                dispatch() L102  Request 640a8251-ec04-4ab1-b840-1ff5c817c3ea ended for path: /api/v1/event/22. Duration: 13.22 ms
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5d45e41a-1aa9-4d3d-bb43-c5ff9d0822aa unread_notification: False
+2024-08-31 07:24:12 loglevel=INFO   logger=app.logger                dispatch() L102  Request 556fcc14-537d-4942-ad3d-3af8e2803a5d ended for path: /api/v1/event/252/event-date/. Duration: 8.63 ms
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1002ff30-c25a-4052-8c74-35d719d11ee7 ended for path: /api/v1/user/6/role. Duration: 7.58 ms
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c1e6f86b-5d72-48db-8765-c600c7811bdc unread_notification: False
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 5b9433b5-19d8-467d-8d5d-e8cea752daca ended for path: /api/v1/reservation/2. Duration: 16.42 ms
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 98040fb7-0e5f-4919-ab0f-1b78fdb16fec unread_notification: False
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 5108fdc4-f2f9-4ed4-935f-f86ec9073523 ended for path: /api/v1/event/22. Duration: 18.90 ms
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0efc21c5-ca61-4d3b-8617-eacbff3789cc ended for path: /api/v1/reservation/user/6. Duration: 10.50 ms
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d3a76b1e-bb77-4951-8a1d-07920333110d unread_notification: False
+2024-08-31 07:24:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 82971a6d-7b9d-41d1-b4d0-014f4cde089d ended for path: /api/v1/waiting-list/user/6. Duration: 11.82 ms
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                dispatch() L102  Request b87ca594-3adc-4436-bc0e-5cff45730df0 ended for path: /api/v1/user/6/role. Duration: 9.98 ms
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                dispatch() L102  Request 57bc5bfc-3a0e-4919-b6f2-acc7a71faaf6 ended for path: /api/v1/reservation/user/6. Duration: 11.33 ms
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 57cd8704-0c13-4d04-8a02-f28250aa8dfc unread_notification: False
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                dispatch() L102  Request 89af1ec6-c52e-4afc-8864-22022047db5d ended for path: /api/v1/event/22. Duration: 22.89 ms
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 75f846dc-2d39-442f-8880-405dec90fce0 unread_notification: False
+2024-08-31 07:24:33 loglevel=INFO   logger=app.logger                dispatch() L102  Request 958067ce-7ab1-44ef-847d-279a1d361ab1 ended for path: /api/v1/event/252/event-date/. Duration: 10.51 ms
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request 682fda63-43c9-48a9-83f4-d53c621ad620 ended for path: /api/v1/user/6/role. Duration: 8.72 ms
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 35778458-0b82-41f8-8c6f-87437b252c7f unread_notification: False
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request d132425a-cd29-4757-a8de-34e0d80dc23b ended for path: /api/v1/reservation/2. Duration: 118.74 ms
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7b10be79-e175-4d4c-8498-2ecb1afad851 unread_notification: False
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request f414d1bf-f1ec-40f4-8caa-e580d9129f49 ended for path: /api/v1/event/22. Duration: 11.02 ms
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request ca583d90-84d1-4de1-a2ca-c9903ef4e644 ended for path: /api/v1/reservation/user/6. Duration: 7.50 ms
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7b99d633-ac16-4618-b91a-c18e1b436385 unread_notification: False
+2024-08-31 07:25:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7b74a650-ee27-4891-bb19-39f346c065ba ended for path: /api/v1/waiting-list/user/6. Duration: 7.40 ms
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request ac3221b9-fa6f-4bb2-aa05-2f70dcdb67a2 ended for path: /api/v1/user/6/role. Duration: 10.00 ms
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9e53ba2c-aa9a-401c-b1f4-8c75e6c90a01 ended for path: /api/v1/reservation/user/6. Duration: 9.69 ms
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 363ba373-994d-4bc3-b623-5c5971868d85 unread_notification: False
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request 139fbf1d-ea59-4841-a312-ec42735c8f53 ended for path: /api/v1/event/22. Duration: 15.05 ms
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c6f1368f-d363-4f1c-afd6-be0bcf2b82e5 unread_notification: False
+2024-08-31 07:30:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request cd8cd409-a5a1-4148-a481-962f07214119 ended for path: /api/v1/event/252/event-date/. Duration: 9.07 ms
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4a7d0835-3afa-4cca-9f2c-2ff6db778c94 ended for path: /api/v1/user/6/role. Duration: 7.50 ms
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 13ca7c56-61e8-409d-bca6-664ae727b1bc unread_notification: False
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 71638429-2e26-4d67-9618-d1b277f10e5e ended for path: /api/v1/reservation/2. Duration: 9.87 ms
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 106d1305-c0ed-46bf-8d93-00822ff5b094 unread_notification: False
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7fc98569-7bbf-451f-826d-36070c35d3de ended for path: /api/v1/event/22. Duration: 14.84 ms
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request afa6d1a3-6093-4ce1-83c2-1f3fd6f563b4 ended for path: /api/v1/reservation/user/6. Duration: 9.28 ms
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 89b9da1f-5568-4361-966d-d180fc0ef6a4 unread_notification: False
+2024-08-31 07:30:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9a93f2d7-5f37-4b26-8fac-2673b6a7573c ended for path: /api/v1/waiting-list/user/6. Duration: 7.97 ms
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0ccf9c34-58dc-4868-84b9-3a12ccb17ff1 ended for path: /api/v1/user/6/role. Duration: 8.63 ms
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request c1e05818-dba4-4967-aca8-0acb9c5efa52 ended for path: /api/v1/reservation/user/6. Duration: 9.15 ms
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: bf72d7a5-9b89-466b-aad3-a70b4260e3a9 unread_notification: False
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request 14cbbd46-658a-4e73-8ed6-9c1d6f4efc0a ended for path: /api/v1/event/22. Duration: 14.08 ms
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 2505110a-7c34-4bd9-9a46-afeda9d11cad unread_notification: False
+2024-08-31 07:35:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request 89a50a7e-be13-46f5-a695-48c8964aacbc ended for path: /api/v1/event/252/event-date/. Duration: 7.95 ms
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 591e16d9-2192-4c93-a291-dad99638d9d4 ended for path: /api/v1/user/6/role. Duration: 7.84 ms
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: da6d3e2a-cc28-4f32-8bd8-620e04702956 unread_notification: False
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 68a26206-951c-40e7-8919-36da28805c84 ended for path: /api/v1/reservation/2. Duration: 11.59 ms
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cbdde2ea-ea2c-4c85-9af6-a98ecb0213cf unread_notification: False
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 47ebb715-4b78-4094-aca0-3990991b2fa6 ended for path: /api/v1/event/22. Duration: 14.01 ms
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 06c23c4f-9072-423b-8ca6-5328226ff602 ended for path: /api/v1/reservation/user/6. Duration: 8.12 ms
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 289c43cf-4306-40dc-9a94-ee0ee9b8c3f3 unread_notification: False
+2024-08-31 07:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request dad8c14b-321b-4b2a-8dc4-ee029b47e472 ended for path: /api/v1/waiting-list/user/6. Duration: 7.91 ms
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 84a4afa1-14a7-4ae5-b60c-ca4c4062a0ba unread_notification: False
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4e6bdec4-db0d-403f-a1ee-67a88b7033ff ended for path: /api/v1/reservation/2. Duration: 20.02 ms
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1d7b6f09-5fc7-43f3-8026-24181daa37bd unread_notification: False
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                dispatch() L102  Request fb2feaef-96b3-4f21-b9db-dbd072ef888d ended for path: /api/v1/event/22. Duration: 13.62 ms
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                dispatch() L102  Request 42d97d1f-125b-478b-8a65-9821aaeabf6a ended for path: /api/v1/reservation/user/6. Duration: 7.41 ms
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3e579f1e-96b0-478c-870e-dcc9ba017db6 unread_notification: False
+2024-08-31 07:38:57 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0014ae03-413c-4175-9b7a-eb0f8ae5e4d1 ended for path: /api/v1/waiting-list/user/6. Duration: 7.79 ms
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5685e372-907f-46f9-8f1a-dcb295d0d33f unread_notification: False
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 57d477ee-a0eb-488d-afa7-000a581b5341 ended for path: /api/v1/reservation/2. Duration: 11.03 ms
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c6cab387-eecb-4f10-a696-83a813f4cfd6 unread_notification: False
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1b0e43f3-2073-4768-9662-0f18872c019e ended for path: /api/v1/event/22. Duration: 12.12 ms
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7bf87eb0-f8d9-4b94-bc95-eb756d8ecb94 ended for path: /api/v1/reservation/user/6. Duration: 8.50 ms
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: ee032614-364c-46f4-9855-a0ba0491bb35 unread_notification: False
+2024-08-31 07:39:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7ac29eff-2e8d-4f05-a3cb-4e154dc4b307 ended for path: /api/v1/waiting-list/user/6. Duration: 9.36 ms
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b1b3f00d-a709-4ca7-8067-bc6b44919670 unread_notification: False
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                dispatch() L102  Request 08f20cca-8113-4fb6-b822-27620e1c896d ended for path: /api/v1/reservation/2. Duration: 8.99 ms
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 749da1c9-19fa-467f-bded-5305cfe2b04e unread_notification: False
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                dispatch() L102  Request bde548dc-e06e-4716-97cd-b56177098296 ended for path: /api/v1/event/22. Duration: 11.94 ms
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2c598da9-4da7-4e63-a836-4674cac3a790 ended for path: /api/v1/reservation/user/6. Duration: 7.47 ms
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 9c69230d-b512-48b8-9e71-ff4915e03186 unread_notification: False
+2024-08-31 07:41:55 loglevel=INFO   logger=app.logger                dispatch() L102  Request 395bc6db-a29c-4807-9779-5ea8918e71b3 ended for path: /api/v1/waiting-list/user/6. Duration: 7.59 ms
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e7ed0ddd-ad42-4d7c-be56-387517c2000d unread_notification: False
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                dispatch() L102  Request e7bc5237-69dc-4dc4-ba19-048296eac7ea ended for path: /api/v1/reservation/2. Duration: 11.49 ms
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: a0804fb9-300f-45e8-8d3b-e03e4969ea10 unread_notification: False
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                dispatch() L102  Request 065b62cc-5794-4d6a-8da4-162680eb7d24 ended for path: /api/v1/event/22. Duration: 12.71 ms
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0d0cc930-2e87-4a71-bb3e-060d573a79c1 ended for path: /api/v1/reservation/user/6. Duration: 9.07 ms
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1867f238-f1e7-4848-b9ec-d95959e5752d unread_notification: False
+2024-08-31 07:41:59 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1d17eb81-c6bf-4d5c-a4ce-6cc4c67e4c6e ended for path: /api/v1/waiting-list/user/6. Duration: 9.15 ms
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7875e8b1-0926-496a-a372-ae51810dde3b unread_notification: False
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3a900462-5d84-4ed7-ba1f-8f904a23af5f ended for path: /api/v1/reservation/2. Duration: 18.94 ms
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1daaca60-2288-4a9c-bfc4-378902d99ab3 unread_notification: False
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 08b8f6b8-9c4a-473e-ae67-84512c43733a ended for path: /api/v1/event/22. Duration: 14.56 ms
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request ef33f0e9-882e-4ff4-b369-1c7c9e1dec10 ended for path: /api/v1/reservation/user/6. Duration: 7.77 ms
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 66094aec-a9c9-424c-9ac9-2223f574872b unread_notification: False
+2024-08-31 07:56:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 33dc638f-c0f8-40d4-8f4f-a1f92736b2fd ended for path: /api/v1/waiting-list/user/6. Duration: 8.57 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4ffbb759-5736-4380-9895-70941434f96d ended for path: /api/v1/user/6/role. Duration: 28.73 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request e9773848-8a09-481c-a700-ccc80e62f32c ended for path: /api/v1/user/6/role. Duration: 10.50 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                get_reservation_by_id() L79   User ID 6 retrieved reservation: 2
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 28631df6-59b0-4d3b-ae7b-8769a45d6b8a unread_notification: False
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0972ee70-2068-43c8-8d2b-c5fd64f543aa ended for path: /api/v1/reservation/2. Duration: 11.00 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 761b0bd9-8e48-4d0f-8f66-40adf4e18aa5 unread_notification: False
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 595a51f9-3716-4bc8-a98e-80c8ab499685 ended for path: /api/v1/event/22. Duration: 17.66 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request df949363-5101-49d0-a316-bb063e8b33a0 ended for path: /api/v1/reservation/user/6. Duration: 8.12 ms
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7943948f-2ffb-4034-a1ca-799978dfecf7 unread_notification: False
+2024-08-31 08:04:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 949a4980-5cad-490d-8164-e38c3069fbe7 ended for path: /api/v1/waiting-list/user/6. Duration: 7.65 ms
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0e17434a-2f37-4402-b97b-60c726c4b2bb ended for path: /api/v1/user/6/role. Duration: 15.81 ms
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                dispatch() L102  Request 483ded75-601e-476d-95c2-6a16f83004d6 ended for path: /api/v1/reservation/user/6. Duration: 9.58 ms
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 49c8220d-64f3-47ba-be9e-cf4fe111c0dd unread_notification: False
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                dispatch() L102  Request d549e945-61de-4c75-9a53-63dc8748e449 ended for path: /api/v1/event/22. Duration: 16.74 ms
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: dccf9fcd-0638-4e47-b308-fc3a3c6c5f38 unread_notification: False
+2024-08-31 08:14:19 loglevel=INFO   logger=app.logger                dispatch() L102  Request 60d949b4-65a8-45a4-b91f-244de95b5e04 ended for path: /api/v1/event/252/event-date/. Duration: 9.48 ms
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request 236c6cf7-d77a-46fe-8430-c967cb225d7c ended for path: /api/v1/user/6/role. Duration: 8.43 ms
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request 58bc8b37-dd83-4083-baa8-60fae46e7691 ended for path: /api/v1/reservation/user/6. Duration: 10.46 ms
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1117bc83-e5da-4626-ac89-bf61cf600f1a unread_notification: False
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request cd7c24a0-cc0f-47e8-8782-0a35389d471e ended for path: /api/v1/event/22. Duration: 17.34 ms
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 4c4443d6-f66e-42cb-bb84-67c868dd6828 unread_notification: False
+2024-08-31 08:14:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1b4c52fb-1e70-47ab-9539-0848743334c1 ended for path: /api/v1/event/252/event-date/. Duration: 11.23 ms
+2024-08-31 08:14:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request 865ed487-08a1-46c4-9fe6-3ebef59337e8 ended for path: /api/v1/user/6/role. Duration: 8.77 ms
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 81e06f81-379b-4718-823f-e0f4981c821e ended for path: /api/v1/user/6/role. Duration: 8.18 ms
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request d4a09288-e697-4a78-95ee-c9fbbff1530b ended for path: /api/v1/reservation/user/6. Duration: 9.83 ms
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 9b436372-1b1e-4e47-9fd0-caa09a790bb5 unread_notification: False
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request b81d2d8f-7072-4655-b873-3adcb33e86e5 ended for path: /api/v1/event/22. Duration: 16.62 ms
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b719c2f1-7486-4950-bc42-f5a0822d4c57 unread_notification: False
+2024-08-31 08:14:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4b807569-68c8-4871-a9d7-43a4d3b9bc47 ended for path: /api/v1/event/252/event-date/. Duration: 8.98 ms
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3b5fb673-76fc-47bd-bf49-ca227a4cff6a ended for path: /api/v1/user/6/role. Duration: 23.87 ms
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4c82c4b3-342d-4074-ade7-89ba0e1fb095 ended for path: /api/v1/user/6/role. Duration: 27.11 ms
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:00 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                dispatch() L102  Request c88b8d6d-0e93-4343-93b4-84f6ad1491ab ended for path: /api/v1/reservation/user/6. Duration: 31.38 ms
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 26e4c0c5-2b5b-4d80-9cd5-15840a634705 unread_notification: False
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                dispatch() L102  Request 109edbc9-f29d-49f4-8ce8-55550ad0345e ended for path: /api/v1/event/22. Duration: 35.62 ms
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3c5f21bd-7677-4b26-bd3e-8667166ed690 unread_notification: False
+2024-08-31 08:15:01 loglevel=INFO   logger=app.logger                dispatch() L102  Request c350e65e-c4d8-42cc-b024-3ada24ce9f20 ended for path: /api/v1/event/252/event-date/. Duration: 21.90 ms
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3a835688-235f-4959-a23c-e95497877e5c ended for path: /api/v1/user/6/role. Duration: 21.20 ms
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request fce43991-783d-4b8a-b22e-aa4418245391 ended for path: /api/v1/user/6/role. Duration: 23.52 ms
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8276caf9-e7fb-4d74-a9ad-894377e65480 ended for path: /api/v1/reservation/user/6. Duration: 15.50 ms
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 365b84d7-5133-4656-9a91-ab4354985131 unread_notification: False
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request a89042e7-7995-46d7-888d-57a46cd6643f ended for path: /api/v1/event/22. Duration: 18.46 ms
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 9a09d284-2fcb-4e3c-b520-1cd289056621 unread_notification: False
+2024-08-31 08:15:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 69d80ff1-3dcd-4328-8c76-889d0bb14181 ended for path: /api/v1/event/252/event-date/. Duration: 9.18 ms
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7161861d-a465-4405-892a-d66cf44cfc42 ended for path: /api/v1/user/6/role. Duration: 10.79 ms
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6d7e00d5-bdae-4eb2-ba97-b5871682912a ended for path: /api/v1/user/6/role. Duration: 8.82 ms
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8258dba1-d136-461d-b8a6-845e4940b575 ended for path: /api/v1/reservation/user/6. Duration: 10.53 ms
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1470f4a9-10b6-458b-9c17-9f970e09caad unread_notification: False
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 942d54d9-d7f6-4a8b-80bc-022f5d230ff4 ended for path: /api/v1/event/22. Duration: 13.72 ms
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 789ff950-8cf1-49e0-a4be-42ab24477a4e unread_notification: False
+2024-08-31 08:15:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 80c51d94-4c64-413b-96e2-c95c63741840 ended for path: /api/v1/event/252/event-date/. Duration: 7.77 ms
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request 465990bc-7b2a-49de-8d5b-ec950da24055 ended for path: /api/v1/user/6/role. Duration: 22.08 ms
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request 16e95238-efb8-4632-bfbf-1a13e47022f3 ended for path: /api/v1/user/6/role. Duration: 27.52 ms
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request d3ca5142-efdd-4ceb-b5c0-e546673df8c3 ended for path: /api/v1/reservation/user/6. Duration: 14.40 ms
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 88147755-eca5-4dae-bfaa-ddc39718bc11 unread_notification: False
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7de96aaa-1c21-4eaa-969c-41a2859a2362 ended for path: /api/v1/event/22. Duration: 13.77 ms
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 52c00738-f73f-4f41-a2fa-59157af5b11c unread_notification: False
+2024-08-31 08:15:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request a867e06e-3f2e-4c5f-91cb-6e969d159839 ended for path: /api/v1/event/252/event-date/. Duration: 10.99 ms
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 16e4803e-bf0e-4d67-82da-34ed58e9bcfd ended for path: /api/v1/user/6/role. Duration: 7.06 ms
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3389979e-edd0-4559-b241-9409609d527f unread_notification: False
+2024-08-31 08:16:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 12df49fa-4b40-4936-a63e-d690296860b8 ended for path: /api/v1/event/. Duration: 42.60 ms
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request aeb0743d-d977-46b3-875f-cf15d9cd855a ended for path: /api/v1/user/6/role. Duration: 7.13 ms
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 1
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1f6390f6-67be-4452-9890-3cd4fb3b770d unread_notification: False
+2024-08-31 08:16:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request c20afe9a-e2fb-4169-ae68-33735b9ef1bf ended for path: /api/v1/event/1. Duration: 15.39 ms
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3d8201ed-0c4a-4b76-827e-2103a3cf954c ended for path: /api/v1/reservation/user/6. Duration: 8.33 ms
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                get_user_waiting_list_entries() L157  No waiting list entries found for user ID: 6
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d2425ca4-a4a4-47b0-9caf-c7c29984f656 unread_notification: False
+2024-08-31 08:16:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1a7e8bcc-35af-48c5-8d65-00ec845ce815 ended for path: /api/v1/waiting-list/user/6. Duration: 8.10 ms
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request e2bc8513-fa20-4e93-8951-de320d5c6dc4 ended for path: /api/v1/user/6/role. Duration: 8.36 ms
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                get_user_reservations() L246  Retrieved reservations for User ID: 6
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request b7a6affe-99fb-4396-a4ad-eb486d952823 ended for path: /api/v1/reservation/user/6. Duration: 9.58 ms
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 6 retrieved event: 22
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b411fd4f-7d94-43cc-bfda-759e49db94cc unread_notification: False
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request b6d404d4-df1f-435d-afd2-e1bc641f1136 ended for path: /api/v1/event/22. Duration: 14.99 ms
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                get_event_date_by_id() L321  Event date retrieved successfully. ID: 252
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 37c2463b-86db-4c00-9422-256993c36674 unread_notification: False
+2024-08-31 08:17:07 loglevel=INFO   logger=app.logger                dispatch() L102  Request ce3859f0-653f-4e13-a23c-12ae0f816124 ended for path: /api/v1/event/252/event-date/. Duration: 8.60 ms
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d929884b-8c4c-448b-adb7-6d44e715fa5a unread_notification: False
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 5, Total: 24
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3fbadf70-edc1-45a6-afb7-07b0802bc2f9 unread_notification: False
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2085b867-9b6f-4766-89f9-d8a844f1de2e ended for path: /api/v1/event/. Duration: 80.18 ms
+2024-08-31 08:32:30 loglevel=INFO   logger=app.logger                dispatch() L102  Request 1681afdd-129d-40fb-9652-faa2c8e2393e ended for path: /api/v1/event/. Duration: 79.90 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 1 at 31.08.2024 08:32:36 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MjUxMjE5NTZ9.64_OhjVlFEyYOvix7eiW3EwEDWgyfuHSlSRlCbJpZt6zMYBr2MLz_yfShbTzg2qUkPlv__CCeb2fW26DLUcGkw
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 5a24b29a-da3d-4f71-ae81-012181dfe4b0 ended for path: /api/v1/auth/login_user/. Duration: 307.81 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7085b0ed-73d9-4d32-bc7b-b6f559e748a3 ended for path: /api/v1/user/1/role. Duration: 8.84 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 90383d13-e5e6-4a0f-b8d8-113385e29666 ended for path: /api/v1/user/1/role. Duration: 6.69 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request fb11767d-717b-4d77-82c3-052eace5ba6a ended for path: /api/v1/user/1/role. Duration: 7.01 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: aea7fec6-10d8-495f-8406-f283715de2d5 unread_notification: False
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request e7085e6a-c452-47a2-b44a-51fa4d7d45ad ended for path: /api/v1/event/. Duration: 39.04 ms
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: ea9b7cbf-eca5-4f0a-b94b-90ebf74a2d5e unread_notification: False
+2024-08-31 08:32:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 53ffa39e-1c67-456b-831a-6120b09c3930 ended for path: /api/v1/event/. Duration: 36.22 ms
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 09a1f916-27ee-4a46-8315-41851454ec31 ended for path: /api/v1/user/1/role. Duration: 13.52 ms
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request b91db07b-9072-48f1-8b6c-5bc381630978 ended for path: /api/v1/user/1/role. Duration: 15.84 ms
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7a1f2d81-2995-441d-b75d-b2b99c2df0d1 unread_notification: False
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 16202457-20e6-4dbe-bb11-3eaeff0df76d unread_notification: False
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4fe80a6d-9c4e-46e9-a581-ad34fcd03f6b ended for path: /api/v1/event/. Duration: 90.70 ms
+2024-08-31 08:33:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request a9814631-5a5a-47ba-b41c-6e6ad7437e06 ended for path: /api/v1/event/. Duration: 39.89 ms
+2024-08-31 08:35:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:35:29 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:35:29 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e93dd009-154e-4fd0-89b2-ceba2d6902ee unread_notification: False
+2024-08-31 08:35:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7140eab8-fc23-4960-bc23-fe24d1383b06 ended for path: /api/v1/event/. Duration: 41.35 ms
+2024-08-31 08:35:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:35:35 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:35:35 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3bf92c5b-1eb2-4150-a692-16bcae20d5fa unread_notification: False
+2024-08-31 08:35:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request c56ecd0a-fc6a-4f4a-9e20-3c9790b74cf9 ended for path: /api/v1/event/. Duration: 37.59 ms
+2024-08-31 08:35:41 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:35:41 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:35:41 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e03204a7-72f5-4752-b7b6-d2699b824e32 unread_notification: False
+2024-08-31 08:35:41 loglevel=INFO   logger=app.logger                dispatch() L102  Request acdee547-bf6b-407b-a0de-b2390abae3e8 ended for path: /api/v1/event/. Duration: 31.04 ms
+2024-08-31 08:36:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:36:02 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:36:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 51fc39ca-2921-48c1-ba20-e119139b1f46 unread_notification: False
+2024-08-31 08:36:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 79a055d5-8e04-44b9-8b85-f1301b11649b ended for path: /api/v1/event/. Duration: 28.76 ms
+2024-08-31 08:39:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:39:06 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:39:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e7bf3112-f294-48f5-b9b5-aee73c1efb57 unread_notification: False
+2024-08-31 08:39:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request d970120d-2ac9-49eb-8b28-411dd12e6409 ended for path: /api/v1/event/. Duration: 29.97 ms
+2024-08-31 08:44:03 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:03 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:44:03 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b255862e-6d22-4b44-99bd-c63313c7e5ba unread_notification: False
+2024-08-31 08:44:03 loglevel=INFO   logger=app.logger                dispatch() L102  Request a1e909ac-360d-442f-b87d-8b87a38f9aa3 ended for path: /api/v1/event/. Duration: 33.23 ms
+2024-08-31 08:44:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:36 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:44:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 68f66b25-ac24-410c-b8e1-3a4d3920d7c7 unread_notification: False
+2024-08-31 08:44:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 475d982a-7c56-42d9-b072-6ba9c8d82d2d ended for path: /api/v1/event/. Duration: 33.65 ms
+2024-08-31 08:44:47 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:47 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 2
+2024-08-31 08:44:47 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 0fe66de0-1652-422f-af08-17c75f931a90 unread_notification: False
+2024-08-31 08:44:47 loglevel=INFO   logger=app.logger                dispatch() L102  Request 95f223a7-6472-420e-8d07-43e6a1525c7e ended for path: /api/v1/event/. Duration: 26.81 ms
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 06da1b7e-1714-4e8e-b392-990046e8eaf9 unread_notification: False
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request fe86e091-0fd7-4696-8e6f-81841b6748e2 ended for path: /api/v1/event/. Duration: 29.53 ms
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 94c8b1a1-3d2b-4044-8acf-a6c7745f98f0 unread_notification: False
+2024-08-31 08:44:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request 869cfd49-18f3-4af0-924b-1868da07fabd ended for path: /api/v1/event/. Duration: 12.91 ms
+2024-08-31 08:44:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:44:50 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:44:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5588cf4e-a7d6-41e6-9a86-76d7ef996cac unread_notification: False
+2024-08-31 08:44:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 32c875f6-2416-4c7d-a212-6b6053332ac3 ended for path: /api/v1/event/. Duration: 35.49 ms
+2024-08-31 08:45:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:08 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:45:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: ef7c9cbf-58d9-4dba-aceb-be611f6824ce unread_notification: False
+2024-08-31 08:45:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3eba69bb-fa89-46cb-9970-789293fc8150 ended for path: /api/v1/event/. Duration: 51.72 ms
+2024-08-31 08:45:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:15 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:45:15 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 2002dce4-15c2-465f-ac52-f084ad2da418 unread_notification: False
+2024-08-31 08:45:15 loglevel=INFO   logger=app.logger                dispatch() L102  Request 988db95d-f332-4895-b6fa-156cddd73cab ended for path: /api/v1/event/. Duration: 21.27 ms
+2024-08-31 08:45:21 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:21 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:45:21 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 66578302-7729-4907-b992-eec25e0c1141 unread_notification: False
+2024-08-31 08:45:21 loglevel=INFO   logger=app.logger                dispatch() L102  Request 08baa005-7754-49d5-bcc5-88949f5a37c9 ended for path: /api/v1/event/. Duration: 34.34 ms
+2024-08-31 08:45:34 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:34 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 2
+2024-08-31 08:45:34 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 9dd5ef77-1d55-4d9b-ab6c-b3abbbfb358f unread_notification: False
+2024-08-31 08:45:34 loglevel=INFO   logger=app.logger                dispatch() L102  Request 471e46cb-4275-4044-ab0f-fa39167b1df0 ended for path: /api/v1/event/. Duration: 15.85 ms
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 5
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7629ef53-48c0-421c-845a-f570f55b547f unread_notification: False
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                dispatch() L102  Request ff4700b4-a0ab-4bba-accc-2dceb2b1bef6 ended for path: /api/v1/event/. Duration: 25.27 ms
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 6
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1b2242aa-b6a9-4b5e-b547-15ce0dd8f0d3 unread_notification: False
+2024-08-31 08:45:42 loglevel=INFO   logger=app.logger                dispatch() L102  Request f9f44e37-d691-4311-b84d-921fca344b5b ended for path: /api/v1/event/. Duration: 25.30 ms
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 5
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 219a0c41-e774-478c-81de-2981d3dde0f8 unread_notification: False
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                dispatch() L102  Request 193d6c85-dfe7-4554-9291-108872b56392 ended for path: /api/v1/event/. Duration: 24.51 ms
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 2
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8696258a-e3ff-4e9e-a2ae-b768c2e173a3 unread_notification: False
+2024-08-31 08:45:46 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6c0532f7-e312-490a-929e-96ef4835b394 ended for path: /api/v1/event/. Duration: 16.72 ms
+2024-08-31 08:45:48 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:48 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:45:48 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cab744f5-7ff1-4143-9151-6e965f5da21b unread_notification: False
+2024-08-31 08:45:48 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3c17b6c4-df27-4b31-b5ae-b9c9f881c281 ended for path: /api/v1/event/. Duration: 30.74 ms
+2024-08-31 08:45:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:50 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 0
+2024-08-31 08:45:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 74b5e1a9-74cb-4b12-9442-641cbd7acadb unread_notification: False
+2024-08-31 08:45:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request 688b4018-d1e7-4cf6-9cf6-e79cf191f21d ended for path: /api/v1/event/. Duration: 20.52 ms
+2024-08-31 08:45:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:45:51 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:45:51 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8045d551-0464-4a97-a364-3f0a3868f911 unread_notification: False
+2024-08-31 08:45:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request 88598f77-6abd-4a18-869c-85741afdd5c2 ended for path: /api/v1/event/. Duration: 28.79 ms
+2024-08-31 08:46:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:06 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 0
+2024-08-31 08:46:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b9d0fff6-3263-416b-97e1-94d8fef1b6c9 unread_notification: False
+2024-08-31 08:46:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request bc4b5ea1-2474-4b32-b4b4-84cf159ec71a ended for path: /api/v1/event/. Duration: 9.61 ms
+2024-08-31 08:46:13 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:13 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 5
+2024-08-31 08:46:13 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e64e4c19-0fa8-4016-886b-cab2bd8e4c7a unread_notification: False
+2024-08-31 08:46:13 loglevel=INFO   logger=app.logger                dispatch() L102  Request 468e3e38-1d4e-4baa-b3af-60589fd454d9 ended for path: /api/v1/event/. Duration: 16.65 ms
+2024-08-31 08:46:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:14 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:14 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 6d8f198d-ce7b-4add-83c0-4ead3a887d9c unread_notification: False
+2024-08-31 08:46:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4fad3270-7d35-4edf-9088-34465abd4176 ended for path: /api/v1/event/. Duration: 13.75 ms
+2024-08-31 08:46:28 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:28 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 0
+2024-08-31 08:46:28 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 1ce00343-bb46-4988-a504-a304bd8b5322 unread_notification: False
+2024-08-31 08:46:28 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6080fe54-a51d-45ce-b8c7-a68c162e5b43 ended for path: /api/v1/event/. Duration: 19.34 ms
+2024-08-31 08:46:30 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:30 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:30 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 2e5b7b97-ab55-4be2-94fc-1322e73ece23 unread_notification: False
+2024-08-31 08:46:30 loglevel=INFO   logger=app.logger                dispatch() L102  Request 40bd259f-6c9e-4331-9986-bb811fe61db5 ended for path: /api/v1/event/. Duration: 13.42 ms
+2024-08-31 08:46:31 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:31 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 1
+2024-08-31 08:46:31 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5bf9b76e-4cbf-4d23-b8f3-edcf89423041 unread_notification: False
+2024-08-31 08:46:31 loglevel=INFO   logger=app.logger                dispatch() L102  Request f88e3e4a-5ef5-4088-89a4-29c05f280bcb ended for path: /api/v1/event/. Duration: 10.33 ms
+2024-08-31 08:46:32 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:32 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:32 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c318d6aa-495f-48a1-8a2d-2cae989b6c24 unread_notification: False
+2024-08-31 08:46:32 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6908f3f9-fd1a-4ce9-a332-d58beeacc161 ended for path: /api/v1/event/. Duration: 13.38 ms
+2024-08-31 08:46:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:33 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 1
+2024-08-31 08:46:33 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b969b1ed-4a4e-462c-a523-8894506bb97b unread_notification: False
+2024-08-31 08:46:33 loglevel=INFO   logger=app.logger                dispatch() L102  Request ff7f4828-5836-48ad-a151-abe12d491693 ended for path: /api/v1/event/. Duration: 10.16 ms
+2024-08-31 08:46:36 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:36 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:36 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: afb6f140-b122-4e45-bed1-d9456d2584f2 unread_notification: False
+2024-08-31 08:46:36 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8664a4a7-7fc5-45f7-b79e-55a0e895ca00 ended for path: /api/v1/event/. Duration: 20.60 ms
+2024-08-31 08:46:55 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:55 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:46:55 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c25eb316-6625-47f7-98aa-7c26ec14f7ff unread_notification: False
+2024-08-31 08:46:55 loglevel=INFO   logger=app.logger                dispatch() L102  Request 264e6a13-233a-45de-869f-2ffd6ea154ae ended for path: /api/v1/event/. Duration: 29.58 ms
+2024-08-31 08:46:56 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:56 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:56 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: f9cf4737-87f3-483e-b7ac-d3ac82083841 unread_notification: False
+2024-08-31 08:46:56 loglevel=INFO   logger=app.logger                dispatch() L102  Request c10059ed-3311-4714-a52f-b26567ff44a4 ended for path: /api/v1/event/. Duration: 13.15 ms
+2024-08-31 08:46:57 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:46:57 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:46:57 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8d1c46c3-55c3-41de-aa4d-08dedb972caa unread_notification: False
+2024-08-31 08:46:57 loglevel=INFO   logger=app.logger                dispatch() L102  Request a34759c7-ef18-4677-9f2c-5b08a4b24d68 ended for path: /api/v1/event/. Duration: 13.47 ms
+2024-08-31 08:47:00 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:00 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 5
+2024-08-31 08:47:00 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 9ddb5ab2-a812-44bc-8ac9-d26defb216d0 unread_notification: False
+2024-08-31 08:47:00 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4085639e-754e-4161-b207-4154734e883a ended for path: /api/v1/event/. Duration: 17.96 ms
+2024-08-31 08:47:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:02 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-31 08:47:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: ef1d1a56-a902-4df1-b05b-54b24e1ec25f unread_notification: False
+2024-08-31 08:47:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9f82a322-53c0-423a-8f9f-fd0d24e8ffe1 ended for path: /api/v1/event/. Duration: 14.92 ms
+2024-08-31 08:47:03 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:03 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:47:03 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8fddb575-a1a6-49e2-9110-b029a5f9033a unread_notification: False
+2024-08-31 08:47:03 loglevel=INFO   logger=app.logger                dispatch() L102  Request 67268821-b378-4c52-b768-393472b02f11 ended for path: /api/v1/event/. Duration: 31.39 ms
+2024-08-31 08:47:05 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:05 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 1
+2024-08-31 08:47:05 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7fbc4596-f8cc-49c6-897c-1e2984764cd5 unread_notification: False
+2024-08-31 08:47:05 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2011bebb-6a0b-41c8-a442-3ad89bcf4279 ended for path: /api/v1/event/. Duration: 10.46 ms
+2024-08-31 08:47:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:06 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 1
+2024-08-31 08:47:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 72d3a23d-a0a1-47f5-87b5-a9379c4e5db5 unread_notification: False
+2024-08-31 08:47:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request 64f03fb6-b32d-45d2-a352-9cb897afc745 ended for path: /api/v1/event/. Duration: 11.05 ms
+2024-08-31 08:47:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:47:08 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:47:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 57a50f7a-2572-4100-93a8-6349b7a8c52e unread_notification: False
+2024-08-31 08:47:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request a85721d5-4c86-4221-bd3e-6b1e5cc50d47 ended for path: /api/v1/event/. Duration: 28.36 ms
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 02242e13-bde9-4677-84d5-5c6b1ad7bf06 ended for path: /api/v1/user/1/role. Duration: 19.97 ms
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                get_event_by_id() L209  User ID 1 retrieved event: 1
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8ddb242e-3e3f-4620-ae50-21e330eb3010 unread_notification: False
+2024-08-31 08:48:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7dc668ba-007a-4def-a9d7-4d3d0fc35cf9 ended for path: /api/v1/event/1. Duration: 17.40 ms
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request 64947602-d985-47d3-adb1-1948ed31016e ended for path: /api/v1/user/1/role. Duration: 7.88 ms
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 77a548e1-744e-45ec-8f0f-5196dbf0fcda unread_notification: False
+2024-08-31 08:48:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request 01208cd8-45d7-422d-9c55-8b79880305ae ended for path: /api/v1/event/. Duration: 36.48 ms
+2024-08-31 08:59:38 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 08:59:38 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 08:59:38 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 82fe1de6-720c-4131-9148-f027b0c55cf1 unread_notification: False
+2024-08-31 08:59:38 loglevel=INFO   logger=app.logger                dispatch() L102  Request 80c572c6-a728-486a-9853-f7e46bcde259 ended for path: /api/v1/event/. Duration: 37.97 ms
+2024-08-31 09:01:50 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:01:50 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 09:01:50 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 11a01211-ba70-48d8-ac87-e9330e80144a unread_notification: False
+2024-08-31 09:01:50 loglevel=INFO   logger=app.logger                dispatch() L102  Request ba5299ef-7aaa-44e0-beee-5455020924b6 ended for path: /api/v1/event/. Duration: 33.27 ms
+2024-08-31 09:01:52 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:01:52 loglevel=INFO   logger=app.logger                dispatch() L102  Request 202069e4-adfb-4677-a2cf-d2a92f718af1 ended for path: /api/v1/user/1/role. Duration: 8.81 ms
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                dispatch() L102  Request 177bb5d2-5705-47f6-93fc-bc328060f3bf ended for path: /api/v1/user/1/role. Duration: 7.38 ms
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 653874cb-c966-410d-ab8d-23b97638813d unread_notification: False
+2024-08-31 09:01:58 loglevel=INFO   logger=app.logger                dispatch() L102  Request 23b1da20-ea18-4bee-affb-7695af588cef ended for path: /api/v1/event/. Duration: 34.65 ms
+2024-08-31 09:06:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request c69f933c-06f2-4499-8118-0d74a4669cba ended for path: /api/v1/user/1/role. Duration: 23.27 ms
+2024-08-31 09:06:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 29077581-6e1b-482e-9757-c2d601f54b27 unread_notification: False
+2024-08-31 09:06:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request fdfffaa7-b7db-41b2-9ea0-954377fa8c6a ended for path: /api/v1/users/. Duration: 25.57 ms
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                dispatch() L102  Request e8f11b02-f0cb-4d38-8ed8-c9cdb5021d11 ended for path: /api/v1/user/1/role. Duration: 8.05 ms
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 46554aba-43a2-40b8-a50d-43d87023fa91 unread_notification: False
+2024-08-31 09:06:09 loglevel=INFO   logger=app.logger                dispatch() L102  Request cbbdc84e-70d4-4a59-a9ed-519ef2fcf593 ended for path: /api/v1/event/. Duration: 39.48 ms
+2024-08-31 09:06:13 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:13 loglevel=INFO   logger=app.logger                dispatch() L102  Request 29421319-1a1e-4013-9c2a-f0bed80ca86e ended for path: /api/v1/user/1/role. Duration: 8.89 ms
+2024-08-31 09:06:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:15 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3e163770-32da-4519-bf72-f4d6a5484c0f ended for path: /api/v1/user/1/role. Duration: 7.65 ms
+2024-08-31 09:06:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8b768fa7-abbd-47e3-a881-5068fc95ab67 ended for path: /api/v1/user/1/role. Duration: 7.21 ms
+2024-08-31 09:06:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-31 09:06:18 loglevel=INFO   logger=app.logger                get_all_events() L247  Events retrieved. Page: 1, Items: 10, Total: 24
+2024-08-31 09:06:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: deeb6f28-cb21-402f-b9b6-4420ccfb6700 unread_notification: False
+2024-08-31 09:06:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request d99617cb-bbd4-45d3-8e8f-c4af0ae28522 ended for path: /api/v1/event/. Duration: 37.28 ms

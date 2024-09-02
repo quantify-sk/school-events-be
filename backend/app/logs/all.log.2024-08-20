@@ -1,0 +1,153 @@
+2024-08-20 08:01:28 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 08:01:32 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:00:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:00:03 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L125  Request 2ff121c3-38fe-40e2-990f-50355823ea1b started for path: /api/v1/auth/login_user/
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                login_user() L136  Login successful for user 1 at 20.08.2024 09:00:06 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MjQxNzMyMDZ9.-2jp_kBNl_8_UAUT2cfUlfKkg0uCgILTQFQ7tQaCYrRZEk0jqcYZjjyUUjl0argbMzAyMpCQKVY6W-lUHYzwWg
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L133  Request 2ff121c3-38fe-40e2-990f-50355823ea1b ended for path: /api/v1/auth/login_user/. Duration: 352.04 ms
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L125  Request 91db1caa-75a2-460d-b448-47484631bb1d started for path: /api/v1/user/1/role
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L133  Request 91db1caa-75a2-460d-b448-47484631bb1d ended for path: /api/v1/user/1/role. Duration: 20.77 ms
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L125  Request 9fbeb5a7-f8f6-456b-a987-88528c39d430 started for path: /api/v1/event/
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 360bde44-7936-4ea3-a443-6479c5474987 unread_notification: False
+2024-08-20 09:00:06 loglevel=INFO   logger=app.logger                dispatch() L133  Request 9fbeb5a7-f8f6-456b-a987-88528c39d430 ended for path: /api/v1/event/. Duration: 31.69 ms
+2024-08-20 09:00:13 loglevel=INFO   logger=app.logger                dispatch() L125  Request fb7f9c5c-b8a0-478f-b6d0-e72d8b4c5532 started for path: /api/v1/user/pending-approval/
+2024-08-20 09:00:13 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:13 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cb1b5af5-1d0e-4682-b207-d04a195742dd unread_notification: False
+2024-08-20 09:00:13 loglevel=INFO   logger=app.logger                dispatch() L133  Request fb7f9c5c-b8a0-478f-b6d0-e72d8b4c5532 ended for path: /api/v1/user/pending-approval/. Duration: 424.88 ms
+2024-08-20 09:00:17 loglevel=INFO   logger=app.logger                dispatch() L125  Request e2b5ff04-002d-4857-bf9e-0204716990c5 started for path: /api/v1/user/approve/7
+2024-08-20 09:00:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:17 loglevel=INFO   logger=app.logger                approve_user() L385  Approving school representative with ID: 7
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                approve_user() L389  Successfully approved school representative: schoolrep2@example.com
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e35e8d4e-4c64-43bd-9633-dc7e66b8e3bf unread_notification: False
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                dispatch() L133  Request e2b5ff04-002d-4857-bf9e-0204716990c5 ended for path: /api/v1/user/approve/7. Duration: 876.19 ms
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                dispatch() L125  Request becc09f4-5c81-4576-9c45-2166e39a8bb7 started for path: /api/v1/user/pending-approval/
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 34e3b85d-4940-4122-ba58-b9866258ccb6 unread_notification: False
+2024-08-20 09:00:18 loglevel=INFO   logger=app.logger                dispatch() L133  Request becc09f4-5c81-4576-9c45-2166e39a8bb7 ended for path: /api/v1/user/pending-approval/. Duration: 10.69 ms
+2024-08-20 09:06:57 loglevel=INFO   logger=app.logger                dispatch() L125  Request 32c7a0e4-a403-4b6f-b4b6-d337328e5453 started for path: /api/v1/event/
+2024-08-20 09:07:10 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:07:10 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 09:07:10 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d05c6585-4cae-4dcf-9051-9947fa953b80 unread_notification: False
+2024-08-20 09:07:10 loglevel=INFO   logger=app.logger                dispatch() L133  Request 32c7a0e4-a403-4b6f-b4b6-d337328e5453 ended for path: /api/v1/event/. Duration: 12851.55 ms
+2024-08-20 09:32:11 loglevel=INFO   logger=app.logger                dispatch() L125  Request b4136c85-4c7b-43dd-b6e5-c1f6f00ed66a started for path: /api/v1/event/
+2024-08-20 09:32:11 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:32:11 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 09:32:11 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: f6044b5c-b209-4d78-86af-c49758ccf784 unread_notification: False
+2024-08-20 09:32:11 loglevel=INFO   logger=app.logger                dispatch() L133  Request b4136c85-4c7b-43dd-b6e5-c1f6f00ed66a ended for path: /api/v1/event/. Duration: 26.35 ms
+2024-08-20 09:52:14 loglevel=INFO   logger=app.logger                dispatch() L125  Request b563828f-da98-4d55-8f74-f85e0c2db253 started for path: /api/v1/auth/login_user/
+2024-08-20 09:52:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                login_user() L136  Login successful for user 4 at 20.08.2024 09:52:15 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3MjQxNzYzMzV9.uNgPkp_xeMJ-2_PmlRxtyusOC9ur8_fop4Z2FtKa2EOX93LRkJ71KEwZgjB8l4cq5Cs7T1Mi9dYO1b_mxaJlwg
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                dispatch() L133  Request b563828f-da98-4d55-8f74-f85e0c2db253 ended for path: /api/v1/auth/login_user/. Duration: 354.96 ms
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                dispatch() L125  Request e7468bad-8f0b-4b06-b79e-947101bb13bc started for path: /api/v1/user/4/role
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                dispatch() L133  Request e7468bad-8f0b-4b06-b79e-947101bb13bc ended for path: /api/v1/user/4/role. Duration: 8.68 ms
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                dispatch() L125  Request c32daf21-fb61-48f4-b62b-72167c60c7a2 started for path: /api/v1/event/organizer/4/events
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                get_organizer_events() L309  Organizer events retrieved. Organizer ID: 4, Page: 1, Items: 10, Total: 2
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c4a9b764-0e72-4fd3-91f5-bfd96462ebfb unread_notification: False
+2024-08-20 09:52:15 loglevel=INFO   logger=app.logger                dispatch() L133  Request c32daf21-fb61-48f4-b62b-72167c60c7a2 ended for path: /api/v1/event/organizer/4/events. Duration: 22.70 ms
+2024-08-20 09:52:17 loglevel=INFO   logger=app.logger                dispatch() L125  Request 19c607a6-2bf4-46c9-8d2a-4303d7e9293f started for path: /api/v1/event/1
+2024-08-20 09:52:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:52:17 loglevel=INFO   logger=app.logger                get_event_by_id() L200  User ID 4 retrieved event: 1
+2024-08-20 09:52:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 22fb418f-5754-4ca9-9e22-05c8f6adbd98 unread_notification: False
+2024-08-20 09:52:17 loglevel=INFO   logger=app.logger                dispatch() L133  Request 19c607a6-2bf4-46c9-8d2a-4303d7e9293f ended for path: /api/v1/event/1. Duration: 13.53 ms
+2024-08-20 09:54:17 loglevel=INFO   logger=app.logger                dispatch() L125  Request d1d3be86-57ac-4596-88b2-7ad2307c40e3 started for path: /api/v1/event/1
+2024-08-20 09:54:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:54:17 loglevel=INFO   logger=app.logger                get_event_by_id() L200  User ID 4 retrieved event: 1
+2024-08-20 09:54:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: d19b800e-0dfd-4395-8a86-cd9e8742e37d unread_notification: False
+2024-08-20 09:54:17 loglevel=INFO   logger=app.logger                dispatch() L133  Request d1d3be86-57ac-4596-88b2-7ad2307c40e3 ended for path: /api/v1/event/1. Duration: 17.54 ms
+2024-08-20 09:54:46 loglevel=INFO   logger=app.logger                dispatch() L125  Request b051d562-44db-4f1d-a5d9-17eb29f4826f started for path: /api/v1/event/organizer/4/events
+2024-08-20 09:54:46 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:54:47 loglevel=INFO   logger=app.logger                get_organizer_events() L309  Organizer events retrieved. Organizer ID: 4, Page: 1, Items: 10, Total: 2
+2024-08-20 09:54:47 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e366b4fb-1fa9-4281-a706-57395cfa5d45 unread_notification: False
+2024-08-20 09:54:47 loglevel=INFO   logger=app.logger                dispatch() L133  Request b051d562-44db-4f1d-a5d9-17eb29f4826f ended for path: /api/v1/event/organizer/4/events. Duration: 16.90 ms
+2024-08-20 09:54:49 loglevel=INFO   logger=app.logger                dispatch() L125  Request 1b4e675a-bc74-47d5-a85f-d40bd1bead45 started for path: /api/v1/event/
+2024-08-20 09:54:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 09:54:49 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 09:54:49 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 19851b69-c86a-4afb-b5a2-0eff7f21e2ea unread_notification: False
+2024-08-20 09:54:49 loglevel=INFO   logger=app.logger                dispatch() L133  Request 1b4e675a-bc74-47d5-a85f-d40bd1bead45 ended for path: /api/v1/event/. Duration: 12.55 ms
+2024-08-20 09:57:28 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:57:29 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:57:32 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:57:33 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:57:35 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:57:36 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:58:53 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:58:54 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:58:57 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:58:58 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:59:00 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:59:01 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:59:15 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:59:16 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 09:59:31 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 09:59:32 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:03:15 loglevel=INFO   logger=app.logger                dispatch() L125  Request 695f0a21-b3c6-49f8-b63b-6a7814afe030 started for path: /api/v1/user/
+2024-08-20 10:03:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:03:16 loglevel=ERROR  logger=app.logger                create_new_school() L103  Error creating new school: (psycopg2.errors.NotNullViolation) null value in column "address" of relation "school" violates not-null constraint
+DETAIL:  Failing row contains (4, JalovskaUkor, null, null, 56745892, 2024-08-20 10:03:16.020134, 2024-08-20 10:03:16.020138).
+
+[SQL: INSERT INTO school (name, ico, created_at, updated_at) VALUES (%(name)s, %(ico)s, %(created_at)s, %(updated_at)s) RETURNING school.id]
+[parameters: {'name': 'JalovskaUkor', 'ico': '56745892', 'created_at': datetime.datetime(2024, 8, 20, 10, 3, 16, 20134), 'updated_at': datetime.datetime(2024, 8, 20, 10, 3, 16, 20138)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2024-08-20 10:03:16 loglevel=ERROR  logger=app.logger                create_user() L98   Error while creating user: CustomInternalServerErrorException.__init__() takes 1 positional argument but 2 were given
+2024-08-20 10:03:16 loglevel=INFO   logger=app.logger                handle_exception() L100  Application exception occurred: 500: Internal Server Error
+2024-08-20 10:03:16 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:500 api_id: d22d89c5-9726-4bbe-978c-299faa9cc061 unread_notification: False
+2024-08-20 10:03:16 loglevel=INFO   logger=app.logger                dispatch() L133  Request 695f0a21-b3c6-49f8-b63b-6a7814afe030 ended for path: /api/v1/user/. Duration: 351.57 ms
+2024-08-20 10:05:49 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 10:05:50 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:06:41 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 10:06:42 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:06:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 10:06:46 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:06:56 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 10:06:57 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:07:07 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-08-20 10:07:08 loglevel=INFO   logger=app.logger                get_database_engine() L37   Created new database engine.
+2024-08-20 10:07:15 loglevel=INFO   logger=app.logger                dispatch() L125  Request 0d9d31c1-7ca9-4cc9-93d9-327c21afde40 started for path: /api/v1/event/
+2024-08-20 10:07:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:07:15 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 10:07:15 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c59ff5f0-e1e5-42a4-a8bb-da2e26e21db2 unread_notification: False
+2024-08-20 10:07:15 loglevel=INFO   logger=app.logger                dispatch() L133  Request 0d9d31c1-7ca9-4cc9-93d9-327c21afde40 ended for path: /api/v1/event/. Duration: 50.31 ms
+2024-08-20 10:07:34 loglevel=INFO   logger=app.logger                dispatch() L125  Request b2c88c28-5a6b-4d2a-bb7e-54fe19538d47 started for path: /api/v1/user/
+2024-08-20 10:07:34 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:07:34 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: e8e64097-4486-4bb4-a9b7-cc76aae69cd4 unread_notification: False
+2024-08-20 10:07:34 loglevel=INFO   logger=app.logger                dispatch() L133  Request b2c88c28-5a6b-4d2a-bb7e-54fe19538d47 ended for path: /api/v1/user/. Duration: 337.97 ms
+2024-08-20 10:08:03 loglevel=INFO   logger=app.logger                dispatch() L125  Request 246387e8-333b-4f83-ba1e-3731ec215d30 started for path: /api/v1/auth/login_user/
+2024-08-20 10:08:03 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                login_user() L136  Login successful for user 1 at 20.08.2024 10:08:04 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MjQxNzcyODR9.5FGravpYGsxkclD2w66sUN-Lv7yePar4dZd1tBhWGctDs5BLL7CL7GG3dNw3_JMFPKCvcKIArELkcrhpIDesUA
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                dispatch() L133  Request 246387e8-333b-4f83-ba1e-3731ec215d30 ended for path: /api/v1/auth/login_user/. Duration: 292.54 ms
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                dispatch() L125  Request 68e1a19c-3a42-474e-920b-77447e15f526 started for path: /api/v1/user/1/role
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                dispatch() L133  Request 68e1a19c-3a42-474e-920b-77447e15f526 ended for path: /api/v1/user/1/role. Duration: 10.52 ms
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                dispatch() L125  Request 74159147-7406-44f5-9255-48aa7d4b3d21 started for path: /api/v1/event/
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: c8554cc8-5527-4fdb-9dfe-2244051c5d67 unread_notification: False
+2024-08-20 10:08:04 loglevel=INFO   logger=app.logger                dispatch() L133  Request 74159147-7406-44f5-9255-48aa7d4b3d21 ended for path: /api/v1/event/. Duration: 13.44 ms
+2024-08-20 10:08:07 loglevel=INFO   logger=app.logger                dispatch() L125  Request 6fce6d45-8afe-4e0d-805e-8ef87ce7585e started for path: /api/v1/user/pending-approval/
+2024-08-20 10:08:07 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:08:07 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7c292db3-9437-4408-a180-84bce5c474f5 unread_notification: False
+2024-08-20 10:08:07 loglevel=INFO   logger=app.logger                dispatch() L133  Request 6fce6d45-8afe-4e0d-805e-8ef87ce7585e ended for path: /api/v1/user/pending-approval/. Duration: 30.30 ms
+2024-08-20 10:08:14 loglevel=INFO   logger=app.logger                dispatch() L125  Request dddaca60-aa9e-4a6a-b98c-52fe25ca3699 started for path: /api/v1/event/
+2024-08-20 10:08:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:08:14 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 10:08:14 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 5a788720-7717-4405-9eb8-f831ae9ead00 unread_notification: False
+2024-08-20 10:08:14 loglevel=INFO   logger=app.logger                dispatch() L133  Request dddaca60-aa9e-4a6a-b98c-52fe25ca3699 ended for path: /api/v1/event/. Duration: 10.87 ms
+2024-08-20 10:26:14 loglevel=INFO   logger=app.logger                dispatch() L125  Request dc421893-b254-4e47-8f45-768094c1929d started for path: /api/v1/user/
+2024-08-20 10:26:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:26:14 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 299067ea-ba09-4b29-af26-ff793f894146 unread_notification: False
+2024-08-20 10:26:14 loglevel=INFO   logger=app.logger                dispatch() L133  Request dc421893-b254-4e47-8f45-768094c1929d ended for path: /api/v1/user/. Duration: 365.99 ms
+2024-08-20 10:29:12 loglevel=INFO   logger=app.logger                dispatch() L125  Request 85b8d7bc-c135-4073-875c-078d1dbf65ce started for path: /api/v1/event/
+2024-08-20 10:29:12 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:29:12 loglevel=INFO   logger=app.logger                get_all_events() L250  Events retrieved. Page: 1, Items: 10, Total: 3
+2024-08-20 10:29:12 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 4f4838de-091c-4bae-be12-05057aa25340 unread_notification: False
+2024-08-20 10:29:12 loglevel=INFO   logger=app.logger                dispatch() L133  Request 85b8d7bc-c135-4073-875c-078d1dbf65ce ended for path: /api/v1/event/. Duration: 15.75 ms
+2024-08-20 10:29:39 loglevel=INFO   logger=app.logger                dispatch() L125  Request ceb89de4-b271-4fe8-9727-f530545715a6 started for path: /api/v1/user/
+2024-08-20 10:29:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-08-20 10:29:39 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 430afdd6-863b-4597-9350-d5891524d129 unread_notification: False
+2024-08-20 10:29:39 loglevel=INFO   logger=app.logger                dispatch() L133  Request ceb89de4-b271-4fe8-9727-f530545715a6 ended for path: /api/v1/user/. Duration: 339.71 ms
