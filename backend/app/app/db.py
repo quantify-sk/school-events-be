@@ -204,8 +204,8 @@ def seed_events():
             event_type=EventType.WORKSHOP,
             duration=90,
             organizer_id=kino_lumiere.user_id,
-            district="Bratislava I",
-            region="Bratislavský kraj",
+            district="bratislava_i", 
+            region="bratislavsky",
         ),
         Event(
             title="Školské predstavenie s lektorským úvodom",
@@ -221,8 +221,8 @@ def seed_events():
             event_type=EventType.SCREENING,
             duration=120,
             organizer_id=kino_lumiere.user_id,
-            district="Bratislava I",
-            region="Bratislavský kraj",
+            district="bratislava_i",
+            region="bratislavsky", 
         ),
         Event(
             title="Školské predstavenie bez lektorského úvodu",
@@ -238,8 +238,8 @@ def seed_events():
             event_type=EventType.SCREENING,
             duration=120,
             organizer_id=kino_lumiere.user_id,
-            district="Bratislava I",
-            region="Bratislavský kraj",
+            district="bratislava_i",
+            region="bratislavsky",
         ),
     ]
 
@@ -313,8 +313,8 @@ def seed_events():
         duration=60,
         organizer_id=sko_zilina.user_id,
         more_info_url="https://skozilina.sk/",
-        district="Žilina",
-        region="Žilinský kraj",
+        district="zilina",  # Set to the appropriate district value
+        region="zilinsky",
     )
     db.add(sko_zilina_event)
     db.flush()
@@ -348,8 +348,8 @@ def seed_events():
         duration=60,
         organizer_id=sfk.user_id,
         more_info_url="https://www.sfk.sk/koncerty-pre-deti-a-mladez",
-        district="Košice",
-        region="Košický kraj",
+    district="kosice_i",  # Set to the appropriate district value
+    region="kosicky",  # Set to the appropriate region value
     )
     db.add(sfk_event)
     db.flush()
@@ -378,8 +378,8 @@ def seed_events():
         duration=120,
         organizer_id=statna_opera.user_id,
         more_info_url="https://www.stateopera.sk/sk/program",
-        district="Banská Bystrica",
-        region="Banskobystrický kraj",
+    district="banska_bystrica",  # Set to the appropriate district value
+    region="banskobystricky",  # Set to the appropriate region value
     )
     db.add(statna_opera_event)
     db.flush()
@@ -411,8 +411,8 @@ def seed_events():
         duration=130,  # 100 minutes performance + 30 minutes discussion
         organizer_id=nova_scena.user_id,
         more_info_url="https://www.novascena.sk/repertoar",
-        district="Bratislava I",
-        region="Bratislavský kraj",
+  district="bratislava_i",  # Set to the appropriate district value
+    region="bratislavsky",  # Set to the appropriate region value
     )
     db.add(nova_scena_punk_rock)
     db.flush()
@@ -442,8 +442,8 @@ def seed_events():
         duration=60,
         organizer_id=nova_scena.user_id,
         more_info_url="https://www.novascena.sk/repertoar",
-        district="Bratislava I",
-        region="Bratislavský kraj",
+  district="bratislava_i",  # Set to the appropriate district value
+    region="bratislavsky",  # Set to the appropriate region value
     )
     db.add(nova_scena_event)
     db.flush()
@@ -473,8 +473,8 @@ def seed_events():
         duration=90,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
 
     )
     db.add(nd_kosice_event1)
@@ -517,8 +517,8 @@ def seed_events():
         duration=90,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event2)
     db.flush()
@@ -555,8 +555,8 @@ def seed_events():
         duration=140,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event3)
     db.flush()
@@ -585,8 +585,8 @@ def seed_events():
         duration=150,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event4)
     db.flush()
@@ -616,8 +616,8 @@ def seed_events():
         duration=90,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj"       
+        district="kosice",
+        region="kosicky",     
     )
     db.add(nd_kosice_event5)
     db.flush()
@@ -651,8 +651,8 @@ def seed_events():
         duration=60,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event6)
     db.flush()
@@ -682,8 +682,8 @@ def seed_events():
         duration=108,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event7)
     db.flush()
@@ -720,8 +720,8 @@ def seed_events():
         duration=80,
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
-        district="Košice",
-        region="Košický kraj",
+        district="kosice",
+        region="kosicky",
     )
     db.add(nd_kosice_event8)
     db.flush()
@@ -758,8 +758,8 @@ def seed_events():
         duration=60,
         organizer_id=sluk.user_id,
         more_info_url="https://www.sluk.sk/predstavenia/gasparko/",
-        district="Bratislava",
-        region="Bratislavský kraj",
+        district="bratislava_i",
+        region="bratislavsky",
     )
     db.add(sluk_event1)
     db.flush()
@@ -780,8 +780,8 @@ def seed_events():
         duration=60,
         organizer_id=sluk.user_id,
         more_info_url="https://www.sluk.sk/predstavenia/zvuky-nie-su-muky/",
-        district="Bratislava",
-        region="Bratislavský kraj",
+        district="bratislava_i",
+        region="bratislavsky",
     )
     db.add(sluk_event2)
     db.flush()
@@ -802,8 +802,8 @@ def seed_events():
         duration=80,
         organizer_id=sluk.user_id,
         more_info_url="https://www.sluk.sk/predstavenia/slovensko/",
-        district="Bratislava",
-        region="Bratislavský kraj",
+        district="bratislava_i",
+        region="bratislavsky",
     )
     db.add(sluk_event3)
     db.flush()
@@ -841,8 +841,8 @@ def seed_events():
         duration=50,
         organizer_id=ifju_szivek.user_id,
         more_info_url="https://ifjuszivek.sk/sk/repertoar/skola-madarskeho-tanca",
-        district="Bratislava",
-        region="Bratislavský kraj",
+        district="bratislava_i",
+        region="bratislavsky",
     )
     db.add(ifju_szivek_event1)
     db.flush()
@@ -879,8 +879,8 @@ def seed_events():
         duration=45,
         organizer_id=ifju_szivek.user_id,
         more_info_url="https://ifjuszivek.sk/sk/repertoar/kukucie-vajicko-0",
-        district="Bratislava",
-        region="Bratislavský kraj",
+        district="bratislava_i",
+        region="bratislavsky",
     )
     db.add(ifju_szivek_event2)
     db.flush()
@@ -912,8 +912,8 @@ def seed_events():
         duration=90,
         organizer_id=suh.user_id,
         more_info_url="https://www.suh.sk/navstivte-nas-menu/filmy-v-planetariu/",
-        district="Nové Zámky",
-        region="Nitriansky kraj",
+        district="nove_zamky",
+        region="nitriansky",
     )
     db.add(suh_event)
     db.flush()
@@ -944,9 +944,9 @@ def seed_events():
         event_type=EventType.WORKSHOP,
         duration=180,  # 120 + 60 minutes
         organizer_id=uluv_svk.user_id,
-        district="Banská Bystrica",
-        region="Banskobystrický kraj",
-    )
+        district="banska_bystrica",
+        region="banskobystricky",
+            )
     db.add(uluv_svk_event1)
     db.flush()
 
@@ -979,8 +979,8 @@ def seed_events():
         event_type=EventType.WORKSHOP,
         duration=180,  # 120 + 60 minutes
         organizer_id=uluv_svk.user_id,
-        district="Banská Bystrica",
-        region="Banskobystrický kraj",
+        district="banska_bystrica",
+        region="banskobystricky",
     )
     db.add(uluv_svk_event2)
     db.flush()
