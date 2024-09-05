@@ -34,6 +34,7 @@ from app.data_adapter.attachment import Attachment
 from app.data_adapter.waiting_list import WaitingList
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 
 
@@ -297,21 +298,96 @@ class Event(Base):
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
+        admin: bool = False,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        db = get_db_session()
+    
+        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id)
+    
+        # Get today's date
+        today = datetime.now().date()
+    
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params["event_dates"]
+            if "date_from" in date_filters:
+                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date >= from_date)
+            if "date_to" in date_filters:
+                end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
+                query = query.filter(EventDate.date < end_date)
+        elif not admin:
+            # If no date filters are provided and not admin, show events from today onwards
+            query = query.filter(EventDate.date >= today)
+    
+        if filter_params:
+            query = ParameterValidator.apply_filters_and_sorting(
+                query,
+                cls,
+                {k: v for k, v in filter_params.items() if k != "event_dates"},
+                None,
+            )
+    
+        if sorting_params:
+            for sort_param in sorting_params:
+                for key, value in sort_param.items():
+                    if key == "event_dates.date":
+                        query = query.order_by(
+                            EventDate.date.asc(), EventDate.time.asc() if value == "asc" 
+                            else EventDate.date.desc(), EventDate.time.desc()
+                        )
+                    elif hasattr(cls, key):
+                        column = getattr(cls, key)
+                        query = query.order_by(
+                            column.asc() if value == "asc" else column.desc()
+                        )
+        else:
+            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
+    
+        total_count = query.count()
+    
+        all_results = query.all()
+    
+        all_events = []
+        for event, event_date in all_results:
+            event_dict = event._to_model()
+            event_dict['event_date'] = event_date.date
+            event_dict['event_time'] = event_date.time
+            event_dict['current_event_date_id'] = event_date.id
+            event_dict['is_current_event_date_locked'] = event_date.is_locked()
+            event_dict['event_date_status'] = event_date.status
+            all_events.append(event_dict)
+    
+        sorted_events = sorted(all_events, key=lambda x: (x['event_date'], x['event_time']))
+    
+        start_index = (current_page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        paginated_events = sorted_events[start_index:end_index]
+    
+        return paginated_events, total_count
+    
+    @classmethod
+    def get_organizer_events(
+        cls,
+        organizer_id: int,
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Union[str, List[str]]]],
+        sorting_params: Optional[List[Dict[str, str]]],
     ) -> Tuple[List[Dict[str, Any]], int]:
         db = get_db_session()
 
-        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id)
+        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id).filter(cls.organizer_id == organizer_id)
+
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params["event_dates"]
+            if "date_from" in date_filters:
+                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date >= from_date)
+            if "date_to" in date_filters:
+                end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
+                query = query.filter(EventDate.date < end_date)
 
         if filter_params:
-            if "event_dates" in filter_params:
-                date_filters = filter_params["event_dates"]
-                if "date_from" in date_filters:
-                    query = query.filter(EventDate.date >= datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date())
-                if "date_to" in date_filters:
-                    # Add one day to the end date to include the entire last day
-                    end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
-                    query = query.filter(EventDate.date < end_date)
-
             query = ParameterValidator.apply_filters_and_sorting(
                 query,
                 cls,
@@ -345,7 +421,8 @@ class Event(Base):
             event_dict['event_date'] = event_date.date
             event_dict['event_time'] = event_date.time
             event_dict['current_event_date_id'] = event_date.id
-            event_dict['is_current_event_date_locked'] = event_date.is_locked() 
+            event_dict['is_current_event_date_locked'] = event_date.is_locked()
+            event_dict['event_date_status'] = event_date.status
             all_events.append(event_dict)
 
         sorted_events = sorted(all_events, key=lambda x: (x['event_date'], x['event_time']))
@@ -355,97 +432,6 @@ class Event(Base):
         paginated_events = sorted_events[start_index:end_index]
 
         return paginated_events, total_count
-    
-    @classmethod
-    def get_organizer_events(
-        cls,
-        organizer_id: int,
-        current_page: int,
-        items_per_page: int,
-        filter_params: Optional[Dict[str, Union[str, List[str]]]],
-        sorting_params: Optional[List[Dict[str, str]]],
-    ) -> Tuple[List[Dict[str, Any]], int]:
-        """
-        Retrieve events for a specific organizer with pagination, filtering, and sorting.
-
-        Args:
-            organizer_id (int): The ID of the organizer.
-            current_page (int): The current page number.
-            items_per_page (int): The number of items per page.
-            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
-            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
-
-        Returns:
-            Tuple[List[Dict[str, Any]], int]: A tuple containing the list of events and the total count.
-        """
-        db = get_db_session()
-
-        # Start with a subquery to get the earliest date for each event
-        date_subquery = (
-            db.query(EventDate.event_id, func.min(EventDate.date).label("min_date"))
-            .group_by(EventDate.event_id)
-            .subquery()
-        )
-
-        # Main query
-        query = (
-            db.query(cls)
-            .filter(cls.organizer_id == organizer_id)
-            .join(date_subquery, cls.id == date_subquery.c.event_id)
-        )
-
-        # Apply date range filter if provided
-        if filter_params and "event_dates" in filter_params:
-            date_filters = filter_params.pop("event_dates")
-            if "date_from" in date_filters:
-                query = query.filter(
-                    date_subquery.c.min_date >= date_filters["date_from"]
-                )
-            if "date_to" in date_filters:
-                query = query.filter(
-                    date_subquery.c.min_date <= date_filters["date_to"]
-                )
-
-        # Apply additional filters using ParameterValidator
-        if filter_params:
-            query = ParameterValidator.apply_filters_and_sorting(
-                query,
-                cls,
-                filter_params,
-                None,  # We'll handle sorting separately
-            )
-
-        # Apply sorting
-        if sorting_params:
-            for sort_param in sorting_params:
-                for key, value in sort_param.items():
-                    if key == "event_dates.date":
-                        query = query.order_by(
-                            date_subquery.c.min_date.asc()
-                            if value == "asc"
-                            else date_subquery.c.min_date.desc()
-                        )
-                    else:
-                        column = getattr(cls, key)
-                        query = query.order_by(
-                            column.asc() if value == "asc" else column.desc()
-                        )
-        else:
-            # Default sorting by earliest date
-            query = query.order_by(date_subquery.c.min_date.asc())
-
-        # Get total count of distinct events
-        total_count = query.count()
-
-        # Apply pagination
-        query = query.offset((current_page - 1) * items_per_page).limit(items_per_page)
-
-        # Load related event_dates
-        query = query.options(joinedload(cls.event_dates))
-
-        # Execute query and convert to model
-        events = query.all()
-        return [event._to_model() for event in events], total_count
 
 
 class EventDate(Base):
@@ -457,9 +443,8 @@ class EventDate(Base):
     time = Column(DateTime, nullable=False)
     capacity = Column(Integer, nullable=False)
     available_spots = Column(Integer, nullable=False)
-    lock_time_hours = Column(
-        Integer, nullable=False, default=48
-    )  # Store lock time as hours
+    lock_time_hours = Column(Integer, nullable=False, default=48)
+    status = Column(SAEnum(EventStatus), nullable=False, default=EventStatus.PUBLISHED)
 
     event = relationship("Event", back_populates="event_dates")
     reservations = relationship("Reservation", back_populates="event_date")
@@ -474,14 +459,15 @@ class EventDate(Base):
         capacity: int,
         lock_time_hours: int = 48,
         available_spots: Optional[int] = None,
+        status: EventStatus = EventStatus.PUBLISHED
     ):
         self.event_id = event_id
         self.date = date
         self.time = time
         self.capacity = capacity
-        self.available_spots = capacity
         self.lock_time_hours = lock_time_hours
         self.available_spots = available_spots if available_spots is not None else capacity
+        self.status = status
 
     def calculate_lock_time(self) -> datetime:
         """
@@ -490,20 +476,38 @@ class EventDate(Base):
         event_datetime = datetime.combine(self.date, self.time.time())
         return event_datetime - timedelta(hours=self.lock_time_hours)
 
-    def is_locked(self) -> bool:
+    def update_status(self):
         """
-        Check if the event date is locked based on the current time and calculated lock time.
+        Update the status of the event based on the current time.
         """
         current_time = datetime.now()
-        return current_time >= self.calculate_lock_time()
+        event_datetime = datetime.combine(self.date, self.time.time())
+        if current_time > event_datetime:
+            if self.status not in [EventStatus.COMPLETED, EventStatus.CANCELLED, EventStatus.COMPLETED_UNPAID, EventStatus.SENT_PAYMENT]:
+                self.status = EventStatus.COMPLETED_UNPAID
+
+    def is_locked(self) -> bool:
+        """
+        Check if the event date is locked based on the current time, calculated lock time, and status.
+        """
+        self.update_status()  # Ensure status is up-to-date before checking
+        current_time = datetime.now()
+        return current_time >= self.calculate_lock_time() or self.status in [EventStatus.COMPLETED, EventStatus.COMPLETED_UNPAID, EventStatus.CANCELLED, EventStatus.SENT_PAYMENT]
 
     def book_seats(self, seats: int) -> bool:
+        """
+        Book a specified number of seats for the event.
+        """
         if self.available_spots >= seats:
             self.available_spots -= seats
             return True
         return False
 
     def _to_model(self) -> Dict[str, Any]:
+        """
+        Convert the EventDate instance to a dictionary representation.
+        """
+        self.update_status()  # Ensure status is up-to-date
         return {
             "id": self.id,
             "event_id": self.event_id,
@@ -512,29 +516,96 @@ class EventDate(Base):
             "capacity": self.capacity,
             "available_spots": self.available_spots,
             "is_locked": self.is_locked(),
+            "status": self.status,
         }
 
     @classmethod
     def get_event_date_by_id(cls, event_date_id: int) -> Optional["EventDate"]:
         """
         Retrieve an event date by its ID, including locked event dates.
-
-        Args:
-            event_date_id (int): The unique identifier of the event date to retrieve.
-
-        Returns:
-            Optional[EventDate]: The EventDate object if found, None otherwise.
         """
         try:
             with get_db_session() as db:
                 event_date = db.query(cls).filter(cls.id == event_date_id).first()
                 return event_date
         except Exception as e:
-            # Log the error here if you have a logging system
             print(f"Error retrieving event date: {str(e)}")
             return None
 
+    @classmethod
+    def update_past_event_statuses(cls, db: Session):
+        """
+        Update the status of all past events to COMPLETED_UNPAID if not already COMPLETED or CANCELLED.
+        """
+        print("Starting update_past_event_statuses")
+        try:
+            past_events = db.query(cls).filter(
+                cls.date < datetime.now(),
+                cls.status.in_([EventStatus.PUBLISHED])
+            ).all()
+            updated_count = 0
+            for event in past_events:
+                if event.status != EventStatus.COMPLETED_UNPAID:
+                    event.status = EventStatus.COMPLETED_UNPAID
+                    updated_count += 1
+            db.commit()
+            return updated_count, db
+        except Exception as e:
+            print(f"Error updating event statuses: {e}")
+            db.rollback()
+            return 0
+        finally:
+            print("Finished update_past_event_statuses")
 
+
+    @classmethod
+    def mark_as_paid(cls, event_date_id: int) -> bool:
+        
+        db = get_db_session()
+
+        try:
+            event_date = db.query(cls).filter(cls.id == event_date_id).first()
+            if event_date:
+                print("Event date found", event_date._to_model())
+                event_date.status = EventStatus.SENT_PAYMENT
+                print(f"Status after setting: {event_date.status}")
+                db.flush()
+                
+                db.commit()
+                db.refresh(event_date)
+                print("Event date status updated", event_date._to_model())
+                return True
+            return False
+        except Exception as e:
+            db.rollback()
+            print(f"Error marking event date as paid: {str(e)}")
+            return False
+        finally:
+            db.close()
+
+
+    @classmethod
+    def mark_as_completed(cls, event_date_id: int) -> bool:
+        db = get_db_session()
+
+        try:
+            event_date = db.query(cls).filter(cls.id == event_date_id).first()
+            print("Event date found", event_date._to_model())
+            if event_date:
+                event_date.status = EventStatus.COMPLETED
+                print(f"Status after setting: {event_date.status}")
+                db.flush()
+                db.commit()
+                db.refresh(event_date)
+                print("Event date status updated", event_date._to_model())
+                return True
+            return False
+        except Exception as e:
+            db.rollback()
+            print(f"Error marking event date as completed: {str(e)}")
+            return False
+        finally:
+            db.close()
 
 
 # Create EventClaim model
@@ -558,22 +629,32 @@ class EventClaim(Base):
     event_date = relationship("EventDate", back_populates="claims")
 
     @classmethod
-    def create_claim(cls, claim_data: Dict[str, Any]) -> "EventClaim":
+    def create_claim(cls, claim_data: Dict[str, Any]) -> List["EventClaim"]:
         """
-        Create a new claim in the database.
+        Create new claims in the database, one for each event date ID.
 
         Args:
-            claim_data (Dict[str, Any]): Data for creating the claim.
+            claim_data (Dict[str, Any]): Data for creating the claims.
 
         Returns:
-            EventClaim: The created claim object.
+            List[EventClaim]: The list of created claim objects.
         """
         with get_db_session() as db:
-            new_claim = cls(**claim_data)
-            db.add(new_claim)
+            event_date_ids = claim_data.pop('event_date_ids')
+            created_claims = []
+
+            for date_id in event_date_ids:
+                new_claim_data = claim_data.copy()
+                new_claim_data['event_date_id'] = date_id
+                new_claim = cls(**new_claim_data)
+                db.add(new_claim)
+                created_claims.append(new_claim)
+
             db.commit()
-            db.refresh(new_claim)
-            return new_claim
+            for claim in created_claims:
+                db.refresh(claim)
+
+            return created_claims
 
     @classmethod
     def get_pending_claims(cls) -> List["EventClaim"]:

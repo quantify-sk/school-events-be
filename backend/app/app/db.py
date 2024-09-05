@@ -8,6 +8,9 @@ from app.data_adapter.event import Event, EventDate
 from app.data_adapter.school import School
 from app.models.user import UserRole, UserStatus
 from app.models.event import EventType, TargetGroup
+import os
+import random
+from app.data_adapter.attachment import Attachment
 
 
 def seed_only_admin_user():
@@ -138,6 +141,30 @@ def seed_users():
 
     print("USERS AND SCHOOLS SEEDED SUCCESSFULLY")
 
+
+def get_random_photo():
+    # Use a raw string for the Windows path
+    photo_dir = "/code/app/bank-photos"
+    
+    # Alternatively, you can use forward slashes, which work on both Windows and Unix-like systems:
+    # photo_dir = "C:/Users/david/school-events-be/backend/app/app/bank-photos"
+    
+    # Check if the directory exists
+    if not os.path.exists(photo_dir):
+        print(f"Warning: The directory {photo_dir} does not exist.")
+        return None
+    
+    # Get all image files from the directory
+    photos = [f for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    
+    if photos:
+        # Select a random photo
+        random_photo = random.choice(photos)
+        # Return the full path to the photo
+        return os.path.join(photo_dir, random_photo)
+    else:
+        print(f"No photos found in {photo_dir}")
+        return None
 
 def seed_events():
     """Seed events"""
@@ -293,6 +320,17 @@ def seed_events():
         )
         db.add_all(event_dates)
 
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     # Štátny komorný orchester Žilina event
     sko_zilina = create_organizer_and_employee(
         "Štátny komorný orchester Žilina", "sko_zilina"
@@ -319,6 +357,18 @@ def seed_events():
     db.add(sko_zilina_event)
     db.flush()
 
+    for event in [sko_zilina_event]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+        
     # Add event dates
     sko_zilina_dates = [datetime(2024, 10, 15), datetime(2024, 10, 16)]
     sko_zilina_times = [time(9, 0), time(11, 0)]
@@ -329,6 +379,8 @@ def seed_events():
         sko_zilina_event.capacity,
     )
     db.add_all(sko_zilina_event_dates)
+
+
 
     # Štátna filharmónia Košice event
     sfk = create_organizer_and_employee("Štátna filharmónia Košice", "sfk")
@@ -353,6 +405,19 @@ def seed_events():
     )
     db.add(sfk_event)
     db.flush()
+
+    for event in [sfk_event]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
 
     sfk_dates = [datetime(2024, 12, 11), datetime(2024, 12, 12), datetime(2024, 12, 13)]
     sfk_event_dates = create_event_dates(
@@ -384,6 +449,18 @@ def seed_events():
     db.add(statna_opera_event)
     db.flush()
 
+
+    for event in [statna_opera_event]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
     statna_opera_dates = [datetime(2024, 10, 24), datetime(2024, 10, 25)]
     statna_opera_event_dates = create_event_dates(
         statna_opera_event.id,
@@ -417,6 +494,18 @@ def seed_events():
     db.add(nova_scena_punk_rock)
     db.flush()
 
+    for event in [nova_scena_punk_rock]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     # Add event dates (1x monthly from September to December 2024)
     punk_rock_dates = [datetime(2024, m, 1) for m in range(9, 13)]
     punk_rock_event_dates = create_event_dates(
@@ -447,6 +536,18 @@ def seed_events():
     )
     db.add(nova_scena_event)
     db.flush()
+
+    for event in [nova_scena_event]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     nova_scena_dates = [datetime(2024, m, 1) for m in range(9, 13) for _ in range(2)]
     nova_scena_event_dates = create_event_dates(
@@ -479,6 +580,18 @@ def seed_events():
     )
     db.add(nd_kosice_event1)
     db.flush()
+
+    for event in [nd_kosice_event1]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     nd_kosice_event1_dates = [
         (datetime(2024, 9, 15), time(16, 0)),
@@ -523,6 +636,18 @@ def seed_events():
     db.add(nd_kosice_event2)
     db.flush()
 
+    for event in [nd_kosice_event2]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     nd_kosice_event2_dates = [
         (datetime(2024, 10, 20), time(10, 0)),
         (datetime(2024, 12, 1), time(16, 0)),
@@ -561,6 +686,18 @@ def seed_events():
     db.add(nd_kosice_event3)
     db.flush()
 
+    for event in [nd_kosice_event3]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     db.add(
         EventDate(
             event_id=nd_kosice_event3.id,
@@ -590,6 +727,19 @@ def seed_events():
     )
     db.add(nd_kosice_event4)
     db.flush()
+
+
+    for event in [nd_kosice_event4]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     db.add(
         EventDate(
@@ -621,6 +771,18 @@ def seed_events():
     )
     db.add(nd_kosice_event5)
     db.flush()
+
+    for event in [nd_kosice_event5]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     nd_kosice_event5_dates = [
         datetime(2024, 9, 23),
@@ -657,6 +819,17 @@ def seed_events():
     db.add(nd_kosice_event6)
     db.flush()
 
+    for event in [nd_kosice_event6]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
     db.add(
         EventDate(
             event_id=nd_kosice_event6.id,
@@ -687,6 +860,18 @@ def seed_events():
     )
     db.add(nd_kosice_event7)
     db.flush()
+
+    for event in [nd_kosice_event7]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     nd_kosice_event7_dates = [
         (datetime(2024, 10, 31), time(18, 0)),
@@ -726,6 +911,18 @@ def seed_events():
     db.add(nd_kosice_event8)
     db.flush()
 
+    for event in [nd_kosice_event8]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     nd_kosice_event8_dates = [
         datetime(2024, 12, 4),
         datetime(2024, 12, 5),
@@ -764,6 +961,18 @@ def seed_events():
     db.add(sluk_event1)
     db.flush()
 
+    for event in [sluk_event1]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     # Zvuky nie sú muky
     sluk_event2 = Event(
         title="Zvuky nie sú muky",
@@ -786,6 +995,17 @@ def seed_events():
     db.add(sluk_event2)
     db.flush()
 
+    for event in [sluk_event2]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
     # Slovensko
     sluk_event3 = Event(
         title="Slovensko",
@@ -807,6 +1027,18 @@ def seed_events():
     )
     db.add(sluk_event3)
     db.flush()
+
+    for event in [sluk_event3]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     sluk_dates = [datetime(2024, m, 1) for m in [9, 10]]
     sluk_event1_dates = create_event_dates(
@@ -847,6 +1079,18 @@ def seed_events():
     db.add(ifju_szivek_event1)
     db.flush()
 
+    for event in [ifju_szivek_event1]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     ifju_szivek_event1_dates = [
         datetime(2024, 9, 23),
         datetime(2024, 9, 24),
@@ -885,6 +1129,18 @@ def seed_events():
     db.add(ifju_szivek_event2)
     db.flush()
 
+    for event in [ifju_szivek_event2]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     ifju_szivek_event2_dates = [datetime(2024, m, 1) for m in [9, 10]]
     ifju_szivek_event2_dates = create_event_dates(
         ifju_szivek_event2.id,
@@ -918,6 +1174,19 @@ def seed_events():
     db.add(suh_event)
     db.flush()
 
+
+    for event in [suh_event]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
+
     suh_dates = [datetime(2024, 9, day) for day in range(1, 31)]
     suh_event_dates = create_event_dates(
         suh_event.id, suh_dates, [time(9, 0)], suh_event.capacity
@@ -949,6 +1218,19 @@ def seed_events():
             )
     db.add(uluv_svk_event1)
     db.flush()
+
+
+    for event in [uluv_svk_event1]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     uluv_svk_event1_dates = [
         datetime(2024, 10, 8),
@@ -984,6 +1266,18 @@ def seed_events():
     )
     db.add(uluv_svk_event2)
     db.flush()
+
+    for event in [uluv_svk_event2]:
+        # Create attachment for the event
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id
+            )
+            db.add(attachment)
 
     uluv_svk_event2_dates = [
         datetime(2024, 10, 3),

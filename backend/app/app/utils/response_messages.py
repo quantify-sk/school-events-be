@@ -33,6 +33,8 @@ class ResponseMessages:
         "User event reservations retrieved successfully"
     )
     MSG_SUCCESS_GET_PARENT_ORGANIZER = "Parent organizer retrieved successfully"
+    MSG_SUCCESS_MARK_PAID = "Reservation marked as paid successfully"
+    MSG_SUCCESS_MARK_COMPLETED = "Reservation marked as completed successfully"
 
     # Error messages
     ERR_USER_NOT_FOUND = "User not found"
@@ -48,6 +50,8 @@ class ResponseMessages:
     ERR_TOKEN_NOT_PROVIDED = "Token not provided"
     ERR_INVALID_DATA = "Invalid data"
     ERR_INVALID_USER_ID = "Invalid user ID"
+    ERR_MARK_PAID = "Error marking reservation as paid"
+    ERR_MARK_COMPLETED = "Error marking reservation as completed"
 
     ERR_EVENT_NOT_FOUND = "Event not found"
     ERR_CREATE_EVENT = "Error creating event"

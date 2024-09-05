@@ -7,11 +7,11 @@ from enum import Enum
 
 class EventStatus(str, Enum):
     PUBLISHED = "published"
-    UNPUBLISHED = "unpublished"
+    SENT_PAYMENT = "completed_payment_sent"
     CANCELLED = "cancelled"
-    COMPLETED = "completed"
-    UNPAID = "unpaid"
+    COMPLETED = "completed_paid"
     COMPLETED_UNPAID = "completed_unpaid"
+    
 
 
 class EventType(str, Enum):
@@ -56,6 +56,8 @@ class EventDateModel(BaseModel):
     capacity: int
     available_spots: int
     lock_time: Optional[datetime] = None
+    is_locked: bool = False
+    status: EventStatus = EventStatus.PUBLISHED
 
     class Config:
         from_attributes = True
@@ -81,6 +83,8 @@ class EventCreateModel(BaseModel):
     event_dates: List[EventDateModel]
     parking_spaces: Optional[int] = None  # Added parking spaces
     ztp_access: Optional[bool] = None  # Added ZTP access
+    region: Optional[str] = None  # Added region
+    district: Optional[str] = None  # Added district
 
 
 class EventUpdateModel(BaseModel):
@@ -160,7 +164,7 @@ class EventClaimCreateModel(BaseModel):
     Pydantic model for creating a new event claim.
     """
     event_id: int
-    event_date_id: Optional[int] = None
+    event_date_ids: Optional[List[int]] = None
     organizer_id: int
     claim_type: ClaimType
     reason: str

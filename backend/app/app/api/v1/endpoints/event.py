@@ -70,6 +70,8 @@ async def create_event(
     parking_spaces: int = Form(None),
     event_dates: str = Form(...),
     attachments: List[UploadFile] = File(None),
+    region: Optional[str] = Form(None),
+    district: Optional[str] = Form(None),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
@@ -113,6 +115,8 @@ async def create_event(
             event_dates=event_date_models,
             parking_spaces=parking_spaces,
             ztp_access=ztp_access,
+            region=region,
+            district=district,
         )
     except ValidationError as e:
         raise CustomBadRequestException(f"Invalid event data: {str(e)}")
@@ -340,6 +344,7 @@ async def get_all_events(
     date_to: Optional[datetime] = Query(
         None, description="End date for filtering events"
     ),
+    admin: bool = Query(False, description="Flag to indicate if the user is an admin"),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
@@ -377,6 +382,7 @@ async def get_all_events(
         items_per_page,
         filters,
         sorting,
+        admin
     )
     return build_api_response(response)
 
@@ -621,4 +627,70 @@ async def update_claim_status(
         GenericResponseModel: A response containing the updated claim data.
     """
     response: GenericResponseModel = await EventService.update_claim_status(claim_id, new_status)
+    return build_api_response(response)
+
+
+@router.post(
+    "/{event_date_id}/mark-as-paid",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Mark event as paid.",
+    description="Mark a COMPLETED_UNPAID event as COMPLETED_PAYMENT_SENT by an admin.",
+    responses={
+        200: {
+            "model": GenericResponseModel[EventModel],
+            "description": "Successfully marked event as paid",
+        },
+        400: {
+            "model": GenericResponseModel,
+            "description": "Event not found or invalid status",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def mark_event_as_paid(
+    event_date_id: int,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Mark an event as paid by an admin.
+    """
+    print("EVENT DATE ID", event_date_id)
+    response: GenericResponseModel = await EventService.mark_as_paid(event_date_id)
+    return build_api_response(response)
+
+@router.post(
+    "/{event_date_id}/mark-as-completed",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Mark event as completed.",
+    description="Mark a COMPLETED_PAYMENT_SENT event as COMPLETED by an admin.",
+    responses={
+        200: {
+            "model": GenericResponseModel[EventModel],
+            "description": "Successfully marked event as completed",
+        },
+        400: {
+            "model": GenericResponseModel,
+            "description": "Event not found or invalid status",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def mark_event_as_completed(
+    event_date_id: int,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Mark an event as completed by an admin.
+    """
+    response: GenericResponseModel = await EventService.mark_as_completed(event_date_id)
     return build_api_response(response)

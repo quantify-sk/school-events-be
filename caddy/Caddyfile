@@ -7,3 +7,11 @@
 {$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
   reverse_proxy fastapi_server:8000
 }
+
+kulturapreskoly-api.quantify.sk {
+  redir http://51.75.62.15:8082/api/v1{uri}
+}
+
+kulturapreskoly-api.quantify.sk:80 {
+  redir http://51.75.62.15:8082/api/v1{uri}
+}

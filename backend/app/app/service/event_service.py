@@ -222,6 +222,7 @@ class EventService:
         items_per_page: int,
         filter_params: Optional[Dict[str, Union[str, List[str]]]],
         sorting_params: Optional[List[Dict[str, str]]],
+        admin: bool = False,
     ) -> GenericResponseModel:
         """
         Retrieve all events with pagination, filtering, and sorting.
@@ -240,6 +241,7 @@ class EventService:
             items_per_page,
             filter_params,
             sorting_params,
+            admin
         )
 
         total_pages = math.ceil(total_count / items_per_page)
@@ -373,7 +375,7 @@ class EventService:
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_CREATE_CLAIM,
                 status_code=status.HTTP_201_CREATED,
-                data=new_claim._to_model(),
+                data=[claim._to_model() for claim in new_claim],
             )
         except Exception as e:
             logger.error(f"Error creating claim: {str(e)}")
@@ -433,3 +435,67 @@ class EventService:
         except Exception as e:
             logger.error(f"Error updating claim status: {str(e)}")
             raise CustomInternalServerErrorException(ResponseMessages.ERR_UPDATE_CLAIM)
+        
+
+    @staticmethod
+    async def mark_as_paid(event_date_id: int) -> GenericResponseModel:
+        """
+        Mark a COMPLETED_UNPAID event as COMPLETED_PAYMENT_SENT by an admin.
+        """
+        if not context_actor_user_data.get():
+            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+        
+        logger.info(f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid.")
+        try:
+            success = EventDate.mark_as_paid(event_date_id)
+            if success:
+                logger.info(f"Event_id {event_date_id} marked as paid successfully.")
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.MSG_SUCCESS_MARK_PAID,
+                    status_code=status.HTTP_200_OK,
+                    data={"event_date_id": event_date_id},
+                )
+            else:
+                logger.warning(f"Failed to mark event_id {event_date_id} as paid. Event may not exist or has invalid status.")
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.ERR_MARK_PAID,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    data={"event_date_id": event_date_id},
+                )
+        except Exception as e:
+            logger.error(f"Error marking event_id {event_date_id} as paid: {str(e)}")
+            raise Exception(f'Error marking event as paid: {str(e)}')
+        
+
+    @staticmethod
+    async def mark_as_completed (event_date_id: int) -> GenericResponseModel:
+        """
+        Mark a COMPLETED_PAYMENT_SENT event as COMPLETED.
+        """
+        if not context_actor_user_data.get():
+            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+        
+        logger.info(f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as completed.")
+        try:
+            success = EventDate.mark_as_completed(event_date_id)
+            if success:
+                logger.info(f"Event_id {event_date_id} marked as completed successfully.")
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.MSG_SUCCESS_MARK_COMPLETED,
+                    status_code=status.HTTP_200_OK,
+                    data={"event_date_id": event_date_id},
+                )
+            else:
+                logger.warning(f"Failed to mark event_id {event_date_id} as completed. Event may not exist or has invalid status.")
+                return GenericResponseModel(
+                    api_id=context_id_api.get(),
+                    message=ResponseMessages.ERR_MARK_COMPLETED,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    data={"event_date_id": event_date_id},
+                )
+        except Exception as e:
+            logger.error(f"Error marking event_id {event_date_id} as completed: {str(e)}")
+            raise Exception(f'Error marking event as completed: {str(e)}')

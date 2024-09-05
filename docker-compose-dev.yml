@@ -47,7 +47,7 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - 6399:6379
+      - 6379:6379
 
   celery_worker:
     container_name: ${PROJECT_NAME}_celery_worker
