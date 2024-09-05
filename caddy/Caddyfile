@@ -15,8 +15,5 @@ kulturapreskoly-api.quantify.sk:80 {
 }
 
 kulturapreskoly-api.quantify.sk:443 {
-  tls {
-    protocols tls1.2 tls1.3
-  }
   reverse_proxy fastapi_server:8000
 }
