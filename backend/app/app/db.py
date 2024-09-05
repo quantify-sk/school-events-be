@@ -155,7 +155,7 @@ def get_random_photo():
         return None
     
     # Get all image files from the directory
-    photos = [f for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    photos = [f for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', 'webp'))]
     
     if photos:
         # Select a random photo

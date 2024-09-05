@@ -2,19 +2,10 @@
   email t.snyrch@gmail.com
 }
 
-kulturapreskoly-api.quantify.sk:443 {
-  tls {
-    protocols tls1.2 tls1.3
-  }
+{$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
   reverse_proxy fastapi_server:8000
 }
 
-# This block redirects HTTP to HTTPS
-kulturapreskoly-api.quantify.sk:80 {
-  redir https://{host}{uri} permanent
-}
-
-# Keep these if you still need them, otherwise you can remove them
-{$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
+kulturapreskoly-api.quantify.sk {
   reverse_proxy fastapi_server:8000
 }

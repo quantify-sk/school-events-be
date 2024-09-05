@@ -1,3 +1,4 @@
+import base64
 import app.api.v1.endpoints
 from app.utils.exceptions import CustomBadRequestException
 from sqlalchemy import (
@@ -302,9 +303,10 @@ class Event(Base):
     ) -> Tuple[List[Dict[str, Any]], int]:
         db = get_db_session()
     
-        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id)
+        query = db.query(cls, EventDate, Attachment)
+        query = query.join(EventDate, cls.id == EventDate.event_id)
+        query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
     
-        # Get today's date
         today = datetime.now().date()
     
         if filter_params and "event_dates" in filter_params:
@@ -316,7 +318,6 @@ class Event(Base):
                 end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
                 query = query.filter(EventDate.date < end_date)
         elif not admin:
-            # If no date filters are provided and not admin, show events from today onwards
             query = query.filter(EventDate.date >= today)
     
         if filter_params:
@@ -332,8 +333,8 @@ class Event(Base):
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
                         query = query.order_by(
-                            EventDate.date.asc(), EventDate.time.asc() if value == "asc" 
-                            else EventDate.date.desc(), EventDate.time.desc()
+                            EventDate.date.asc() if value == "asc" else EventDate.date.desc(),
+                            EventDate.time.asc() if value == "asc" else EventDate.time.desc()
                         )
                     elif hasattr(cls, key):
                         column = getattr(cls, key)
@@ -345,25 +346,41 @@ class Event(Base):
     
         total_count = query.count()
     
+        query = query.limit(items_per_page).offset((current_page - 1) * items_per_page)
+    
         all_results = query.all()
     
         all_events = []
-        for event, event_date in all_results:
+        event_attachments = {}  # Store unique attachments by event ID
+    
+        for event, event_date, attachment in all_results:
             event_dict = event._to_model()
             event_dict['event_date'] = event_date.date
             event_dict['event_time'] = event_date.time
             event_dict['current_event_date_id'] = event_date.id
             event_dict['is_current_event_date_locked'] = event_date.is_locked()
             event_dict['event_date_status'] = event_date.status
+    
+            event_id = event_dict['id']
+    
+            if not admin and attachment is not None:
+                # Check if the attachment for the event ID already exists
+                if event_id not in event_attachments:
+                    with open(attachment.path, 'rb') as file:
+                        file_data = file.read()
+                    event_attachments[event_id] = {
+                        'id': attachment.id,
+                        'name': attachment.name,
+                        'data': base64.b64encode(file_data).decode('utf-8'),
+                        'type': attachment.type
+                    }
+    
             all_events.append(event_dict)
     
-        sorted_events = sorted(all_events, key=lambda x: (x['event_date'], x['event_time']))
+        for event_dict in all_events:
+            event_dict['attachments'] = [event_attachments.get(event_dict['id'])] if event_dict['id'] in event_attachments else []
     
-        start_index = (current_page - 1) * items_per_page
-        end_index = start_index + items_per_page
-        paginated_events = sorted_events[start_index:end_index]
-    
-        return paginated_events, total_count
+        return all_events, total_count
     
     @classmethod
     def get_organizer_events(
