@@ -13,3 +13,10 @@ kulturapreskoly-api.quantify.sk {
 kulturapreskoly-api.quantify.sk:80 {
   redir http://51.75.62.15:8082/api/v1{uri}
 }
+
+kulturapreskoly-api.quantify.sk:443 {
+  tls {
+    protocols tls1.2 tls1.3
+  }
+  reverse_proxy fastapi_server:8000
+}
