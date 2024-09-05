@@ -1,7 +1,5 @@
 {
   email t.snyrch@gmail.com
-  auto_https off
-  admin off
 }
 
 {$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
