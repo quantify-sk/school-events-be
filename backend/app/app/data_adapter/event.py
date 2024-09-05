@@ -302,32 +302,130 @@ class Event(Base):
         admin: bool = False,
     ) -> Tuple[List[Dict[str, Any]], int]:
         db = get_db_session()
-    
+
         query = db.query(cls, EventDate, Attachment)
         query = query.join(EventDate, cls.id == EventDate.event_id)
         query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
-    
-        today = datetime.now().date()
-    
+
+        # Apply date filters
         if filter_params and "event_dates" in filter_params:
             date_filters = filter_params["event_dates"]
             if "date_from" in date_filters:
                 from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
                 query = query.filter(EventDate.date >= from_date)
             if "date_to" in date_filters:
-                end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
-                query = query.filter(EventDate.date < end_date)
+                to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date <= to_date)
         elif not admin:
+            # If not admin and no date filters, show only future events
+            today = datetime.now().date()
             query = query.filter(EventDate.date >= today)
-    
+
+        # Apply other filters
         if filter_params:
-            query = ParameterValidator.apply_filters_and_sorting(
-                query,
-                cls,
-                {k: v for k, v in filter_params.items() if k != "event_dates"},
-                None,
-            )
+            for key, value in filter_params.items():
+                if key != "event_dates" and hasattr(cls, key):
+                    column = getattr(cls, key)
+                    if isinstance(value, list):
+                        query = query.filter(column.in_(value))
+                    else:
+                        query = query.filter(column == value)
+
+        # Apply sorting
+        if sorting_params:
+            for sort_param in sorting_params:
+                for key, value in sort_param.items():
+                    if key == "event_dates.date":
+                        query = query.order_by(
+                            EventDate.date.asc() if value == "asc" else EventDate.date.desc(),
+                            EventDate.time.asc() if value == "asc" else EventDate.time.desc()
+                        )
+                    elif hasattr(cls, key):
+                        column = getattr(cls, key)
+                        query = query.order_by(
+                            column.asc() if value == "asc" else column.desc()
+                        )
+        else:
+            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
+
+        # Count total results
+        total_count = query.count()
+
+        # Apply pagination
+        query = query.limit(items_per_page).offset((current_page - 1) * items_per_page)
+
+        # Execute query
+        all_results = query.all()
+
+        # Process results
+        all_events = []
+        event_attachments = {}
+
+        for event, event_date, attachment in all_results:
+            event_dict = event._to_model()
+            event_dict['event_date'] = event_date.date
+            event_dict['event_time'] = event_date.time
+            event_dict['current_event_date_id'] = event_date.id
+            event_dict['is_current_event_date_locked'] = event_date.is_locked()
+            event_dict['event_date_status'] = event_date.status
+
+            event_id = event_dict['id']
+
+            if attachment is not None:
+                if event_id not in event_attachments:
+                    with open(attachment.path, 'rb') as file:
+                        file_data = file.read()
+                    event_attachments[event_id] = {
+                        'id': attachment.id,
+                        'name': attachment.name,
+                        'data': base64.b64encode(file_data).decode('utf-8') if not admin else None,
+                        'type': attachment.type
+                    }
+
+            all_events.append(event_dict)
+
+        for event_dict in all_events:
+            event_dict['attachments'] = [event_attachments.get(event_dict['id'])] if event_dict['id'] in event_attachments else []
+
+        return all_events, total_count
     
+    @classmethod
+    def get_organizer_events(
+        cls,
+        organizer_id: int,
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Union[str, List[str]]]],
+        sorting_params: Optional[List[Dict[str, str]]],
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        db = get_db_session()
+    
+        query = db.query(cls, EventDate, Attachment)
+        query = query.join(EventDate, cls.id == EventDate.event_id)
+        query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
+        query = query.filter(cls.organizer_id == organizer_id)
+    
+        # Apply date filters
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params["event_dates"]
+            if "date_from" in date_filters:
+                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date >= from_date)
+            if "date_to" in date_filters:
+                to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date <= to_date)
+    
+        # Apply other filters
+        if filter_params:
+            for key, value in filter_params.items():
+                if key != "event_dates" and hasattr(cls, key):
+                    column = getattr(cls, key)
+                    if isinstance(value, list):
+                        query = query.filter(column.in_(value))
+                    else:
+                        query = query.filter(column == value)
+    
+        # Apply sorting
         if sorting_params:
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
@@ -344,14 +442,18 @@ class Event(Base):
         else:
             query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
     
+        # Count total results
         total_count = query.count()
     
+        # Apply pagination
         query = query.limit(items_per_page).offset((current_page - 1) * items_per_page)
     
+        # Execute query
         all_results = query.all()
     
+        # Process results
         all_events = []
-        event_attachments = {}  # Store unique attachments by event ID
+        event_attachments = {}
     
         for event, event_date, attachment in all_results:
             event_dict = event._to_model()
@@ -363,8 +465,7 @@ class Event(Base):
     
             event_id = event_dict['id']
     
-            if not admin and attachment is not None:
-                # Check if the attachment for the event ID already exists
+            if attachment is not None:
                 if event_id not in event_attachments:
                     with open(attachment.path, 'rb') as file:
                         file_data = file.read()
@@ -381,74 +482,6 @@ class Event(Base):
             event_dict['attachments'] = [event_attachments.get(event_dict['id'])] if event_dict['id'] in event_attachments else []
     
         return all_events, total_count
-    
-    @classmethod
-    def get_organizer_events(
-        cls,
-        organizer_id: int,
-        current_page: int,
-        items_per_page: int,
-        filter_params: Optional[Dict[str, Union[str, List[str]]]],
-        sorting_params: Optional[List[Dict[str, str]]],
-    ) -> Tuple[List[Dict[str, Any]], int]:
-        db = get_db_session()
-
-        query = db.query(cls, EventDate).join(EventDate, cls.id == EventDate.event_id).filter(cls.organizer_id == organizer_id)
-
-        if filter_params and "event_dates" in filter_params:
-            date_filters = filter_params["event_dates"]
-            if "date_from" in date_filters:
-                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
-                query = query.filter(EventDate.date >= from_date)
-            if "date_to" in date_filters:
-                end_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date() + timedelta(days=1)
-                query = query.filter(EventDate.date < end_date)
-
-        if filter_params:
-            query = ParameterValidator.apply_filters_and_sorting(
-                query,
-                cls,
-                {k: v for k, v in filter_params.items() if k != "event_dates"},
-                None,
-            )
-
-        if sorting_params:
-            for sort_param in sorting_params:
-                for key, value in sort_param.items():
-                    if key == "event_dates.date":
-                        query = query.order_by(
-                            EventDate.date.asc(), EventDate.time.asc() if value == "asc" 
-                            else EventDate.date.desc(), EventDate.time.desc()
-                        )
-                    elif hasattr(cls, key):
-                        column = getattr(cls, key)
-                        query = query.order_by(
-                            column.asc() if value == "asc" else column.desc()
-                        )
-        else:
-            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
-
-        total_count = query.count()
-
-        all_results = query.all()
-
-        all_events = []
-        for event, event_date in all_results:
-            event_dict = event._to_model()
-            event_dict['event_date'] = event_date.date
-            event_dict['event_time'] = event_date.time
-            event_dict['current_event_date_id'] = event_date.id
-            event_dict['is_current_event_date_locked'] = event_date.is_locked()
-            event_dict['event_date_status'] = event_date.status
-            all_events.append(event_dict)
-
-        sorted_events = sorted(all_events, key=lambda x: (x['event_date'], x['event_time']))
-
-        start_index = (current_page - 1) * items_per_page
-        end_index = start_index + items_per_page
-        paginated_events = sorted_events[start_index:end_index]
-
-        return paginated_events, total_count
 
 
 class EventDate(Base):
