@@ -10,7 +10,7 @@
 }
 
 kulturapreskoly-api.quantify.sk {
-    handle_path /api/docs * {
+    handle_path /api/docs/* {
         basicauth {
             admin $2a$14$drIJWG9SNhJDXkkdnR7t..qoK9YbccmQcgiZJ3GB.lRBw7yt871J2
         }
