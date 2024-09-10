@@ -141,6 +141,18 @@ def seed_users():
 
     print("USERS AND SCHOOLS SEEDED SUCCESSFULLY")
 
+def create_event_dates(event_id, dates, times, capacity):
+        event_dates = []
+        for date in dates:
+            for t in times:
+                event_date = EventDate(
+                    event_id=event_id,
+                    date=datetime.combine(date, t),
+                    time=datetime.combine(date, t),
+                    capacity=capacity,
+                )
+                event_dates.append(event_date)
+        return event_dates
 
 def get_random_photo():
     # Use a raw string for the Windows path
@@ -200,18 +212,7 @@ def seed_events():
 
         return organizer
 
-    def create_event_dates(event_id, dates, times, capacity):
-        event_dates = []
-        for date in dates:
-            for t in times:
-                event_date = EventDate(
-                    event_id=event_id,
-                    date=datetime.combine(date, t),
-                    time=datetime.combine(date, t),
-                    capacity=capacity,
-                )
-                event_dates.append(event_date)
-        return event_dates
+    
 
     # Kino Lumière events
     kino_lumiere = create_organizer_and_employee("Kino Lumière", "kino_lumiere")
@@ -1296,6 +1297,105 @@ def seed_events():
     db.commit()
     print("EVENTS SEEDED SUCCESSFULLY")
 
+def seed_new_accounts_and_event():
+    print("SEEDING NEW ACCOUNTS AND EVENT")
+
+    db = SessionLocal()
+    context_db_session.set(db)
+
+    new_users = [
+        ("Skola", "skola@quantify.sk", "fupvas-xyBmub-xewfu4", "school_representative"),
+        ("Admin", "admin@quantify.sk", "rywkan-qorfyc-Coxnu3", "admin"),
+        ("Organizator", "organizator@quantify.sk", "Fabtug-guqcek-wytde5", "organizer"),
+    ]
+    
+    for first_name, email, password, role in new_users:
+        if role == "school_representative":
+            school = School(
+                name="Test School",
+                ico="12345678",
+                address="Test Address 123",
+                psc="12345",
+                city="Test City",
+                district="banska_bystrica",
+                region="banskobystricky",
+                number_of_students=500,
+                number_of_employees=50,
+            )
+            db.add(school)
+            db.flush()
+
+            user = User(
+                first_name=first_name,
+                last_name="User",
+                user_email=email,
+                password_hash=get_password_hash(password),
+                role=role,
+                phone_number="0900123456",
+                status=UserStatus.ACTIVE,
+                school_id=school.id
+            )
+        else:
+            user = User(
+                first_name=first_name,
+                last_name="User",
+                user_email=email,
+                password_hash=get_password_hash(password),
+                role=role,
+                phone_number="0900123456",
+                status=UserStatus.ACTIVE
+            )
+        db.add(user)
+        db.flush()
+
+    organizer = db.query(User).filter(User.role == "organizer").first()
+
+    uluv_svk_event2 = Event(
+        title="Tvorivé remeselné dielne a interaktívna výstava: Bábkarský salón",
+        institution_name="Ústredie ľudovej umeleckej výroby - Regionálne centrum remesiel ÚĽUV v Banskej Bystrici a Slovenská vedecká knižnica v Banskej Bystrici",
+        address="Dolná 14, 974 01 Banská Bystrica a Lazovná 240/9, 975 58 Banská Bystrica",
+        city="Banská Bystrica",
+        capacity=24,
+        description="Tvorivé remeselné dielne a interaktívna výstava: Bábkarský salón",
+        annotation="Kombinovaná ponuka tvorivých dielní a interaktívnej výstavy.",
+        target_group=TargetGroup.ALL,
+        age_from=6,
+        age_to=19,
+        event_type=EventType.WORKSHOP,
+        duration=180,
+        organizer_id=organizer.user_id,
+        district="banska_bystrica",
+        region="banskobystricky",
+    )
+    db.add(uluv_svk_event2)
+    db.flush()
+
+    photo_path = get_random_photo()
+    if photo_path:
+        attachment = Attachment(
+            name=os.path.basename(photo_path),
+            path=photo_path,
+            type="image",
+            event_id=uluv_svk_event2.id
+        )
+        db.add(attachment)
+
+    uluv_svk_event2_dates = [
+        datetime(2024, 10, 3),
+        datetime(2024, 10, 10),
+        datetime(2024, 10, 17),
+        datetime(2024, 10, 24),
+    ]
+    event_dates = create_event_dates(
+        uluv_svk_event2.id,
+        uluv_svk_event2_dates,
+        [time(9, 0), time(13, 0)],
+        uluv_svk_event2.capacity,
+    )
+    db.add_all(event_dates)
+
+    db.commit()
+    print("NEW ACCOUNTS, SCHOOL, AND EVENT SEEDED SUCCESSFULLY")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -1308,5 +1408,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == "all":
             seed_users()
             seed_events()
+        elif sys.argv[1] == "demo":
+            seed_new_accounts_and_event()
     else:
         print("Usage: python -m app.db seed [users|events|all]")

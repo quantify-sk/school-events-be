@@ -24,6 +24,7 @@ help:
 	@echo "  logs-dev           Show logs from development docker compose."
 	@echo "  logs-prod          Show logs from production docker compose."
 	@echo "  reload             Remove volumes, reset git state, rebuild and seed the database."
+	@echo "  seed_demo_db       Seed the database with demo data."
 	
 
 install:
@@ -65,6 +66,10 @@ run-dev:
 stop-dev:
 	@echo "Stopping development docker compose..."
 	docker compose -f docker-compose-dev.yml down
+
+seed-demo-db:
+	@echo "Seeding the database with demo data..."
+	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db demo
 
 run-prod:
 	@echo "Running production docker compose..."
@@ -108,4 +113,4 @@ logs-prod:
 
 reload:
 	@echo "Reloading: removing volumes, resetting git state, rebuilding, and seeding the database..."
-	make rm-volumes && git reset --hard origin/main && make run-dev-build && make seed-db
+	make rm-volumes && git reset --hard origin/main && make run-dev-build && make seed-demo-db
