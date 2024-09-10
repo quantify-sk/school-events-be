@@ -46,7 +46,7 @@ make run-dev-build
 ```
 Spustiť lokálne v production móde(AutoReload vypnutý):
 ```bash
-make run-prod-build
+make run-prod
 ```
 
 4. Naplňte databázu počiatočnými dátami:
