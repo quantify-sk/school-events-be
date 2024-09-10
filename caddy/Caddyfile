@@ -8,7 +8,7 @@ kulturapreskoly-api.quantify.sk {
         basicauth {
             admin $2a$14$drIJWG9SNhJDXkkdnR7t..qoK9YbccmQcgiZJ3GB.lRBw7yt871J2
         }
-        reverse_proxy fastapi_server:8000
+        reverse_proxy fastapi_server:8000/api/docs
     }
     reverse_proxy fastapi_server:8000
 }
