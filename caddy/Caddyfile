@@ -1,11 +1,15 @@
 {
-  email t.snyrch@gmail.com
+    email t.snyrch@gmail.com
 }
 
 {$EXT_ENDPOINT1}, {$LOCAL_1}, {$LOCAL_2} {
-  reverse_proxy fastapi_server:8000
+    reverse_proxy fastapi_server:8000
 }
 
-kulturapreskoly-api.quantify.sk {
-  reverse_proxy fastapi_server:8000
+kulturapreskoly.quantify.sk {
+    reverse_proxy fastapi_server:8000
+    basicauth {
+        admin $2a$14$drIJWG9SNhJDXkkdnR7t..qoK9YbccmQcgiZJ3GB.lRBw7yt871J2
+    }
 }
+
