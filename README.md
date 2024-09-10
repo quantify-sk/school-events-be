@@ -68,10 +68,12 @@ Následne opakujte spustenie apikácie znova
 - Projekt je nakonfigurovaný tak, aby fungoval s    predvolenými hodnotami. Vo väčšine prípadov nie je potrebné manuálne vytvárať .env súbor.
 - Ak potrebujete upraviť konfiguráciu (napríklad pre produkčné nasadenie), vytvorte .env súbor s požadovanými hodnotami.
 - Uistite sa, že máte nainštalované všetky potrebné nástroje (Docker, Docker Compose, Make) pred spustením projektu.
-- V prípade problémov skontrolujte logy pomocou ```bash
+- V prípade problémov skontrolujte logy pomocou 
+```bash
 make logs-dev
 ``` 
 alebo
+
 ```bash
 make logs-prod
 ``` 
