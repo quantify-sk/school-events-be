@@ -1296,10 +1296,38 @@ def seed_events():
 
 
 def seed_new_accounts_and_event():
-    print("SEEDING NEW ACCOUNTS AND EVENT")
+    print("SEEDING NEW ACCOUNTS AND EVENTS")
 
     db = SessionLocal()
     context_db_session.set(db)
+
+
+    # Helper function to create organizer and employee
+    def create_organizer_and_employee(institution_name, email_prefix):
+        organizer = User(
+            first_name=institution_name,
+            last_name="Organizer",
+            user_email=f"{email_prefix}_organizer@example.com",
+            password_hash=get_password_hash("password123"),
+            role=UserRole.ORGANIZER,
+            phone_number="0900123456",
+        )
+        db.add(organizer)
+        db.flush()
+
+        employee = User(
+            first_name=institution_name,
+            last_name="Employee",
+            user_email=f"{email_prefix}_employee@example.com",
+            password_hash=get_password_hash("password123"),
+            role=UserRole.EMPLOYEE,
+            parent_organizer_id=organizer.user_id,
+            phone_number="0909876543",
+        )
+        db.add(employee)
+        db.flush()
+
+        return organizer
 
     new_users = [
         ("Skola", "skola@quantify.sk", "fupvas-xyBmub-xewfu4", "school_representative"),
@@ -1368,32 +1396,89 @@ def seed_new_accounts_and_event():
     db.add(uluv_svk_event2)
     db.flush()
 
-    photo_path = get_random_photo()
-    if photo_path:
-        attachment = Attachment(
-            name=os.path.basename(photo_path),
-            path=photo_path,
-            type="image",
-            event_id=uluv_svk_event2.id,
-        )
-        db.add(attachment)
+    suh = create_organizer_and_employee("Slovenská ústredná hvezdáreň", "suh")
+    suh_event = Event(
+        title="Stála programová ponuka",
+        institution_name="Slovenská ústredná hvezdáreň",
+        address="Komárňanská 137, 947 01 Hurbanovo",
+        city="Hurbanovo",
+        capacity=36,
+        description="Ponuka spočíva v aktivitách v priestoroch stálej expozície múzea, program v planetáriu a prehliadka priestorov historickej budovy a astronomickej techniky, s možnosťou astronomického pozorovania v prípade priaznivého počasia.",
+        annotation="Návšteva hvezdárne s programom v planetáriu a možnosťou astronomického pozorovania.",
+        target_group=TargetGroup.ALL,
+        age_from=6,
+        age_to=19,
+        event_type=EventType.EXHIBITION,
+        duration=90,
+        organizer_id=suh.user_id,
+        more_info_url="https://www.suh.sk/navstivte-nas-menu/filmy-v-planetariu/",
+        district="nove_zamky",
+        region="nitriansky",
+    )
+    db.add(suh_event)
+    db.flush()
 
-    uluv_svk_event2_dates = [
-        datetime(2024, 10, 3),
-        datetime(2024, 10, 10),
-        datetime(2024, 10, 17),
-        datetime(2024, 10, 24),
-    ]
-    event_dates = create_event_dates(
+    ifju_szivek = create_organizer_and_employee("Tanečné divadlo Ifjú Szivek", "ifju_szivek")
+    ifju_szivek_event1 = Event(
+        title="Škola tanca - Tánciskola",
+        institution_name="Tanečné divadlo Ifjú Szivek",
+        address="Mostová 6, Bratislava",
+        city="Bratislava",
+        capacity=76,
+        description="Škola tanca je najúspešnejším matiné-programom umeleckého kolektívu, ktorý za desať rokov predstavili vyše dvesto krát doma i v zahraničí.",
+        annotation="Predstavenie približuje atmosféru školy, kde sa počas nezvyčajnej hodiny tanca môžu detskí diváci oboznámiť s tancami národov Karpatskej kotliny podľa geografického členenia.",
+        target_group=TargetGroup.ELEMENTARY_SCHOOL,
+        age_from=6,
+        age_to=15,
+        event_type=EventType.DANCE,
+        duration=50,
+        organizer_id=ifju_szivek.user_id,
+        more_info_url="https://ifjuszivek.sk/sk/repertoar/skola-madarskeho-tanca",
+        district="bratislava_i",
+        region="bratislavsky",
+    )
+    db.add(ifju_szivek_event1)
+    db.flush()
+
+    for event in [uluv_svk_event2, suh_event, ifju_szivek_event1]:
+        photo_path = get_random_photo()
+        if photo_path:
+            attachment = Attachment(
+                name=os.path.basename(photo_path),
+                path=photo_path,
+                type="image",
+                event_id=event.id,
+            )
+            db.add(attachment)
+
+    today = datetime.now().date()
+    
+    uluv_dates = [today + timedelta(days=i) for i in range((today.weekday() - 3) % 7, 60, 7)]
+    uluv_event_dates = create_event_dates(
         uluv_svk_event2.id,
-        uluv_svk_event2_dates,
+        uluv_dates,
         [time(9, 0), time(13, 0)],
         uluv_svk_event2.capacity,
     )
-    db.add_all(event_dates)
+    db.add_all(uluv_event_dates)
+
+    suh_dates = [today + timedelta(days=i) for i in range(30)]
+    suh_event_dates = create_event_dates(
+        suh_event.id, suh_dates, [time(9, 0)], suh_event.capacity
+    )
+    db.add_all(suh_event_dates)
+
+    ifju_szivek_dates = [today + timedelta(days=i*7) for i in range(6)]
+    ifju_szivek_event_dates = create_event_dates(
+        ifju_szivek_event1.id,
+        ifju_szivek_dates,
+        [time(9, 0), time(11, 0), time(13, 0)],
+        ifju_szivek_event1.capacity,
+    )
+    db.add_all(ifju_szivek_event_dates)
 
     db.commit()
-    print("NEW ACCOUNTS, SCHOOL, AND EVENT SEEDED SUCCESSFULLY")
+    print("NEW ACCOUNTS, SCHOOL, AND EVENTS SEEDED SUCCESSFULLY")
 
 
 def generate_seed_reservation_code(db, length=8):
