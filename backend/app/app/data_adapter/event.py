@@ -1,6 +1,8 @@
 import base64
+from collections import defaultdict
 import app.api.v1.endpoints
 from app.utils.exceptions import CustomBadRequestException
+from app.models.report import ReportType
 from sqlalchemy import (
     Column,
     Integer,
@@ -14,8 +16,9 @@ from sqlalchemy import (
     desc,
     Boolean,
     text,
-    select
+    select,
 )
+from app.logger import logger
 from sqlalchemy.orm import relationship, joinedload
 from datetime import date, datetime, time, timedelta
 from app.database import Base
@@ -27,16 +30,19 @@ from app.models.event import (
     EventType,
     EventUpdateModel,
     TargetGroup,
+    EventDateModel,
 )
 from app.context_manager import get_db_session
-from app.models.get_params import ParameterValidator
+from app.models.get_params import ParameterValidator, parse_json_params
 import typing
 from app.data_adapter.attachment import Attachment
 from app.data_adapter.waiting_list import WaitingList
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
+from app.data_adapter.school import School
+from app.models.statistics import StatisticsRequestModel
+from sqlalchemy import Enum, JSON
 
 
 class Event(Base):
@@ -113,7 +119,9 @@ class Event(Base):
             "status": self.status,
             "event_type": self.event_type,
             "duration": self.duration,
-            "more_info_url": None if self.more_info_url == "null" else self.more_info_url,
+            "more_info_url": None
+            if self.more_info_url == "null"
+            else self.more_info_url,
             "attachments": [attachment._to_model() for attachment in self.attachments],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -126,8 +134,116 @@ class Event(Base):
             "region": self.region,
         }
 
-
     Reservation = None
+
+    @classmethod
+    def get_events_with_dates(
+        cls,
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Union[str, List[str]]]],
+        sorting_params: Optional[List[Dict[str, str]]],
+        admin: bool = False,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        db = get_db_session()
+
+        # Base query with DISTINCT to avoid duplicates
+        query = db.query(cls, EventDate, Attachment).distinct(cls.id)
+        query = query.join(EventDate, cls.id == EventDate.event_id)
+        query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
+
+        # Handle event_dates manually
+        if filter_params and "event_dates" in filter_params:
+            date_filters = filter_params["event_dates"]
+            if "date_from" in date_filters:
+                from_date = datetime.strptime(
+                    date_filters["date_from"], "%Y-%m-%d"
+                ).date()
+                query = query.filter(EventDate.date >= from_date)
+            if "date_to" in date_filters:
+                to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
+                query = query.filter(EventDate.date <= to_date)
+
+            # Remove event_dates from filter_params to avoid processing it again
+            del filter_params["event_dates"]
+        elif not admin:
+            # If not admin and no date filters, show only future events
+            today = datetime.now().date()
+            query = query.filter(EventDate.date >= today)
+
+        # Use ParameterValidator for other filters
+        if filter_params:
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, None
+            )
+
+        # Handle sorting separately
+        if sorting_params:
+            for sort_param in sorting_params:
+                for key, value in sort_param.items():
+                    if key == "event_dates.date":
+                        query = query.order_by(
+                            EventDate.date.asc()
+                            if value == "asc"
+                            else EventDate.date.desc(),
+                            EventDate.time.asc()
+                            if value == "asc"
+                            else EventDate.time.desc(),
+                        )
+                    elif hasattr(cls, key):
+                        column = getattr(cls, key)
+                        query = query.order_by(
+                            column.asc() if value == "asc" else column.desc()
+                        )
+        else:
+            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
+
+        # Count total results
+        total_count = query.count()
+
+        # Apply pagination
+        query = query.limit(items_per_page).offset((current_page - 1) * items_per_page)
+
+        # Execute query
+        all_results = query.all()
+
+        # Process results
+        all_events = []
+        event_attachments = {}
+
+        for event, event_date, attachment in all_results:
+            event_dict = event._to_model()
+            event_dict["event_date"] = event_date.date
+            event_dict["event_time"] = event_date.time
+            event_dict["current_event_date_id"] = event_date.id
+            event_dict["is_current_event_date_locked"] = event_date.is_locked()
+            event_dict["event_date_status"] = event_date.status
+
+            event_id = event_dict["id"]
+
+            if attachment is not None:
+                if event_id not in event_attachments:
+                    with open(attachment.path, "rb") as file:
+                        file_data = file.read()
+                    event_attachments[event_id] = {
+                        "id": attachment.id,
+                        "name": attachment.name,
+                        "data": base64.b64encode(file_data).decode("utf-8")
+                        if not admin
+                        else None,
+                        "type": attachment.type,
+                    }
+
+            all_events.append(event_dict)
+
+        for event_dict in all_events:
+            event_dict["attachments"] = (
+                [event_attachments.get(event_dict["id"])]
+                if event_dict["id"] in event_attachments
+                else []
+            )
+
+        return all_events, total_count
 
     @classmethod
     def create_new_event(
@@ -192,7 +308,9 @@ class Event(Base):
             update_data = event_data.dict(exclude_unset=True)
 
             # Handle attachments
-            existing_attachments = db.query(Attachment).filter(Attachment.event_id == event_id).all()
+            existing_attachments = (
+                db.query(Attachment).filter(Attachment.event_id == event_id).all()
+            )
             for attachment in existing_attachments:
                 if attachment.id not in existing_attachment_ids:
                     db.delete(attachment)
@@ -202,25 +320,43 @@ class Event(Base):
 
             # Handle event dates
             if "event_dates" in update_data:
-                existing_dates = db.query(EventDate).filter(EventDate.event_id == event_id).all()
+                existing_dates = (
+                    db.query(EventDate).filter(EventDate.event_id == event_id).all()
+                )
                 existing_date_ids = {date.id for date in existing_dates}
-                update_date_ids = {date['id'] for date in update_data["event_dates"] if 'id' in date}
+                update_date_ids = {
+                    date["id"] for date in update_data["event_dates"] if "id" in date
+                }
 
                 # Update existing dates and add new ones
                 for date_data in update_data["event_dates"]:
                     try:
-                        date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d").date() if isinstance(date_data["date"], str) else date_data["date"]
-                        time_obj = datetime.strptime(date_data["time"], "%H:%M").time() if isinstance(date_data["time"], str) else date_data["time"]
+                        date_obj = (
+                            datetime.strptime(date_data["date"], "%Y-%m-%d").date()
+                            if isinstance(date_data["date"], str)
+                            else date_data["date"]
+                        )
+                        time_obj = (
+                            datetime.strptime(date_data["time"], "%H:%M").time()
+                            if isinstance(date_data["time"], str)
+                            else date_data["time"]
+                        )
                         combined_datetime = datetime.combine(date_obj, time_obj)
 
-                        if 'id' in date_data and date_data['id'] in existing_date_ids:
+                        if "id" in date_data and date_data["id"] in existing_date_ids:
                             # Update existing date
-                            db.query(EventDate).filter(EventDate.id == date_data['id']).update({
-                                'date': combined_datetime,
-                                'time': combined_datetime,
-                                'capacity': event.capacity,
-                                'available_spots': date_data.get('available_spots', event.capacity),
-                            })
+                            db.query(EventDate).filter(
+                                EventDate.id == date_data["id"]
+                            ).update(
+                                {
+                                    "date": combined_datetime,
+                                    "time": combined_datetime,
+                                    "capacity": event.capacity,
+                                    "available_spots": date_data.get(
+                                        "available_spots", event.capacity
+                                    ),
+                                }
+                            )
                         else:
                             # Add new date
                             new_event_date = EventDate(
@@ -228,12 +364,16 @@ class Event(Base):
                                 date=combined_datetime,
                                 time=combined_datetime,
                                 capacity=event.capacity,
-                                available_spots=date_data.get('available_spots', event.capacity),
+                                available_spots=date_data.get(
+                                    "available_spots", event.capacity
+                                ),
                             )
                             db.add(new_event_date)
                     except (ValueError, TypeError) as e:
                         print(f"Error parsing date or time: {str(e)}")
-                        raise CustomBadRequestException(f"Invalid date or time format: {str(e)}")
+                        raise CustomBadRequestException(
+                            f"Invalid date or time format: {str(e)}"
+                        )
 
                 # Remove dates that are no longer in the update data
                 for date in existing_dates:
@@ -243,13 +383,15 @@ class Event(Base):
                             select(text("COUNT(*)"))
                             .select_from(text("reservation"))
                             .where(text("event_date_id = :date_id")),
-                            {"date_id": date.id}
+                            {"date_id": date.id},
                         ).scalar()
 
                         if reservation_count == 0:
                             db.delete(date)
                         else:
-                            print(f"Cannot delete event date (ID: {date.id}) as it has existing reservations.")
+                            print(
+                                f"Cannot delete event date (ID: {date.id}) as it has existing reservations."
+                            )
 
             # Update other fields only if they exist in the update_data and are not None
             for field, value in update_data.items():
@@ -273,8 +415,6 @@ class Event(Base):
             raise CustomBadRequestException(f"Error updating event: {str(e)}")
         finally:
             db.close()
-
-
 
     @classmethod
     def delete_event_by_id(cls, event_id: int) -> bool:
@@ -307,38 +447,43 @@ class Event(Base):
         query = query.join(EventDate, cls.id == EventDate.event_id)
         query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
 
-        # Apply date filters
+        # Handle event_dates manually
         if filter_params and "event_dates" in filter_params:
             date_filters = filter_params["event_dates"]
             if "date_from" in date_filters:
-                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
+                from_date = datetime.strptime(
+                    date_filters["date_from"], "%Y-%m-%d"
+                ).date()
                 query = query.filter(EventDate.date >= from_date)
             if "date_to" in date_filters:
                 to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
                 query = query.filter(EventDate.date <= to_date)
+
+            # Remove event_dates from filter_params to avoid processing it again
+            del filter_params["event_dates"]
         elif not admin:
             # If not admin and no date filters, show only future events
             today = datetime.now().date()
             query = query.filter(EventDate.date >= today)
 
-        # Apply other filters
+        # Use ParameterValidator for other filters
         if filter_params:
-            for key, value in filter_params.items():
-                if key != "event_dates" and hasattr(cls, key):
-                    column = getattr(cls, key)
-                    if isinstance(value, list):
-                        query = query.filter(column.in_(value))
-                    else:
-                        query = query.filter(column == value)
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, None
+            )
 
-        # Apply sorting
+        # Handle sorting separately
         if sorting_params:
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
                         query = query.order_by(
-                            EventDate.date.asc() if value == "asc" else EventDate.date.desc(),
-                            EventDate.time.asc() if value == "asc" else EventDate.time.desc()
+                            EventDate.date.asc()
+                            if value == "asc"
+                            else EventDate.date.desc(),
+                            EventDate.time.asc()
+                            if value == "asc"
+                            else EventDate.time.desc(),
                         )
                     elif hasattr(cls, key):
                         column = getattr(cls, key)
@@ -363,32 +508,38 @@ class Event(Base):
 
         for event, event_date, attachment in all_results:
             event_dict = event._to_model()
-            event_dict['event_date'] = event_date.date
-            event_dict['event_time'] = event_date.time
-            event_dict['current_event_date_id'] = event_date.id
-            event_dict['is_current_event_date_locked'] = event_date.is_locked()
-            event_dict['event_date_status'] = event_date.status
+            event_dict["event_date"] = event_date.date
+            event_dict["event_time"] = event_date.time
+            event_dict["current_event_date_id"] = event_date.id
+            event_dict["is_current_event_date_locked"] = event_date.is_locked()
+            event_dict["event_date_status"] = event_date.status
 
-            event_id = event_dict['id']
+            event_id = event_dict["id"]
 
             if attachment is not None:
                 if event_id not in event_attachments:
-                    with open(attachment.path, 'rb') as file:
+                    with open(attachment.path, "rb") as file:
                         file_data = file.read()
                     event_attachments[event_id] = {
-                        'id': attachment.id,
-                        'name': attachment.name,
-                        'data': base64.b64encode(file_data).decode('utf-8') if not admin else None,
-                        'type': attachment.type
+                        "id": attachment.id,
+                        "name": attachment.name,
+                        "data": base64.b64encode(file_data).decode("utf-8")
+                        if not admin
+                        else None,
+                        "type": attachment.type,
                     }
 
             all_events.append(event_dict)
 
         for event_dict in all_events:
-            event_dict['attachments'] = [event_attachments.get(event_dict['id'])] if event_dict['id'] in event_attachments else []
+            event_dict["attachments"] = (
+                [event_attachments.get(event_dict["id"])]
+                if event_dict["id"] in event_attachments
+                else []
+            )
 
         return all_events, total_count
-    
+
     @classmethod
     def get_organizer_events(
         cls,
@@ -405,34 +556,39 @@ class Event(Base):
         query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
         query = query.filter(cls.organizer_id == organizer_id)
     
-        # Apply date filters
+        # Handle event_dates manually
         if filter_params and "event_dates" in filter_params:
             date_filters = filter_params["event_dates"]
             if "date_from" in date_filters:
-                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
+                from_date = datetime.strptime(
+                    date_filters["date_from"], "%Y-%m-%d"
+                ).date()
                 query = query.filter(EventDate.date >= from_date)
             if "date_to" in date_filters:
                 to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
                 query = query.filter(EventDate.date <= to_date)
     
-        # Apply other filters
-        if filter_params:
-            for key, value in filter_params.items():
-                if key != "event_dates" and hasattr(cls, key):
-                    column = getattr(cls, key)
-                    if isinstance(value, list):
-                        query = query.filter(column.in_(value))
-                    else:
-                        query = query.filter(column == value)
+            # Remove event_dates from filter_params to avoid processing it again
+            del filter_params["event_dates"]
     
-        # Apply sorting
+        # Use ParameterValidator for other filters
+        if filter_params:
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, cls, filter_params, None
+            )
+    
+        # Handle sorting separately
         if sorting_params:
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
                         query = query.order_by(
-                            EventDate.date.asc() if value == "asc" else EventDate.date.desc(),
-                            EventDate.time.asc() if value == "asc" else EventDate.time.desc()
+                            EventDate.date.asc()
+                            if value == "asc"
+                            else EventDate.date.desc(),
+                            EventDate.time.asc()
+                            if value == "asc"
+                            else EventDate.time.desc(),
                         )
                     elif hasattr(cls, key):
                         column = getattr(cls, key)
@@ -457,31 +613,460 @@ class Event(Base):
     
         for event, event_date, attachment in all_results:
             event_dict = event._to_model()
-            event_dict['event_date'] = event_date.date
-            event_dict['event_time'] = event_date.time
-            event_dict['current_event_date_id'] = event_date.id
-            event_dict['is_current_event_date_locked'] = event_date.is_locked()
-            event_dict['event_date_status'] = event_date.status
+            event_dict["event_date"] = event_date.date
+            event_dict["event_time"] = event_date.time
+            event_dict["current_event_date_id"] = event_date.id
+            event_dict["is_current_event_date_locked"] = event_date.is_locked()
+            event_dict["event_date_status"] = event_date.status
     
-            event_id = event_dict['id']
+            event_id = event_dict["id"]
     
             if attachment is not None:
                 if event_id not in event_attachments:
-                    with open(attachment.path, 'rb') as file:
+                    with open(attachment.path, "rb") as file:
                         file_data = file.read()
                     event_attachments[event_id] = {
-                        'id': attachment.id,
-                        'name': attachment.name,
-                        'data': base64.b64encode(file_data).decode('utf-8'),
-                        'type': attachment.type
+                        "id": attachment.id,
+                        "name": attachment.name,
+                        "data": base64.b64encode(file_data).decode("utf-8"),
+                        "type": attachment.type,
                     }
     
             all_events.append(event_dict)
     
         for event_dict in all_events:
-            event_dict['attachments'] = [event_attachments.get(event_dict['id'])] if event_dict['id'] in event_attachments else []
+            event_dict["attachments"] = (
+                [event_attachments.get(event_dict["id"])]
+                if event_dict["id"] in event_attachments
+                else []
+            )
     
         return all_events, total_count
+
+    def _to_model_without_attachments(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "institution_name": self.institution_name,
+            "address": self.address,
+            "city": self.city,
+            "capacity": self.capacity,
+            "available_spots": self.available_spots,
+            "description": self.description,
+            "annotation": self.annotation,
+            "parent_info": None if self.parent_info is "null" else self.parent_info,
+            "target_group": self.target_group,
+            "age_from": self.age_from,
+            "age_to": self.age_to,
+            "status": self.status,
+            "event_type": self.event_type,
+            "duration": self.duration,
+            "more_info_url": None
+            if self.more_info_url == "null"
+            else self.more_info_url,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "organizer_id": self.organizer_id,
+            "ztp_access": self.ztp_access,
+            "parking_spaces": self.parking_spaces,
+            "claims": [claim._to_model() for claim in self.claims],
+            "district": self.district,
+            "region": self.region,
+        }
+
+    @classmethod
+    def _get_event_dates(cls, query):
+        event_dates = (
+            query.with_entities(cls.id, cls.title, EventDate.date)
+            .order_by(cls.id, EventDate.date)
+            .all()
+        )
+
+        # Group dates by event
+        grouped_dates = {}
+        for event_id, title, date in event_dates:
+            if event_id not in grouped_dates:
+                grouped_dates[event_id] = {"title": title, "dates": []}
+            grouped_dates[event_id]["dates"].append(date.strftime("%Y-%m-%d"))
+
+        return [
+            {"id": event_id, "title": data["title"], "dates": data["dates"]}
+            for event_id, data in grouped_dates.items()
+        ]
+
+    @classmethod
+    def generate_statistics(
+        cls, filters: StatisticsRequestModel, report_type: ReportType
+    ) -> Dict[str, Any]:
+        db = get_db_session()
+        query = db.query(cls).join(EventDate, EventDate.event_id == cls.id)
+
+        # Apply filters
+        if filters.start_date:
+            query = query.filter(EventDate.date >= filters.start_date)
+        if filters.end_date:
+            query = query.filter(EventDate.date <= filters.end_date)
+        if filters.region:
+            query = query.filter(cls.region == filters.region)
+        if filters.district:
+            query = query.filter(cls.district == filters.district)
+        if filters.event_type:
+            query = query.filter(cls.event_type == filters.event_type)
+        if filters.target_group:
+            query = query.filter(cls.target_group == filters.target_group)
+        if filters.organizer_id:
+            query = query.filter(cls.organizer_id == filters.organizer_id)
+
+        statistics = {"summary": {}, "details": {}, "charts": {}}
+        from app.models.reservation import ReservationStatus
+        from app.data_adapter.user import User
+        from app.data_adapter.reservation import Reservation
+        from sqlalchemy import func, case
+
+        if report_type == ReportType.EVENT_SUMMARY:
+            # Query for event summary
+            event_summary = db.query(
+                cls.id.label('event_id'),
+                cls.title.label('event_title'),
+                cls.institution_name,
+                cls.organizer_id,
+                func.concat(User.first_name, ' ', User.last_name).label('organizer_name'),
+                cls.capacity.label('event_capacity'),
+                cls.available_spots.label('event_available_spots'),
+                cls.event_type,
+                cls.target_group,
+                cls.district,
+                cls.region,
+                EventDate.id.label('event_date_id'),
+                func.to_char(EventDate.date, 'YYYY-MM-DD').label('formatted_date'),
+                EventDate.capacity.label('date_capacity'),
+                EventDate.available_spots.label('date_available_spots'),
+                func.count(Reservation.id).label('reservation_count'),
+                func.sum(case((Reservation.status == ReservationStatus.CONFIRMED, 1), else_=0)).label('confirmed_reservations'),
+                func.sum(case((Reservation.status == ReservationStatus.CANCELLED, 1), else_=0)).label('cancelled_reservations'),
+                func.sum(case((Reservation.status == ReservationStatus.PENDING, 1), else_=0)).label('pending_reservations')
+            ).join(EventDate, EventDate.event_id == cls.id)\
+             .outerjoin(Reservation, Reservation.event_date_id == EventDate.id)\
+             .join(User, User.user_id == cls.organizer_id)
+
+            # Apply date filters to the event_summary query
+            if filters.start_date:
+                event_summary = event_summary.filter(EventDate.date >= filters.start_date)
+            if filters.end_date:
+                event_summary = event_summary.filter(EventDate.date <= filters.end_date)
+
+            event_summary = event_summary.group_by(
+                cls.id, EventDate.id, User.user_id, User.first_name, User.last_name
+            ).order_by(EventDate.date).all()
+
+            event_summary_list = []
+            total_events = 0
+            total_reservations = 0
+            total_capacity = 0
+            category_counts = {}
+
+            for row in event_summary:
+                filled_spots = row.date_capacity - row.date_available_spots
+                fill_rate = (filled_spots / row.date_capacity) * 100 if row.date_capacity > 0 else 0
+
+                # Count categories
+                category_counts[row.event_type] = category_counts.get(row.event_type, 0) + 1
+
+                event_summary_list.append({
+                    "event_id": row.event_id,
+                    "event_title": row.event_title,
+                    "institution_name": row.institution_name,
+                    "organizer_id": row.organizer_id,
+                    "organizer_name": row.organizer_name,
+                    "event_capacity": row.event_capacity,
+                    "event_available_spots": row.event_available_spots,
+                    "filled_spots": filled_spots,
+                    "fill_rate": round(fill_rate, 2),
+                    "reservation_count": row.reservation_count,
+                })
+
+                # Aggregate totals
+                total_events += 1
+                total_reservations += row.reservation_count
+                total_capacity += row.date_capacity
+
+            # Calculate overall fill rate
+            overall_fill_rate = (total_reservations / total_capacity) * 100 if total_capacity > 0 else 0
+
+
+            # Dictionary to translate EventType labels to Slovak
+            translation_dict = {
+                EventType.THEATER: "Divadlo",
+                EventType.CONCERT: "Koncert",
+                EventType.EXHIBITION: "Výstava",
+                EventType.WORKSHOP: "Workshop",
+                EventType.SCREENING: "Premietanie",
+                EventType.PERFORMANCE: "Predstavenie",
+                EventType.DANCE: "Tanec",
+                EventType.OPERA: "Opera",
+                EventType.BALLET: "Balet",
+                EventType.OTHER: "Iné"
+            }
+
+            # Translate labels from category_counts
+            translated_labels = [translation_dict[EventType(category)] for category in category_counts.keys()]
+            # Prepare chart data
+            statistics["charts"] = {
+                "totalEvents": {
+                    "labels": ["Celkový počet podujatí"],
+                    "data": [total_events]
+                },
+                "totalReservations": {
+                    "labels": ["Celkový počet rezervácií"],
+                    "data": [total_reservations]
+                },
+                "overallFillRate": {
+                    "labels": ["Celková obsadenosť"],
+                    "data": [round(overall_fill_rate, 2)]
+                },
+                "eventsByCategory": {
+                    "labels": translated_labels,
+                    "data": list(category_counts.values())
+                }
+            }
+
+            statistics["details"]["event_summary"] = event_summary_list
+
+
+        elif report_type == ReportType.RESERVATION:
+            # Existing RESERVATION report logic
+            total_reservations = cls._get_total_reservations(query)
+            reservation_trends = cls._get_reservation_trends(db)
+            reservation_status_distribution = cls._get_reservation_status_distribution(
+                query
+            )
+
+            statistics["summary"] = {"total_reservations": total_reservations}
+
+            statistics["details"] = {
+                "reservation_trends": reservation_trends,
+                "reservation_status_distribution": reservation_status_distribution,
+            }
+
+            statistics["charts"] = {
+                "reservation_trends": {
+                    "labels": list(reservation_trends.keys()),
+                    "data": list(reservation_trends.values()),
+                },
+                "reservation_status_distribution": {
+                    "labels": list(reservation_status_distribution.keys()),
+                    "data": list(reservation_status_distribution.values()),
+                },
+            }
+
+        else:
+            raise ValueError(f"Unsupported report type: {report_type}")
+
+        return statistics
+
+    @staticmethod
+    def _get_events_by_status(query):
+        # Fetch count of events grouped by status
+        return dict(
+            query.with_entities(Event.status, func.count(Event.id))
+            .group_by(Event.status)
+            .all()
+        )
+
+    @staticmethod
+    def _get_events_by_type(query):
+        return dict(
+            query.with_entities(Event.event_type, func.count(Event.id))
+            .group_by(Event.event_type)
+            .all()
+        )
+
+    @staticmethod
+    def _get_events_by_target_group(query):
+        return dict(
+            query.with_entities(Event.target_group, func.count(Event.id))
+            .group_by(Event.target_group)
+            .all()
+        )
+
+    @staticmethod
+    def _get_popular_events(query):
+        from app.data_adapter.reservation import Reservation
+
+        # Fetch popular events based on reservation count
+        events = (
+            query.join(Reservation, Reservation.event_id == Event.id)
+            .group_by(Event.id)
+            .order_by(func.count(Reservation.id).desc())
+            .limit(10)
+            .all()
+        )
+        return [event._to_model_without_attachments() for event in events]
+
+    @staticmethod
+    def _get_average_capacity(query):
+        result = query.with_entities(func.avg(Event.capacity)).scalar()
+        return float(result) if result is not None else 0
+
+    @staticmethod
+    def _get_total_reservations(query):
+        from app.data_adapter.reservation import Reservation
+
+        return (
+            query.join(Reservation).with_entities(func.count(Reservation.id)).scalar()
+        )
+
+    @staticmethod
+    def _get_reservation_status_distribution(query):
+        from app.data_adapter.reservation import Reservation
+
+        # Group reservation status and count them
+        return dict(
+            query.join(Reservation, Reservation.event_id == Event.id)
+            .with_entities(Reservation.status, func.count(Reservation.id))
+            .group_by(Reservation.status)
+            .all()
+        )
+
+    @staticmethod
+    def _get_events_by_region(query):
+        return dict(
+            query.with_entities(Event.region, func.count(Event.id))
+            .group_by(Event.region)
+            .all()
+        )
+
+    @staticmethod
+    def _get_events_by_district(query):
+        return dict(
+            query.with_entities(Event.district, func.count(Event.id))
+            .group_by(Event.district)
+            .all()
+        )
+
+    @staticmethod
+    def _get_highest_fill_rate_events(query):
+        from app.data_adapter.reservation import Reservation
+
+        # Order by fill rate (reservations/capacity)
+        events = (
+            query.join(Reservation)
+            .group_by(Event.id)
+            .order_by((func.count(Reservation.id) * 100 / Event.capacity).desc())
+            .limit(10)
+            .all()
+        )
+        return [event._to_model_without_attachments() for event in events]
+
+    @staticmethod
+    def _get_average_duration(query):
+        result = query.with_entities(func.avg(Event.duration)).scalar()
+        return float(result) if result is not None else 0
+
+    @staticmethod
+    def _get_events_with_parking(query):
+        # Count events with available parking spaces
+        return query.filter(Event.parking_spaces > 0).count()
+
+    @staticmethod
+    def _get_events_with_ztp_access(query):
+        return query.filter(Event.ztp_access == True).count()
+
+    @staticmethod
+    def _get_average_age_range(query):
+        avg_from = query.with_entities(func.avg(Event.age_from)).scalar()
+        avg_to = query.with_entities(func.avg(Event.age_to)).scalar()
+        return {
+            "average_age_from": float(avg_from) if avg_from is not None else 0,
+            "average_age_to": float(avg_to) if avg_to is not None else 0,
+        }
+
+    @staticmethod
+    def _get_most_active_organizers(query):
+        from app.data_adapter.user import User
+
+        result = (
+            query.join(User, Event.organizer_id == User.user_id)
+            .group_by(User.user_id, User.first_name, User.last_name)
+            .order_by(func.count(Event.id).desc())
+            .with_entities(
+                User.user_id,
+                User.first_name,
+                User.last_name,
+                func.count(Event.id).label("event_count"),
+            )
+            .limit(10)
+            .all()
+        )
+        return [
+            {
+                "user_id": row.user_id,
+                "first_name": row.first_name,
+                "last_name": row.last_name,
+                "event_count": row.event_count,
+            }
+            for row in result
+        ]
+
+    @staticmethod
+    def _get_reservation_trends(session):
+        from app.data_adapter.reservation import Reservation
+
+        today = datetime.utcnow().date()
+        last_week = today - timedelta(days=7)
+        last_month = today - timedelta(days=30)
+        last_year = today - timedelta(days=365)
+
+        trends = {
+            "last_week": session.query(Reservation)
+            .filter(Reservation.created_at >= last_week)
+            .count(),
+            "last_month": session.query(Reservation)
+            .filter(Reservation.created_at >= last_month)
+            .count(),
+            "last_year": session.query(Reservation)
+            .filter(Reservation.created_at >= last_year)
+            .count(),
+        }
+        return trends
+
+    @staticmethod
+    def _get_school_participation(session):
+        from app.data_adapter.reservation import Reservation
+        from app.data_adapter.user import User
+        from app.data_adapter.school import School
+
+        school_query = (
+            session.query(School)
+            .join(User, User.school_id == School.id)
+            .join(Reservation, Reservation.user_id == User.user_id)
+        )
+
+        total_schools = school_query.distinct(School.id).count()
+
+        most_active_schools = (
+            school_query.group_by(School.id, School.name)
+            .order_by(func.count(Reservation.id).desc())
+            .with_entities(
+                School.id,
+                School.name,
+                func.count(Reservation.id).label("reservation_count"),
+            )
+            .limit(5)
+            .all()
+        )
+
+        return {
+            "total_participating_schools": total_schools,
+            "most_active_schools": [
+                {
+                    "school_id": school.id,
+                    "school_name": school.name,
+                    "reservation_count": school.reservation_count,
+                }
+                for school in most_active_schools
+            ],
+        }
 
 
 class EventDate(Base):
@@ -499,7 +1084,9 @@ class EventDate(Base):
     event = relationship("Event", back_populates="event_dates")
     reservations = relationship("Reservation", back_populates="event_date")
     waiting_list = relationship("WaitingList", back_populates="event_date")
-    claims = relationship("EventClaim", back_populates="event_date", cascade="all, delete-orphan")
+    claims = relationship(
+        "EventClaim", back_populates="event_date", cascade="all, delete-orphan"
+    )
 
     def __init__(
         self,
@@ -509,14 +1096,16 @@ class EventDate(Base):
         capacity: int,
         lock_time_hours: int = 48,
         available_spots: Optional[int] = None,
-        status: EventStatus = EventStatus.PUBLISHED
+        status: EventStatus = EventStatus.PUBLISHED,
     ):
         self.event_id = event_id
         self.date = date
         self.time = time
         self.capacity = capacity
         self.lock_time_hours = lock_time_hours
-        self.available_spots = available_spots if available_spots is not None else capacity
+        self.available_spots = (
+            available_spots if available_spots is not None else capacity
+        )
         self.status = status
 
     def calculate_lock_time(self) -> datetime:
@@ -533,7 +1122,12 @@ class EventDate(Base):
         current_time = datetime.now()
         event_datetime = datetime.combine(self.date, self.time.time())
         if current_time > event_datetime:
-            if self.status not in [EventStatus.COMPLETED, EventStatus.CANCELLED, EventStatus.COMPLETED_UNPAID, EventStatus.SENT_PAYMENT]:
+            if self.status not in [
+                EventStatus.COMPLETED,
+                EventStatus.CANCELLED,
+                EventStatus.COMPLETED_UNPAID,
+                EventStatus.SENT_PAYMENT,
+            ]:
                 self.status = EventStatus.COMPLETED_UNPAID
 
     def is_locked(self) -> bool:
@@ -542,7 +1136,12 @@ class EventDate(Base):
         """
         self.update_status()  # Ensure status is up-to-date before checking
         current_time = datetime.now()
-        return current_time >= self.calculate_lock_time() or self.status in [EventStatus.COMPLETED, EventStatus.COMPLETED_UNPAID, EventStatus.CANCELLED, EventStatus.SENT_PAYMENT]
+        return current_time >= self.calculate_lock_time() or self.status in [
+            EventStatus.COMPLETED,
+            EventStatus.COMPLETED_UNPAID,
+            EventStatus.CANCELLED,
+            EventStatus.SENT_PAYMENT,
+        ]
 
     def book_seats(self, seats: int) -> bool:
         """
@@ -589,10 +1188,13 @@ class EventDate(Base):
         """
         print("Starting update_past_event_statuses")
         try:
-            past_events = db.query(cls).filter(
-                cls.date < datetime.now(),
-                cls.status.in_([EventStatus.PUBLISHED])
-            ).all()
+            past_events = (
+                db.query(cls)
+                .filter(
+                    cls.date < datetime.now(), cls.status.in_([EventStatus.PUBLISHED])
+                )
+                .all()
+            )
             updated_count = 0
             for event in past_events:
                 if event.status != EventStatus.COMPLETED_UNPAID:
@@ -607,10 +1209,8 @@ class EventDate(Base):
         finally:
             print("Finished update_past_event_statuses")
 
-
     @classmethod
     def mark_as_paid(cls, event_date_id: int) -> bool:
-        
         db = get_db_session()
 
         try:
@@ -620,7 +1220,7 @@ class EventDate(Base):
                 event_date.status = EventStatus.SENT_PAYMENT
                 print(f"Status after setting: {event_date.status}")
                 db.flush()
-                
+
                 db.commit()
                 db.refresh(event_date)
                 print("Event date status updated", event_date._to_model())
@@ -632,7 +1232,6 @@ class EventDate(Base):
             return False
         finally:
             db.close()
-
 
     @classmethod
     def mark_as_completed(cls, event_date_id: int) -> bool:
@@ -658,69 +1257,55 @@ class EventDate(Base):
             db.close()
 
 
-# Create EventClaim model
 class EventClaim(Base):
     """
-    Represents a claim for cancelling an event date or deleting an event.
+    Represents a claim for creating, updating, or cancelling an event or event date.
     """
+
     __tablename__ = "event_claim"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
+    event_id = Column(
+        Integer, ForeignKey("event.id"), nullable=True
+    )  # Nullable for create claims
     event_date_id = Column(Integer, ForeignKey("event_date.id"), nullable=True)
     organizer_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
-    claim_type = Column(SAEnum(ClaimType), nullable=False)
+    claim_type = Column(Enum(ClaimType), nullable=False)
     reason = Column(Text, nullable=False)
-    status = Column(SAEnum(ClaimStatus), nullable=False, default=ClaimStatus.PENDING)
+    status = Column(Enum(ClaimStatus), nullable=False, default=ClaimStatus.PENDING)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    event_data = Column(
+        JSON, nullable=True
+    )  # Store event data for create/update claims
 
     event = relationship("Event", back_populates="claims")
     event_date = relationship("EventDate", back_populates="claims")
 
     @classmethod
-    def create_claim(cls, claim_data: Dict[str, Any]) -> List["EventClaim"]:
+    def create_claim(cls, claim_data: Dict[str, Any]) -> "EventClaim":
         """
-        Create new claims in the database, one for each event date ID.
+        Create a new claim in the database.
 
         Args:
-            claim_data (Dict[str, Any]): Data for creating the claims.
+            claim_data (Dict[str, Any]): Data for creating the claim.
 
         Returns:
-            List[EventClaim]: The list of created claim objects.
+            EventClaim: The created claim object.
         """
         with get_db_session() as db:
-            event_date_ids = claim_data.pop('event_date_ids')
-            created_claims = []
-
-            for date_id in event_date_ids:
-                new_claim_data = claim_data.copy()
-                new_claim_data['event_date_id'] = date_id
-                new_claim = cls(**new_claim_data)
-                db.add(new_claim)
-                created_claims.append(new_claim)
-
+            new_claim = cls(**claim_data)
+            db.add(new_claim)
             db.commit()
-            for claim in created_claims:
-                db.refresh(claim)
-
-            return created_claims
+            db.refresh(new_claim)
+            return new_claim
 
     @classmethod
-    def get_pending_claims(cls) -> List["EventClaim"]:
+    def update_claim_status(
+        cls, claim_id: int, new_status: ClaimStatus
+    ) -> Optional["EventClaim"]:
         """
-        Retrieve all pending claims from the database.
-
-        Returns:
-            List[EventClaim]: A list of pending claim objects.
-        """
-        with get_db_session() as db:
-            return db.query(cls).filter(cls.status == ClaimStatus.PENDING).all()
-
-    @classmethod
-    def update_claim_status(cls, claim_id: int, new_status: ClaimStatus) -> Optional["EventClaim"]:
-        """
-        Update the status of a claim in the database.
+        Update the status of a claim in the database and process the claim if approved.
 
         Args:
             claim_id (int): The ID of the claim to update.
@@ -732,10 +1317,156 @@ class EventClaim(Base):
         with get_db_session() as db:
             claim = db.query(cls).filter(cls.id == claim_id).first()
             if claim:
-                claim.status = new_status
-                db.commit()
-                db.refresh(claim)
+                if (
+                    new_status == ClaimStatus.APPROVED
+                    and claim.status != ClaimStatus.APPROVED
+                ):
+                    # Process the claim if it's being approved for the first time
+                    if claim.claim_type == ClaimType.CREATE_EVENT:
+                        cls._process_create_event(db, claim)
+                    elif claim.claim_type == ClaimType.EDIT_EVENT:
+                        cls._process_edit_event(db, claim)
+                    elif claim.claim_type == ClaimType.DELETE_EVENT:
+                        cls._process_delete_event(db, claim)
+                    elif claim.claim_type == ClaimType.CANCEL_DATE:
+                        cls._process_cancel_date(db, claim)
+
+            claim.status = new_status
+            claim.updated_at = datetime.utcnow()
+
+            db.commit()
+            db.refresh(claim)
             return claim
+
+    @classmethod
+    def _process_create_event(cls, db: Session, claim: "EventClaim"):
+        event_data = EventCreateModel(**claim.event_data)
+        new_event = Event(**event_data.dict(exclude={"attachments", "event_dates"}))
+        new_event.available_spots = new_event.capacity
+        db.add(new_event)
+        db.flush()
+
+        for event_date in event_data.event_dates:
+            combined_datetime = datetime.combine(event_date.date, event_date.time)
+            new_event_date = EventDate(
+                event_id=new_event.id,
+                date=combined_datetime,
+                time=combined_datetime,
+                capacity=new_event.capacity,
+                available_spots=new_event.capacity,
+            )
+            db.add(new_event_date)
+
+        if event_data.attachments:
+            for attachment_data in event_data.attachments:
+                attachment = Attachment(**attachment_data.dict(), event=new_event)
+                db.add(attachment)
+
+        claim.event = new_event
+
+    @classmethod
+    def _process_edit_event(cls, db: Session, claim: "EventClaim"):
+        event = claim.event
+        if not event:
+            raise ValueError("Event not found for edit claim")
+
+        # Extract only the 'to' values from the claim.event_data
+        update_data = {
+            key: value["to"] for key, value in claim.event_data.items() if "to" in value
+        }
+
+        # Create EventUpdateModel instance with extracted 'to' values
+        update_model = EventUpdateModel(**update_data)
+        update_dict = update_model.dict(exclude_unset=True)
+
+        for field, value in update_dict.items():
+            if field not in ["attachments", "event_dates"] and value is not None:
+                setattr(event, field, value)
+
+        if "event_dates" in update_dict:
+            cls._update_event_dates(db, event, update_dict["event_dates"])
+
+        if "attachments" in update_dict:
+            cls._update_attachments(db, event, update_dict["attachments"])
+
+    @classmethod
+    def _process_delete_event(cls, db: Session, claim: "EventClaim"):
+        event = claim.event
+        if not event:
+            raise ValueError("Event not found for delete claim")
+        db.delete(event)
+
+    @classmethod
+    def _process_cancel_date(cls, db: Session, claim: "EventClaim"):
+        if not claim.event_data or "selected_dates" not in claim.event_data:
+            raise ValueError("No selected dates found in claim data")
+
+        selected_date_ids = claim.event_data["selected_dates"]
+        for date_id in selected_date_ids:
+            event_date = db.query(EventDate).filter(EventDate.id == date_id).first()
+            if event_date:
+                event_date.status = EventStatus.CANCELLED
+            else:
+                logger.warning(
+                    f"Event date with id {date_id} not found for cancel claim {claim.id}"
+                )
+
+    @classmethod
+    def _update_event_dates(
+        cls, db: Session, event: Event, new_dates: List[EventDateModel]
+    ):
+        existing_dates = {date.id: date for date in event.event_dates}
+
+        for date_data in new_dates:
+            if date_data.id in existing_dates:
+                existing_date = existing_dates[date_data.id]
+                for field, value in date_data.dict(exclude={"id", "event_id"}).items():
+                    setattr(existing_date, field, value)
+            else:
+                new_date = EventDate(
+                    **date_data.dict(exclude={"id"}), event_id=event.id
+                )
+                db.add(new_date)
+
+        for old_date_id in set(existing_dates.keys()) - set(
+            date.id for date in new_dates
+        ):
+            db.delete(existing_dates[old_date_id])
+
+    @classmethod
+    def _update_attachments(
+        cls, db: Session, event: Event, new_attachments: List[Attachment]
+    ):
+        existing_attachments = {
+            attachment.id: attachment for attachment in event.attachments
+        }
+
+        for attachment_data in new_attachments:
+            if attachment_data.id in existing_attachments:
+                existing_attachment = existing_attachments[attachment_data.id]
+                for field, value in attachment_data.dict(exclude={"id"}).items():
+                    setattr(existing_attachment, field, value)
+            else:
+                new_attachment = Attachment(
+                    **attachment_data.dict(exclude={"id"}), event_id=event.id
+                )
+                db.add(new_attachment)
+
+        for old_attachment_id in set(existing_attachments.keys()) - set(
+            attachment.id for attachment in new_attachments
+        ):
+            db.delete(existing_attachments[old_attachment_id])
+
+    @classmethod
+    def get_pending_claims(cls) -> List["EventClaim"]:
+        """
+        Retrieve all pending claims from the database.
+
+        Returns:
+            List[EventClaim]: A list of pending claim objects.
+        """
+        with get_db_session() as db:
+            return db.query(cls).filter(cls.status == ClaimStatus.PENDING).all()
 
     def _to_model(self) -> Dict[str, Any]:
         """
@@ -749,9 +1480,10 @@ class EventClaim(Base):
             "event_id": self.event_id,
             "event_date_id": self.event_date_id,
             "organizer_id": self.organizer_id,
-            "claim_type": self.claim_type,
+            "claim_type": self.claim_type.value,
             "reason": self.reason,
-            "status": self.status,
+            "status": self.status.value,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "event_data": self.event_data,
         }

@@ -111,7 +111,7 @@ async def get_parent_organizer(
     description="Retrieve the role of a user by their ID.",
 )
 async def get_user_role(
-    user_id: int, # The authentication token.
+    user_id: int,  # The authentication token.
     _=Depends(build_request_context),  # Build the request context.
 ):
     """

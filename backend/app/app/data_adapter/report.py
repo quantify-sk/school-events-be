@@ -1,7 +1,19 @@
 from app.data_adapter.school import School
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, JSON, and_, func, select, join
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Enum,
+    ForeignKey,
+    JSON,
+    and_,
+    func,
+    select,
+    join,
+)
 from sqlalchemy.orm import relationship, joinedload, aliased
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from app.context_manager import get_db_session
 from app.database import Base
 from enum import Enum as PyEnum
@@ -14,10 +26,12 @@ from app.models.get_params import ParameterValidator
 import json
 from app.models.reservation import ReservationStatus
 
+
 class ReportType(PyEnum):
     EVENT_SUMMARY = "event_summary"
     ATTENDANCE = "attendance"
     RESERVATION = "reservation"
+
 
 class Report(Base):
     __tablename__ = "report"
@@ -42,7 +56,7 @@ class Report(Base):
 
     @staticmethod
     def serialize_datetime(obj):
-        if isinstance(obj, datetime):
+        if isinstance(obj, (datetime, date)):
             return obj.isoformat()
         raise TypeError(f"Type {type(obj)} not serializable")
 
@@ -98,27 +112,36 @@ class Report(Base):
     @classmethod
     def generate_event_summary(cls, filters: dict) -> List[Dict[str, Any]]:
         with get_db_session() as session:
-            query = session.query(Event).distinct().options(
-                joinedload(Event.event_dates),
-                joinedload(Event.reservations)
+            query = (
+                session.query(Event)
+                .distinct()
+                .options(joinedload(Event.event_dates), joinedload(Event.reservations))
             )
 
             # Handle date filtering separately
             if filters.get("start_date") or filters.get("end_date"):
                 query = query.join(Event.event_dates)
                 if filters.get("start_date"):
-                    query = query.filter(EventDate.date >= cls.ensure_utc(filters["start_date"]))
+                    query = query.filter(
+                        EventDate.date >= cls.ensure_utc(filters["start_date"])
+                    )
                 if filters.get("end_date"):
-                    query = query.filter(EventDate.date <= cls.ensure_utc(filters["end_date"]))
+                    query = query.filter(
+                        EventDate.date <= cls.ensure_utc(filters["end_date"])
+                    )
 
             # Use ParameterValidator for other filters
             filter_params = {"multi_columns": []}
             if filters.get("event_type"):
-                filter_params["multi_columns"].append({"event_type": [filters["event_type"]]})
+                filter_params["multi_columns"].append(
+                    {"event_type": [filters["event_type"]]}
+                )
             if filters.get("city"):
                 filter_params["multi_columns"].append({"city": [filters["city"]]})
 
-            query = ParameterValidator.apply_filters_and_sorting(query, Event, filter_params, None)
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, Event, filter_params, None
+            )
 
             events = query.all()
 
@@ -126,7 +149,9 @@ class Report(Base):
             for event in events:
                 event_model = event._to_model()
                 total_capacity = sum(date.capacity for date in event.event_dates)
-                total_available_spots = sum(date.available_spots for date in event.event_dates)
+                total_available_spots = sum(
+                    date.available_spots for date in event.event_dates
+                )
                 total_reservations = len(event.reservations)
                 event_model["total_capacity"] = total_capacity
                 event_model["total_available_spots"] = total_available_spots
@@ -139,41 +164,58 @@ class Report(Base):
     def generate_attendance_report(cls, filters: dict) -> List[Dict[str, Any]]:
         with get_db_session() as session:
             current_time = datetime.utcnow()
-            query = session.query(
+            query = (
+                session.query(
+                    Event.id,
+                    Event.title,
+                    Event.institution_name,
+                    Event.city,
+                    Event.event_type,
+                    EventDate.date,
+                    func.count(Reservation.id).label("attendance_count"),
+                )
+                .join(EventDate, Event.id == EventDate.event_id)
+                .outerjoin(
+                    Reservation,
+                    and_(
+                        Reservation.event_id == Event.id,
+                        Reservation.event_date_id == EventDate.id,
+                    ),
+                )
+                .filter(EventDate.date <= current_time)
+            )
+
+            # Handle date filtering
+            if filters.get("start_date"):
+                query = query.filter(
+                    EventDate.date >= cls.ensure_utc(filters["start_date"])
+                )
+            if filters.get("end_date"):
+                query = query.filter(
+                    EventDate.date <= cls.ensure_utc(filters["end_date"])
+                )
+
+            # Use ParameterValidator for other filters
+            filter_params = {"multi_columns": []}
+            if filters.get("event_type"):
+                filter_params["multi_columns"].append(
+                    {"event_type": [filters["event_type"]]}
+                )
+            if filters.get("city"):
+                filter_params["multi_columns"].append({"city": [filters["city"]]})
+
+            query = ParameterValidator.apply_filters_and_sorting(
+                query, Event, filter_params, None
+            )
+
+            query = query.group_by(
                 Event.id,
                 Event.title,
                 Event.institution_name,
                 Event.city,
                 Event.event_type,
                 EventDate.date,
-                func.count(Reservation.id).label("attendance_count")
-            ).join(
-                EventDate, Event.id == EventDate.event_id
-            ).outerjoin(
-                Reservation, and_(
-                    Reservation.event_id == Event.id,
-                    Reservation.event_date_id == EventDate.id
-                )
-            ).filter(
-                EventDate.date <= current_time
             )
-
-            # Handle date filtering
-            if filters.get("start_date"):
-                query = query.filter(EventDate.date >= cls.ensure_utc(filters["start_date"]))
-            if filters.get("end_date"):
-                query = query.filter(EventDate.date <= cls.ensure_utc(filters["end_date"]))
-
-            # Use ParameterValidator for other filters
-            filter_params = {"multi_columns": []}
-            if filters.get("event_type"):
-                filter_params["multi_columns"].append({"event_type": [filters["event_type"]]})
-            if filters.get("city"):
-                filter_params["multi_columns"].append({"city": [filters["city"]]})
-
-            query = ParameterValidator.apply_filters_and_sorting(query, Event, filter_params, None)
-
-            query = query.group_by(Event.id, Event.title, Event.institution_name, Event.city, Event.event_type, EventDate.date)
             results = query.all()
 
             attendance_report = [
@@ -184,7 +226,7 @@ class Report(Base):
                     "city": result.city,
                     "event_type": result.event_type,
                     "date": result.date.isoformat(),
-                    "attendance_count": result.attendance_count
+                    "attendance_count": result.attendance_count,
                 }
                 for result in results
             ]
@@ -209,9 +251,13 @@ class Report(Base):
 
             # Apply date filters
             if filters.get("start_date"):
-                query = query.filter(EventDate.date >= cls.ensure_utc(filters["start_date"]))
+                query = query.filter(
+                    EventDate.date >= cls.ensure_utc(filters["start_date"])
+                )
             if filters.get("end_date"):
-                query = query.filter(EventDate.date <= cls.ensure_utc(filters["end_date"]))
+                query = query.filter(
+                    EventDate.date <= cls.ensure_utc(filters["end_date"])
+                )
 
             # Apply other filters
             if filters.get("city"):
@@ -219,7 +265,9 @@ class Report(Base):
             if filters.get("event_type"):
                 query = query.filter(Event.event_type == filters["event_type"])
             if filters.get("reservation_status"):
-                query = query.filter(Reservation.status == filters["reservation_status"])
+                query = query.filter(
+                    Reservation.status == filters["reservation_status"]
+                )
 
             # Region and district filters
             if filters.get("region"):
@@ -237,7 +285,11 @@ class Report(Base):
                 event_model = reservation.event._to_model()
                 event_date_model = reservation.event_date._to_model()
                 user_model = reservation.user._to_model()
-                school_model = reservation.user.school._to_model() if reservation.user.school else None
+                school_model = (
+                    reservation.user.school._to_model()
+                    if reservation.user.school
+                    else None
+                )
 
                 reservation_summary = {
                     **reservation_model,
@@ -261,13 +313,17 @@ class Report(Base):
                     },
                     "school": school_model,
                     "status": reservation.status.value,
-                    "cancelled_at": reservation.cancelled_at.isoformat() if reservation.cancelled_at else None,
+                    "cancelled_at": reservation.cancelled_at.isoformat()
+                    if reservation.cancelled_at
+                    else None,
                 }
                 reservation_summaries.append(reservation_summary)
 
-            print(f"Number of reservation summaries: {len(reservation_summaries)}")  # Debug print
+            print(
+                f"Number of reservation summaries: {len(reservation_summaries)}"
+            )  # Debug print
             return reservation_summaries
-        
+
     @staticmethod
     def ensure_utc(dt):
         if isinstance(dt, str):
@@ -275,14 +331,20 @@ class Report(Base):
         if dt.tzinfo is None:
             return dt.replace(tzinfo=timezone.utc)
         return dt.astimezone(timezone.utc)
-    
+
     @classmethod
-    def save_report(cls, report_data: Dict[str, Any], generated_by: int) -> Dict[str, Any]:
+    def save_report(
+        cls, report_data: Dict[str, Any], generated_by: int
+    ) -> Dict[str, Any]:
         with get_db_session() as session:
-            serialized_filters = json.dumps(report_data['filters'], default=cls.serialize_datetime)
-            serialized_data = json.dumps(report_data['data'], default=cls.serialize_datetime)
+            serialized_filters = json.dumps(
+                report_data["filters"], default=cls.serialize_datetime
+            )
+            serialized_data = json.dumps(
+                report_data["data"], default=cls.serialize_datetime
+            )
             report = cls(
-                report_type=ReportType(report_data['report_type']),
+                report_type=ReportType(report_data["report_type"]),
                 generated_by=generated_by,
                 filters=serialized_filters,
                 data=serialized_data,

@@ -34,7 +34,6 @@ class SchoolModel(BaseModel):
     number_of_employees: Optional[int] = 0
     psc: Optional[str] = None
     city: Optional[str] = None
-    
 
     class Config:
         from_attributes = True

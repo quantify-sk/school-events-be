@@ -1,4 +1,12 @@
-from app.api.v1.endpoints import auth, user, event, reservation, waiting_list, report
+from app.api.v1.endpoints import (
+    auth,
+    user,
+    event,
+    reservation,
+    waiting_list,
+    report,
+    statistics,
+)
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -38,4 +46,10 @@ api_router.include_router(
     report.router,
     prefix="/report",
     tags=["Report"],
+)
+
+api_router.include_router(
+    statistics.router,
+    prefix="/statistics",
+    tags=["Statistics"],
 )

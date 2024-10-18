@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 import threading
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from datetime import datetime, time, date
 from enum import Enum
 
@@ -11,7 +11,6 @@ class EventStatus(str, Enum):
     CANCELLED = "cancelled"
     COMPLETED = "completed_paid"
     COMPLETED_UNPAID = "completed_unpaid"
-    
 
 
 class EventType(str, Enum):
@@ -26,14 +25,19 @@ class EventType(str, Enum):
     BALLET = "ballet"
     OTHER = "other"
 
+
 class ClaimType(str, Enum):
     CANCEL_DATE = "cancel_date"
     DELETE_EVENT = "delete_event"
+    EDIT_EVENT = "edit_event"
+    CREATE_EVENT = "create_event"
+
 
 class ClaimStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
+
 
 class TargetGroup(str, Enum):
     ELEMENTARY_SCHOOL = "elementary_school"
@@ -110,7 +114,6 @@ class EventUpdateModel(BaseModel):
     event_dates: Optional[List[EventDateModel]] = None
     ztp_access: Optional[bool] = None  # Added ZTP access
     parking_spaces: Optional[int] = None  # Added parking spaces
-    
 
 
 class EventModel(BaseModel):
@@ -159,20 +162,24 @@ class EventSortParams(BaseModel):
     field: str
     order: str = "asc"
 
+
 class EventClaimCreateModel(BaseModel):
     """
     Pydantic model for creating a new event claim.
     """
-    event_id: int
-    event_date_ids: Optional[List[int]] = None
+
+    event_id: Optional[int] = None  # Optional for CREATE claims
     organizer_id: int
     claim_type: ClaimType
     reason: str
+    event_data: Optional[Dict[str, Any]] = None  # For CREATE and UPDATE claims
+
 
 class EventClaimModel(BaseModel):
     """
     Pydantic model for representing an event claim.
     """
+
     id: int
     event_id: int
     event_date_id: Optional[int]

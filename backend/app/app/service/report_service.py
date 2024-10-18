@@ -36,6 +36,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from fastapi.responses import StreamingResponse
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter, landscape
+from app.service.event_statistic_service import EventStatisticsService
+from app.models.statistics import StatisticsRequestModel
 
 
 class ReportService:
@@ -45,14 +47,20 @@ class ReportService:
     ) -> GenericResponseModel:
         try:
             report_data = None
-            if report_type == ReportType.EVENT_SUMMARY.value:
-                report_data = Report.generate_event_summary(filters.dict())
-            elif report_type == ReportType.ATTENDANCE.value:
-                report_data = Report.generate_attendance_report(filters.dict())
-            elif report_type == ReportType.RESERVATION.value:
-                report_data = Report.generate_reservation_report(filters.dict())
+            if report_type in [
+                ReportType.EVENT_SUMMARY.value,
+                ReportType.ATTENDANCE.value,
+                ReportType.RESERVATION.value,
+            ]:
+                # Use EventStatisticsService for event-related reports
+                statistics_filters = StatisticsRequestModel(**filters.dict())
+                response = EventStatisticsService.get_event_statistics(
+                    statistics_filters, report_type
+                )
+                report_data = response.data.dict()
             # Add more report types as needed
 
+            # Create the report
             report = Report.create_report(
                 report_type=ReportType(report_type),
                 generated_by=filters.user_id,
@@ -114,10 +122,10 @@ class ReportService:
         try:
             user_id = context_actor_user_data.get().user_id
             report = Report.create_report(
-                report_type=ReportType(report_data['report_type']),
+                report_type=ReportType(report_data["report_type"]),
                 generated_by=user_id,
-                filters=report_data.get('filters', {}),
-                data=report_data['data'],
+                filters=report_data.get("filters", {}),
+                data=report_data["data"],
             )
             logger.info(f"Saved report for user ID: {user_id}")
             return GenericResponseModel(
@@ -128,7 +136,9 @@ class ReportService:
             )
         except Exception as e:
             logger.error(f"Unexpected error saving report. Error: {str(e)}")
-            raise CustomInternalServerErrorException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+            raise CustomInternalServerErrorException(
+                ResponseMessages.ERR_INTERNAL_SERVER_ERROR
+            )
 
     @staticmethod
     async def email_report(report_data: Dict[str, Any]):
@@ -149,98 +159,111 @@ class ReportService:
         try:
             user_id = context_actor_user_data.get().user_id
             logger.info(f"Exporting report in {format} format for user ID: {user_id}")
-    
+
             # Convert report_data to a pandas DataFrame
-            df = pd.DataFrame(report_data.get('data', []))
-    
+            df = pd.DataFrame(report_data.get("data", []))
+
             if df.empty:
                 raise ValueError("No data to export")
-    
-            if format == 'csv':
+
+            if format == "csv":
                 # Generate CSV with UTF-8 encoding and BOM
                 output = io.StringIO()
-                df.to_csv(output, index=False, encoding='utf-8-sig')
+                df.to_csv(output, index=False, encoding="utf-8-sig")
                 output.seek(0)
-    
+
                 return StreamingResponse(
                     iter([output.getvalue()]),
                     media_type="text/csv",
-                    headers={"Content-Disposition": f"attachment; filename=report.csv"}
+                    headers={"Content-Disposition": f"attachment; filename=report.csv"},
                 )
-    
-            elif format == 'excel':
+
+            elif format == "excel":
                 # Generate Excel
                 output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    df.to_excel(writer, sheet_name='Report', index=False)
+                with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+                    df.to_excel(writer, sheet_name="Report", index=False)
                 output.seek(0)
-    
+
                 return StreamingResponse(
                     iter([output.getvalue()]),
                     media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    headers={"Content-Disposition": f"attachment; filename=report.xlsx"}
+                    headers={
+                        "Content-Disposition": f"attachment; filename=report.xlsx"
+                    },
                 )
-    
-            elif format == 'pdf':
+
+            elif format == "pdf":
                 # Generate PDF
                 buffer = io.BytesIO()
-                doc = SimpleDocTemplate(buffer, pagesize=landscape(letter), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+                doc = SimpleDocTemplate(
+                    buffer,
+                    pagesize=landscape(letter),
+                    rightMargin=30,
+                    leftMargin=30,
+                    topMargin=30,
+                    bottomMargin=30,
+                )
                 elements = []
-    
+
                 styles = getSampleStyleSheet()
-                title = Paragraph("Report", styles['Title'])
+                title = Paragraph("Report", styles["Title"])
                 elements.append(title)
-    
+
                 # Split the DataFrame into chunks of 10 columns each
                 chunk_size = 10
                 for i in range(0, len(df.columns), chunk_size):
-                    chunk = df.iloc[:, i:i+chunk_size]
-                    
+                    chunk = df.iloc[:, i : i + chunk_size]
+
                     # Convert DataFrame chunk to a list of lists for the PDF table
                     data = [chunk.columns.tolist()] + chunk.values.tolist()
-    
+
                     # Ensure all data is string type
                     data = [[str(cell) for cell in row] for row in data]
-    
+
                     table = Table(data, repeatRows=1)
-                    table.setStyle(TableStyle([
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, 0), 8),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                        ('FONTSIZE', (0, 1), (-1, -1), 7),
-                        ('TOPPADDING', (0, 1), (-1, -1), 6),
-                        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-                    ]))
+                    table.setStyle(
+                        TableStyle(
+                            [
+                                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                                ("FONTSIZE", (0, 0), (-1, 0), 8),
+                                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                                ("TEXTCOLOR", (0, 1), (-1, -1), colors.black),
+                                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                                ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+                                ("FONTSIZE", (0, 1), (-1, -1), 7),
+                                ("TOPPADDING", (0, 1), (-1, -1), 6),
+                                ("BOTTOMPADDING", (0, 1), (-1, -1), 6),
+                                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                            ]
+                        )
+                    )
                     elements.append(table)
-                    elements.append(Paragraph("<br/><br/>", styles['Normal']))
-    
+                    elements.append(Paragraph("<br/><br/>", styles["Normal"]))
+
                 doc.build(elements)
                 buffer.seek(0)
-    
+
                 return StreamingResponse(
                     iter([buffer.getvalue()]),
                     media_type="application/pdf",
-                    headers={"Content-Disposition": f"attachment; filename=report.pdf"}
+                    headers={"Content-Disposition": f"attachment; filename=report.pdf"},
                 )
-    
+
             else:
                 raise ValueError(f"Unsupported format: {format}")
-    
+
         except ValueError as ve:
             logger.error(f"ValueError in export_report: {str(ve)}")
             raise HTTPException(status_code=400, detail=str(ve))
         except Exception as e:
             logger.error(f"Unexpected error exporting report. Error: {str(e)}")
             raise CustomInternalServerErrorException()
-        
+
     @staticmethod
     def delete_report(report_id: int) -> GenericResponseModel:
         try:

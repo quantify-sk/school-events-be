@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import sys
 
 from app.context_manager import context_db_session
@@ -141,34 +141,40 @@ def seed_users():
 
     print("USERS AND SCHOOLS SEEDED SUCCESSFULLY")
 
+
 def create_event_dates(event_id, dates, times, capacity):
-        event_dates = []
-        for date in dates:
-            for t in times:
-                event_date = EventDate(
-                    event_id=event_id,
-                    date=datetime.combine(date, t),
-                    time=datetime.combine(date, t),
-                    capacity=capacity,
-                )
-                event_dates.append(event_date)
-        return event_dates
+    event_dates = []
+    for date in dates:
+        for t in times:
+            event_date = EventDate(
+                event_id=event_id,
+                date=datetime.combine(date, t),
+                time=datetime.combine(date, t),
+                capacity=capacity,
+            )
+            event_dates.append(event_date)
+    return event_dates
+
 
 def get_random_photo():
     # Use a raw string for the Windows path
     photo_dir = "/code/app/bank-photos"
-    
+
     # Alternatively, you can use forward slashes, which work on both Windows and Unix-like systems:
     # photo_dir = "C:/Users/david/school-events-be/backend/app/app/bank-photos"
-    
+
     # Check if the directory exists
     if not os.path.exists(photo_dir):
         print(f"Warning: The directory {photo_dir} does not exist.")
         return None
-    
+
     # Get all image files from the directory
-    photos = [f for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', 'webp'))]
-    
+    photos = [
+        f
+        for f in os.listdir(photo_dir)
+        if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif", "webp"))
+    ]
+
     if photos:
         # Select a random photo
         random_photo = random.choice(photos)
@@ -177,6 +183,7 @@ def get_random_photo():
     else:
         print(f"No photos found in {photo_dir}")
         return None
+
 
 def seed_events():
     """Seed events"""
@@ -212,8 +219,6 @@ def seed_events():
 
         return organizer
 
-    
-
     # Kino Lumière events
     kino_lumiere = create_organizer_and_employee("Kino Lumière", "kino_lumiere")
 
@@ -232,7 +237,7 @@ def seed_events():
             event_type=EventType.WORKSHOP,
             duration=90,
             organizer_id=kino_lumiere.user_id,
-            district="bratislava_i", 
+            district="bratislava_i",
             region="bratislavsky",
         ),
         Event(
@@ -250,7 +255,7 @@ def seed_events():
             duration=120,
             organizer_id=kino_lumiere.user_id,
             district="bratislava_i",
-            region="bratislavsky", 
+            region="bratislavsky",
         ),
         Event(
             title="Školské predstavenie bez lektorského úvodu",
@@ -328,7 +333,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -366,10 +371,10 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
-        
+
     # Add event dates
     sko_zilina_dates = [datetime(2024, 10, 15), datetime(2024, 10, 16)]
     sko_zilina_times = [time(9, 0), time(11, 0)]
@@ -380,8 +385,6 @@ def seed_events():
         sko_zilina_event.capacity,
     )
     db.add_all(sko_zilina_event_dates)
-
-
 
     # Štátna filharmónia Košice event
     sfk = create_organizer_and_employee("Štátna filharmónia Košice", "sfk")
@@ -401,8 +404,8 @@ def seed_events():
         duration=60,
         organizer_id=sfk.user_id,
         more_info_url="https://www.sfk.sk/koncerty-pre-deti-a-mladez",
-    district="kosice_i",  # Set to the appropriate district value
-    region="kosicky",  # Set to the appropriate region value
+        district="kosice_i",  # Set to the appropriate district value
+        region="kosicky",  # Set to the appropriate region value
     )
     db.add(sfk_event)
     db.flush()
@@ -415,10 +418,9 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
-
 
     sfk_dates = [datetime(2024, 12, 11), datetime(2024, 12, 12), datetime(2024, 12, 13)]
     sfk_event_dates = create_event_dates(
@@ -444,12 +446,11 @@ def seed_events():
         duration=120,
         organizer_id=statna_opera.user_id,
         more_info_url="https://www.stateopera.sk/sk/program",
-    district="banska_bystrica",  # Set to the appropriate district value
-    region="banskobystricky",  # Set to the appropriate region value
+        district="banska_bystrica",  # Set to the appropriate district value
+        region="banskobystricky",  # Set to the appropriate region value
     )
     db.add(statna_opera_event)
     db.flush()
-
 
     for event in [statna_opera_event]:
         # Create attachment for the event
@@ -459,7 +460,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
     statna_opera_dates = [datetime(2024, 10, 24), datetime(2024, 10, 25)]
@@ -489,8 +490,8 @@ def seed_events():
         duration=130,  # 100 minutes performance + 30 minutes discussion
         organizer_id=nova_scena.user_id,
         more_info_url="https://www.novascena.sk/repertoar",
-  district="bratislava_i",  # Set to the appropriate district value
-    region="bratislavsky",  # Set to the appropriate region value
+        district="bratislava_i",  # Set to the appropriate district value
+        region="bratislavsky",  # Set to the appropriate region value
     )
     db.add(nova_scena_punk_rock)
     db.flush()
@@ -503,7 +504,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -532,8 +533,8 @@ def seed_events():
         duration=60,
         organizer_id=nova_scena.user_id,
         more_info_url="https://www.novascena.sk/repertoar",
-  district="bratislava_i",  # Set to the appropriate district value
-    region="bratislavsky",  # Set to the appropriate region value
+        district="bratislava_i",  # Set to the appropriate district value
+        region="bratislavsky",  # Set to the appropriate region value
     )
     db.add(nova_scena_event)
     db.flush()
@@ -546,7 +547,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -577,7 +578,6 @@ def seed_events():
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
         district="kosice",
         region="kosicky",
-
     )
     db.add(nd_kosice_event1)
     db.flush()
@@ -590,7 +590,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -645,7 +645,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -695,7 +695,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -729,7 +729,6 @@ def seed_events():
     db.add(nd_kosice_event4)
     db.flush()
 
-
     for event in [nd_kosice_event4]:
         # Create attachment for the event
         photo_path = get_random_photo()
@@ -738,7 +737,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -768,7 +767,7 @@ def seed_events():
         organizer_id=nd_kosice.user_id,
         more_info_url="http://www.sdke.sk/sk/divadlo/program",
         district="kosice",
-        region="kosicky",     
+        region="kosicky",
     )
     db.add(nd_kosice_event5)
     db.flush()
@@ -781,7 +780,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -828,7 +827,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
     db.add(
@@ -870,7 +869,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -920,7 +919,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -970,7 +969,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1004,7 +1003,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
     # Slovensko
@@ -1037,7 +1036,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1088,7 +1087,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1138,7 +1137,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1175,7 +1174,6 @@ def seed_events():
     db.add(suh_event)
     db.flush()
 
-
     for event in [suh_event]:
         # Create attachment for the event
         photo_path = get_random_photo()
@@ -1184,7 +1182,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1216,10 +1214,9 @@ def seed_events():
         organizer_id=uluv_svk.user_id,
         district="banska_bystrica",
         region="banskobystricky",
-            )
+    )
     db.add(uluv_svk_event1)
     db.flush()
-
 
     for event in [uluv_svk_event1]:
         # Create attachment for the event
@@ -1229,7 +1226,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1276,7 +1273,7 @@ def seed_events():
                 name=os.path.basename(photo_path),
                 path=photo_path,
                 type="image",
-                event_id=event.id
+                event_id=event.id,
             )
             db.add(attachment)
 
@@ -1297,6 +1294,7 @@ def seed_events():
     db.commit()
     print("EVENTS SEEDED SUCCESSFULLY")
 
+
 def seed_new_accounts_and_event():
     print("SEEDING NEW ACCOUNTS AND EVENT")
 
@@ -1308,7 +1306,7 @@ def seed_new_accounts_and_event():
         ("Admin", "admin@quantify.sk", "rywkan-qorfyc-Coxnu3", "admin"),
         ("Organizator", "organizator@quantify.sk", "Fabtug-guqcek-wytde5", "organizer"),
     ]
-    
+
     for first_name, email, password, role in new_users:
         if role == "school_representative":
             school = School(
@@ -1333,7 +1331,7 @@ def seed_new_accounts_and_event():
                 role=role,
                 phone_number="0900123456",
                 status=UserStatus.ACTIVE,
-                school_id=school.id
+                school_id=school.id,
             )
         else:
             user = User(
@@ -1343,7 +1341,7 @@ def seed_new_accounts_and_event():
                 password_hash=get_password_hash(password),
                 role=role,
                 phone_number="0900123456",
-                status=UserStatus.ACTIVE
+                status=UserStatus.ACTIVE,
             )
         db.add(user)
         db.flush()
@@ -1376,7 +1374,7 @@ def seed_new_accounts_and_event():
             name=os.path.basename(photo_path),
             path=photo_path,
             type="image",
-            event_id=uluv_svk_event2.id
+            event_id=uluv_svk_event2.id,
         )
         db.add(attachment)
 
@@ -1397,6 +1395,94 @@ def seed_new_accounts_and_event():
     db.commit()
     print("NEW ACCOUNTS, SCHOOL, AND EVENT SEEDED SUCCESSFULLY")
 
+
+def generate_seed_reservation_code(db, length=8):
+    """Generate a unique reservation code for seeding purposes."""
+    from app.data_adapter.reservation import Reservation
+    import string
+
+    while True:
+        code = "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
+        if not db.query(Reservation).filter_by(local_reservation_code=code).first():
+            return code
+
+
+def seed_school_reservations():
+    """Seed reservations for schools to random events"""
+    print("SEEDING RESERVATIONS FOR SCHOOLS")
+
+    db = SessionLocal()
+
+    # Retrieve all schools and their representatives
+    schools = db.query(School).join(User, School.id == User.school_id).all()
+    print(f"Total Schools: {len(schools)}")
+
+    # Retrieve all events with their dates
+    events = db.query(Event).join(EventDate).all()
+    print(f"Total Events: {len(events)}")
+
+    # Create reservations
+    for school in schools:
+        # Get the school representative
+        representative = db.query(User).filter(User.school_id == school.id).first()
+        if not representative:
+            print(f"No representative found for school: {school.name}")
+            continue
+
+        # Randomly select 5 to 10 events for each school
+        num_reservations = random.randint(5, 10)
+        selected_events = random.sample(events, min(num_reservations, len(events)))
+
+        for event in selected_events:
+            # Randomly select an event date
+            event_date = random.choice(event.event_dates)
+
+            from app.data_adapter.reservation import Reservation, ReservationStatus
+
+            # Create reservation
+            number_of_students = random.randint(10, 40)
+            number_of_teachers = random.randint(1, 4)
+            reservation = Reservation(
+                event_id=event.id,
+                event_date_id=event_date.id,
+                user_id=representative.user_id,
+                number_of_students=number_of_students,
+                number_of_teachers=number_of_teachers,
+                special_requirements=random.choice([None, "Wheelchair access needed", "Allergies: peanuts", "Requires sign language interpreter"]),
+                contact_info=representative.user_email,
+                status=random.choice(list(ReservationStatus)),  # Randomly select a status
+                local_reservation_code=generate_seed_reservation_code(db),
+                created_at=datetime.utcnow() - timedelta(days=random.randint(1, 30)),  # Random creation date within the last 30 days
+                updated_at=datetime.utcnow(),
+            )
+
+            try:
+                # Add reservation to the database
+                db.add(reservation)
+                db.flush()  # This will assign an ID to the reservation
+
+                # Update available spots for the event date
+                event_date.available_spots -= number_of_students + number_of_teachers
+
+                print(f"Created reservation for {school.name} to event {event.title}")
+            except Exception as e:
+                db.rollback()
+                print(
+                    f"Failed to create reservation for {school.name} to event {event.title}: {str(e)}"
+                )
+                continue
+
+        # Commit after processing each school
+        try:
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            print(f"Failed to commit reservations for {school.name}: {str(e)}")
+
+    db.close()
+    print("SEEDING RESERVATIONS FOR SCHOOLS COMPLETED")
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "users":
@@ -1410,5 +1496,7 @@ if __name__ == "__main__":
             seed_events()
         elif sys.argv[1] == "demo":
             seed_new_accounts_and_event()
+        elif sys.argv[1] == "reservations":
+            seed_school_reservations()
     else:
         print("Usage: python -m app.db seed [users|events|all]")

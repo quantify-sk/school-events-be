@@ -396,7 +396,7 @@ class Reservation(Base):
                 )
             return reservation._to_model()
 
-    @staticmethod
+    @classmethod
     def generate_local_code(session) -> str:
         """
         Generate a unique local reservation code.

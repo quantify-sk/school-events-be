@@ -25,6 +25,7 @@ help:
 	@echo "  logs-prod          Show logs from production docker compose."
 	@echo "  reload             Remove volumes, reset git state, rebuild and seed the database."
 	@echo "  seed_demo_db       Seed the database with demo data."
+	@echo "  seed_reservations_db Seed the reservations."
 	
 
 install:
@@ -70,6 +71,10 @@ stop-dev:
 seed-demo-db:
 	@echo "Seeding the database with demo data..."
 	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db demo
+
+seed-reservations-db:
+	@echo "Seeding the reservations..."
+	docker compose -f docker-compose-dev.yml exec fastapi_server poetry run python -m app.db reservations
 
 run-prod:
 	@echo "Running production docker compose..."

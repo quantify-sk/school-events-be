@@ -26,6 +26,7 @@ from pydantic import Json
 from app.utils.exceptions import CustomBadRequestException
 from app.logger import logger
 from pydantic import ValidationError
+from fastapi import Body
 
 router = APIRouter()
 
@@ -378,11 +379,79 @@ async def get_all_events(
             filters["event_dates"]["date_to"] = date_to.isoformat()
 
     response = EventService.get_all_events(
-        current_page,
-        items_per_page,
-        filters,
-        sorting,
-        admin
+        current_page, items_per_page, filters, sorting, admin
+    )
+    return build_api_response(response)
+
+
+@router.get(
+    "/with-dates/",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Get all events with dates.",
+    description="Retrieve all events along with their dates with pagination, filtering, and sorting.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successful retrieval of events with dates",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def get_all_events_with_dates(
+    current_page: int = Query(1, description="Page number of the results"),
+    items_per_page: int = Query(10, description="Number of results per page"),
+    filter_params: Optional[str] = Query(
+        None, alias="filter_params", description="JSON string of filter parameters"
+    ),
+    sorting_params: Optional[str] = Query(
+        None, alias="sorting_params", description="JSON string of sorting parameters"
+    ),
+    date_from: Optional[datetime] = Query(
+        None, description="Start date for filtering events"
+    ),
+    date_to: Optional[datetime] = Query(
+        None, description="End date for filtering events"
+    ),
+    admin: bool = Query(False, description="Flag to indicate if the user is an admin"),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Retrieve all events along with their dates with pagination, filtering, and sorting.
+
+    This endpoint allows fetching events with various filtering options including date range.
+    It also supports pagination and sorting of results.
+
+    Args:
+        current_page (int): The current page number for pagination.
+        items_per_page (int): The number of items to display per page.
+        filter_params (Optional[str]): JSON string containing filter parameters.
+        sorting_params (Optional[str]): JSON string containing sorting parameters.
+        date_from (Optional[datetime]): Start date for filtering events.
+        date_to (Optional[datetime]): End date for filtering events.
+
+    Returns:
+        GenericResponseModel: A response model containing the list of events and pagination information.
+    """
+    filters = parse_json_params(filter_params) if filter_params else None
+    sorting = parse_json_params(sorting_params) if sorting_params else None
+
+    # Add date filtering to filter_params if provided
+    if date_from or date_to:
+        if not filters:
+            filters = {}
+        filters["event_dates"] = {}
+        if date_from:
+            filters["event_dates"]["date_from"] = date_from.isoformat()
+        if date_to:
+            filters["event_dates"]["date_to"] = date_to.isoformat()
+
+    # Call the service function to get events with their dates
+    response = EventService.get_all_events_with_dates(
+        current_page, items_per_page, filters, sorting, admin
     )
     return build_api_response(response)
 
@@ -518,7 +587,7 @@ async def get_event_date(
     status_code=status.HTTP_201_CREATED,
     response_model=GenericResponseModel,
     summary="Create a new claim",
-    description="Create a new claim for cancelling an event date or deleting an event.",
+    description="Create a new claim for creating, updating, or cancelling an event.",
     responses={
         201: {
             "model": GenericResponseModel[EventClaimModel],
@@ -540,7 +609,7 @@ async def create_claim(
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
     """
-    Create a new claim for an event or event date.
+    Create a new claim for an event.
 
     Args:
         claim_data (EventClaimCreateModel): Data for creating the claim.
@@ -552,6 +621,7 @@ async def create_claim(
     """
     response: GenericResponseModel = await EventService.create_claim(claim_data)
     return build_api_response(response)
+
 
 @router.get(
     "/claims/pending",
@@ -587,6 +657,7 @@ async def get_pending_claims(
     response: GenericResponseModel = await EventService.get_pending_claims()
     return build_api_response(response)
 
+
 @router.put(
     "/claims/{claim_id}",
     status_code=status.HTTP_200_OK,
@@ -610,7 +681,7 @@ async def get_pending_claims(
 )
 async def update_claim_status(
     claim_id: int,
-    new_status: ClaimStatus,
+    new_status: ClaimStatus = Body(..., embed=True),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
@@ -626,7 +697,9 @@ async def update_claim_status(
     Returns:
         GenericResponseModel: A response containing the updated claim data.
     """
-    response: GenericResponseModel = await EventService.update_claim_status(claim_id, new_status)
+    response: GenericResponseModel = await EventService.update_claim_status(
+        claim_id, new_status
+    )
     return build_api_response(response)
 
 
@@ -662,6 +735,7 @@ async def mark_event_as_paid(
     print("EVENT DATE ID", event_date_id)
     response: GenericResponseModel = await EventService.mark_as_paid(event_date_id)
     return build_api_response(response)
+
 
 @router.post(
     "/{event_date_id}/mark-as-completed",

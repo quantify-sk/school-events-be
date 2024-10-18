@@ -193,7 +193,7 @@ class User(Base):
         return user._to_model() if user else None
 
     @classmethod
-    def create_new_user(cls, user_data: UserCreateModel) -> 'User':
+    def create_new_user(cls, user_data: UserCreateModel) -> "User":
         """
         Create a new user. The school association and error handling are managed in the service layer.
 

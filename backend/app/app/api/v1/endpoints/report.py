@@ -159,7 +159,6 @@ async def get_all_reports(
         500: {"model": GenericResponseModel, "description": "Internal Server Error"},
     },
 )
-
 async def save_report(
     report_data: Dict[str, Any],
     auth: dict = Depends(authenticate_user_token),
@@ -177,13 +176,14 @@ async def save_report(
 
     Returns:
         ReportResponse: The details of the saved report.
-        
+
     Raises:
         HTTPException:
             - 500: If there's an internal server error during the process.
     """
     response = ReportService.save_report(report_data)
     return build_api_response(response)
+
 
 # @router.post(
 #     "/email",
@@ -224,6 +224,7 @@ async def save_report(
 #     background_tasks.add_task(ReportService.email_report, report_data, auth['user_id'])
 #     return build_api_response({"message": "Report email task has been queued"})
 
+
 @router.post(
     "/export/{format}",
     response_model=GenericResponseModel,
@@ -231,7 +232,10 @@ async def save_report(
     summary="Export a generated report",
     description="Export a generated report in the specified format (PDF, Excel, CSV).",
     responses={
-        200: {"model": GenericResponseModel, "description": "Successfully exported report"},
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successfully exported report",
+        },
         500: {"model": GenericResponseModel, "description": "Internal Server Error"},
     },
 )
@@ -260,12 +264,12 @@ async def export_report(
             - 400: If the export format is invalid.
             - 500: If there's an internal server error during the process.
     """
-    format = report_data.get('format', format)
+    format = report_data.get("format", format)
     print("FORMAT: ", format)
     try:
-        if format not in ['pdf', 'excel', 'csv']:
+        if format not in ["pdf", "excel", "csv"]:
             raise HTTPException(status_code=400, detail="Invalid export format")
-    
+
         return ReportService.export_report(report_data, format)
     except Exception as e:
         logger.error(f"Unexpected error exporting report: {str(e)}")

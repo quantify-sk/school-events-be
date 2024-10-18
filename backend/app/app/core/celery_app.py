@@ -9,7 +9,6 @@ import sqlalchemy.orm
 from app.core.config import settings
 
 
-
 celery_app = Celery(
     "tasks",
     broker="redis://redis:6379/0",
@@ -22,10 +21,12 @@ celery_app.conf.broker_connection_retry_on_startup = True
 # Create a scoped session
 Session = scoped_session(sessionmaker(autocommit=False, autoflush=False))
 
+
 @worker_init.connect(weak=False)
 def initialize_session(**kwargs):
     engine = create_engine(settings.DATABASE_URI)
     Session.configure(bind=engine)
+
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
@@ -113,6 +114,7 @@ def setup_periodic_tasks(sender: Celery, **kwargs) -> None:
 #     finally:
 #         # Ensure the session is properly closed
 #         db.close()
+
 
 @celery_app.task
 def update_event_statuses_task():

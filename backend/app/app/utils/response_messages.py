@@ -111,7 +111,7 @@ class ResponseMessages:
     ERR_REPORT_NOT_FOUND = "Report not found"
     ERR_INVALID_REPORT_INPUT = "Invalid input for report generation"
 
-    #Event claims
+    # Event claims
     MSG_SUCCESS_CREATE_CLAIM = "Claim created successfully"
     MSG_SUCCESS_GET_PENDING_CLAIMS = "Pending claims retrieved successfully"
 
@@ -120,3 +120,10 @@ class ResponseMessages:
     ERR_CLAIM_NOT_FOUND = "Claim not found"
     ERR_UPDATE_CLAIM = "Error updating claim"
     MSG_SUCCESS_UPDATE_CLAIM = "Claim updated successfully"
+
+    MSG_SUCCESS_GET_STATISTICS = "Statistics retrieved successfully"
+    ERR_GENERATING_STATISTICS = "Error generating statistics"
+
+    MSG_SUCCESS_GET_ALL_EVENTS_WITH_DATES = (
+        "All events with dates retrieved successfully"
+    )

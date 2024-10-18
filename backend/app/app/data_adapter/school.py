@@ -54,8 +54,8 @@ class School(Base):
         region: str,
         number_of_students: int = 0,
         number_of_employees: int = 0,
-        psc = "00000",
-        city = "AAAA"
+        psc="00000",
+        city="AAAA",
     ):
         """
         Initialize a new School instance.
@@ -98,7 +98,7 @@ class School(Base):
             "number_of_students": self.number_of_students,
             "number_of_employees": self.number_of_employees,
             "psc": self.psc,
-            "city": self.city
+            "city": self.city,
         }
 
     @classmethod

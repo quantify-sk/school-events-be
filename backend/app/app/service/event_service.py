@@ -237,11 +237,7 @@ class EventService:
             GenericResponseModel: A GenericResponseModel with the list of events and pagination info.
         """
         events, total_count = Event.get_events(
-            current_page,
-            items_per_page,
-            filter_params,
-            sorting_params,
-            admin
+            current_page, items_per_page, filter_params, sorting_params, admin
         )
 
         total_pages = math.ceil(total_count / items_per_page)
@@ -259,6 +255,58 @@ class EventService:
                 total_pages=total_pages,
                 total_items=total_count,
                 items=events,
+            ),
+        )
+
+    @staticmethod
+    def get_all_events_with_dates(
+        current_page: int,
+        items_per_page: int,
+        filter_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        sorting_params: Optional[List[Dict[str, str]]] = None,
+        admin: bool = False,
+    ) -> GenericResponseModel:
+        """
+        Service function to retrieve all events along with their dates.
+        Includes pagination, filtering, and sorting.
+
+        Args:
+            current_page (int): The current page number.
+            items_per_page (int): The number of items per page.
+            filter_params (Optional[Dict[str, Union[str, List[str]]]]): The filter parameters.
+            sorting_params (Optional[List[Dict[str, str]]]): The sorting parameters.
+            admin (bool): Whether the user is an admin.
+
+        Returns:
+            GenericResponseModel: A response model with the list of events and pagination info.
+        """
+        # Call the class method to get events with dates
+        events_with_dates, total_count = Event.get_events_with_dates(
+            current_page=current_page,
+            items_per_page=items_per_page,
+            filter_params=filter_params,
+            sorting_params=sorting_params,
+            admin=admin,
+        )
+
+        # Calculate total pages
+        total_pages = math.ceil(total_count / items_per_page)
+
+        logger.info(
+            f"Events with dates retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
+        )
+
+        # Return the paginated response
+        return GenericResponseModel(
+            api_id=context_id_api.get(),
+            message=ResponseMessages.MSG_SUCCESS_GET_ALL_EVENTS_WITH_DATES,
+            status_code=status.HTTP_200_OK,
+            data=PaginationResponseDataModel(
+                current_page=current_page,
+                items_per_page=items_per_page,
+                total_pages=total_pages,
+                total_items=total_count,
+                items=events_with_dates,
             ),
         )
 
@@ -371,15 +419,16 @@ class EventService:
         """
         try:
             new_claim = EventClaim.create_claim(claim_data.dict())
+            logger.info(f"Created new claim: {new_claim.id}")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_CREATE_CLAIM,
                 status_code=status.HTTP_201_CREATED,
-                data=[claim._to_model() for claim in new_claim],
+                data=new_claim._to_model(),
             )
         except Exception as e:
             logger.error(f"Error creating claim: {str(e)}")
-            raise CustomInternalServerErrorException(ResponseMessages.ERR_CREATE_CLAIM)
+            raise CustomBadRequestException(ResponseMessages.ERR_CREATING_CLAIM)
 
     @staticmethod
     async def get_pending_claims() -> GenericResponseModel:
@@ -402,10 +451,12 @@ class EventService:
             )
         except Exception as e:
             logger.error(f"Error retrieving pending claims: {str(e)}")
-            raise CustomInternalServerErrorException(ResponseMessages.ERR_GET_PENDING_CLAIMS)
+            raise CustomInternalServerErrorException()
 
     @staticmethod
-    async def update_claim_status(claim_id: int, new_status: ClaimStatus) -> GenericResponseModel:
+    async def update_claim_status(
+        claim_id: int, new_status: ClaimStatus
+    ) -> GenericResponseModel:
         """
         Update the status of a claim.
 
@@ -434,8 +485,7 @@ class EventService:
             raise e
         except Exception as e:
             logger.error(f"Error updating claim status: {str(e)}")
-            raise CustomInternalServerErrorException(ResponseMessages.ERR_UPDATE_CLAIM)
-        
+            raise CustomInternalServerErrorException()
 
     @staticmethod
     async def mark_as_paid(event_date_id: int) -> GenericResponseModel:
@@ -444,8 +494,10 @@ class EventService:
         """
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
-        
-        logger.info(f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid.")
+
+        logger.info(
+            f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid."
+        )
         try:
             success = EventDate.mark_as_paid(event_date_id)
             if success:
@@ -457,7 +509,9 @@ class EventService:
                     data={"event_date_id": event_date_id},
                 )
             else:
-                logger.warning(f"Failed to mark event_id {event_date_id} as paid. Event may not exist or has invalid status.")
+                logger.warning(
+                    f"Failed to mark event_id {event_date_id} as paid. Event may not exist or has invalid status."
+                )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
                     message=ResponseMessages.ERR_MARK_PAID,
@@ -466,22 +520,25 @@ class EventService:
                 )
         except Exception as e:
             logger.error(f"Error marking event_id {event_date_id} as paid: {str(e)}")
-            raise Exception(f'Error marking event as paid: {str(e)}')
-        
+            raise Exception(f"Error marking event as paid: {str(e)}")
 
     @staticmethod
-    async def mark_as_completed (event_date_id: int) -> GenericResponseModel:
+    async def mark_as_completed(event_date_id: int) -> GenericResponseModel:
         """
         Mark a COMPLETED_PAYMENT_SENT event as COMPLETED.
         """
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
-        
-        logger.info(f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as completed.")
+
+        logger.info(
+            f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as completed."
+        )
         try:
             success = EventDate.mark_as_completed(event_date_id)
             if success:
-                logger.info(f"Event_id {event_date_id} marked as completed successfully.")
+                logger.info(
+                    f"Event_id {event_date_id} marked as completed successfully."
+                )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
                     message=ResponseMessages.MSG_SUCCESS_MARK_COMPLETED,
@@ -489,7 +546,9 @@ class EventService:
                     data={"event_date_id": event_date_id},
                 )
             else:
-                logger.warning(f"Failed to mark event_id {event_date_id} as completed. Event may not exist or has invalid status.")
+                logger.warning(
+                    f"Failed to mark event_id {event_date_id} as completed. Event may not exist or has invalid status."
+                )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
                     message=ResponseMessages.ERR_MARK_COMPLETED,
@@ -497,5 +556,7 @@ class EventService:
                     data={"event_date_id": event_date_id},
                 )
         except Exception as e:
-            logger.error(f"Error marking event_id {event_date_id} as completed: {str(e)}")
-            raise Exception(f'Error marking event as completed: {str(e)}')
+            logger.error(
+                f"Error marking event_id {event_date_id} as completed: {str(e)}"
+            )
+            raise Exception(f"Error marking event as completed: {str(e)}")
