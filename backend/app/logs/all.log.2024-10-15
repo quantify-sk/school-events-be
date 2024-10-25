@@ -1,0 +1,743 @@
+2024-10-15 09:22:35 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:22:36 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:22:36 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:22:36 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:38:19 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:38:19 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:38:19 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:38:19 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:38:20 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:38:20 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:39:00 loglevel=INFO   logger=app.logger                dispatch() L102  Request 94be8a95-c757-49b4-b632-48e0ad043ac6 ended for path: /api/docs. Duration: 3.64 ms
+2024-10-15 09:39:01 loglevel=INFO   logger=app.logger                dispatch() L102  Request d8a83c50-0eef-4883-b877-b1d5d71daa65 ended for path: /api/openapi.json. Duration: 327.25 ms
+2024-10-15 09:39:09 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 09:39:09 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:401 api_id: 2172412f-e5bd-4e5b-a197-7f6aea2e4cfb unread_notification: False
+2024-10-15 09:39:09 loglevel=INFO   logger=app.logger                get_db() L46   Rollback db session
+2024-10-15 09:39:09 loglevel=INFO   logger=app.logger                dispatch() L102  Request 859f8d6d-e2b2-4e11-9a4d-57a519e7bdaa ended for path: /api/v1/auth/login_user/. Duration: 58.26 ms
+2024-10-15 09:39:33 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:39:33 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:39:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:39:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:39:57 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:39:57 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:40:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 09:40:25 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 5 at 15.10.2024 09:40:25 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3MjkwMTQwMjV9.sHI3_QUSvxq54urKLlkCFzMPk38tGzbqe5DkQh8Ti9041V7tavxE1KM91ohMdyDz9rv5DcwA698RfjSbwACnNw
+2024-10-15 09:40:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request b7783144-cc73-47ff-8383-bbc92af0433f ended for path: /api/v1/auth/login_user/. Duration: 312.55 ms
+2024-10-15 09:48:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:48:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:49:03 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:49:03 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:49:10 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:49:10 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:49:53 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:49:53 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:24 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:24 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:27 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:28 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:34 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:34 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:37 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:37 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:40 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:40 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:51 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:51 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:54 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:54 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:50:57 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:50:57 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:51:22 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:51:22 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:51:25 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:51:25 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:51:35 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:51:35 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:51:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:51:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:00 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:00 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:06 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:06 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:12 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:12 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:15 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:15 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:25 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:25 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:39 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:39 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:42 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:42 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:56 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:52:56 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:52:59 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:00 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:03 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:03 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:06 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:06 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:14 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:14 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:18 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:22 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:22 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:53:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:53:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:54:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:54:18 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:54:32 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:54:32 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:01 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:01 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:21 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:21 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:24 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:24 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:28 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:29 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:34 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:34 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:41 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:41 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:45 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:49 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:53 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:53 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:55:58 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:55:59 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:12 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:12 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:27 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:27 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:31 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:31 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:35 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:35 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:56:58 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:56:58 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:57:03 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:57:03 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:58:11 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:58:11 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:58:11 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:58:11 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 09:58:12 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 09:58:12 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:00:01 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:00:24 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:00:24 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:03:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:03:19 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:03:22 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:03:22 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:03:25 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:03:25 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:03:37 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:03:37 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:09 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:04:10 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:17 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:04:17 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:24 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:04:24 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:30 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:04:30 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:37 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:04:37 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:04:43 loglevel=INFO   logger=app.logger                dispatch() L102  Request f53ba296-a6b1-452e-95ee-36fa14257003 ended for path: /api/docs. Duration: 1.15 ms
+2024-10-15 10:04:44 loglevel=INFO   logger=app.logger                dispatch() L102  Request ddba71b5-ad83-474c-8801-5b059d1914b4 ended for path: /api/openapi.json. Duration: 248.98 ms
+2024-10-15 10:04:53 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:04:53 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 5 at 15.10.2024 10:04:53 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3MjkwMTU0OTN9.xgbLffmHGFohgsKx8EmQC-UZRH6iV8E9ihU4UyXFygBdn1MiIML_kc5UzTo8arOrMO0sg-24keMfYe7bSuE_Zg
+2024-10-15 10:04:53 loglevel=INFO   logger=app.logger                dispatch() L102  Request 740cc85f-6b7a-4a17-8452-4e2e63da9c7c ended for path: /api/v1/auth/login_user/. Duration: 360.73 ms
+2024-10-15 10:05:12 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:05:12 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:05:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:05:19 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:05:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request b1f4a918-968b-495f-ae15-6fb2f484f575 ended for path: /api/docs. Duration: 1.17 ms
+2024-10-15 10:05:23 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4e9969ab-f770-4471-bf62-8586a46dc781 ended for path: /api/openapi.json. Duration: 267.48 ms
+2024-10-15 10:05:34 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:05:34 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 5 at 15.10.2024 10:05:34 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3MjkwMTU1MzR9.N3etQq6uRGObnZ-2gbv9CuTcBN3cBfmzRc4n-OGiF-WO6SF8uEsbvqXgPDXiBmTdODXyrRwHcG3pHxbO39y9gg
+2024-10-15 10:05:34 loglevel=INFO   logger=app.logger                dispatch() L102  Request fc6c5a97-5761-4089-99c6-fb91bd9f678e ended for path: /api/v1/auth/login_user/. Duration: 353.84 ms
+2024-10-15 10:05:58 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:05:58 loglevel=INFO   logger=app.logger                validation_exception_handler() L129  Validation exception occurred: [{'type': 'date_from_datetime_parsing', 'loc': ('body', 'start_date'), 'msg': 'Input should be a valid date or datetime, input is too short', 'input': '2024-8-15', 'ctx': {'error': 'input is too short'}}]
+2024-10-15 10:05:58 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Input should be a valid date or datetime, input is too short
+2024-10-15 10:05:58 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:422 api_id: c15a7196-e75c-4bd8-8f04-ab932872d83c unread_notification: False
+2024-10-15 10:05:58 loglevel=INFO   logger=app.logger                dispatch() L102  Request bd9f3b35-5590-4d24-9f02-7f2457e36647 ended for path: /api/v1/statistics/statistics. Duration: 4.33 ms
+2024-10-15 10:06:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:06:22 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum eventtype: "string"
+LINE 4: ... event.district = 'string' AND event.event_type = 'string' A...
+                                                             ^
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s AND event.region = %(region_1)s AND event.district = %(district_1)s AND event.event_type = %(event_type_1)s AND event.target_group = %(target_group_1)s) AS anon_1]
+[parameters: {'created_at_1': datetime.date(2024, 10, 15), 'created_at_2': datetime.date(2024, 10, 15), 'region_1': 'string', 'district_1': 'string', 'event_type_1': 'string', 'target_group_1': 'string'}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2024-10-15 10:06:22 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:06:22 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:06:22 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 2da7dab8-7c61-46c9-906f-1c9734599fce unread_notification: False
+2024-10-15 10:06:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 420ddcb3-be19-4852-934e-bee83de4b18e ended for path: /api/v1/statistics/statistics. Duration: 21.30 ms
+2024-10-15 10:06:29 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:06:29 loglevel=INFO   logger=app.logger                validation_exception_handler() L129  Validation exception occurred: [{'type': 'date_from_datetime_parsing', 'loc': ('body', 'start_date'), 'msg': 'Input should be a valid date or datetime, input is too short', 'input': '2024-8-15', 'ctx': {'error': 'input is too short'}}]
+2024-10-15 10:06:29 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Input should be a valid date or datetime, input is too short
+2024-10-15 10:06:29 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:422 api_id: dcc7270d-4330-4fc6-b92b-3e3580dff0f3 unread_notification: False
+2024-10-15 10:06:29 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7eefd311-7866-4855-a199-8708fb0c9682 ended for path: /api/v1/statistics/statistics. Duration: 3.83 ms
+2024-10-15 10:07:18 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:07:18 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum eventtype: "string"
+LINE 4: ... event.district = 'string' AND event.event_type = 'string' A...
+                                                             ^
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s AND event.region = %(region_1)s AND event.district = %(district_1)s AND event.event_type = %(event_type_1)s AND event.target_group = %(target_group_1)s) AS anon_1]
+[parameters: {'created_at_1': datetime.date(2024, 8, 15), 'created_at_2': datetime.date(2024, 10, 15), 'region_1': 'string', 'district_1': 'string', 'event_type_1': 'string', 'target_group_1': 'string'}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2024-10-15 10:07:18 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:07:18 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:07:18 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 90348fd6-18fe-4c57-8292-889d2591dc05 unread_notification: False
+2024-10-15 10:07:18 loglevel=INFO   logger=app.logger                dispatch() L102  Request d14e51d0-c339-4220-939c-250b75847b7f ended for path: /api/v1/statistics/statistics. Duration: 15.05 ms
+2024-10-15 10:07:45 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:07:45 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum targetgroup: "string"
+LINE 4: ...t.event_type = 'CONCERT' AND event.target_group = 'string') ...
+                                                             ^
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s AND event.region = %(region_1)s AND event.district = %(district_1)s AND event.event_type = %(event_type_1)s AND event.target_group = %(target_group_1)s) AS anon_1]
+[parameters: {'created_at_1': datetime.date(2024, 8, 15), 'created_at_2': datetime.date(2024, 10, 15), 'region_1': 'string', 'district_1': 'string', 'event_type_1': 'CONCERT', 'target_group_1': 'string'}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2024-10-15 10:07:45 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:07:45 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:07:45 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: bb686308-5615-45ec-81dd-0d86fd0d9b72 unread_notification: False
+2024-10-15 10:07:45 loglevel=INFO   logger=app.logger                dispatch() L102  Request c4e91766-f353-4601-98b1-fc39e327b42b ended for path: /api/v1/statistics/statistics. Duration: 13.77 ms
+2024-10-15 10:08:25 loglevel=INFO   logger=app.logger                validation_exception_handler() L129  Validation exception occurred: [{'type': 'json_invalid', 'loc': ('body', 60), 'msg': 'JSON decode error', 'input': {}, 'ctx': {'error': 'Expecting property name enclosed in double quotes'}}]
+2024-10-15 10:08:25 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: JSON decode error
+2024-10-15 10:08:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:422 api_id: 878f501a-85f1-46ee-8937-51c061890b4c unread_notification: False
+2024-10-15 10:08:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request d606437b-0348-4829-9849-6c4c0b18407e ended for path: /api/v1/statistics/statistics. Duration: 3.35 ms
+2024-10-15 10:08:32 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:08:32 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.UndefinedTable) missing FROM-clause entry for table "anon_1"
+LINE 3: ....id ORDER BY (count(reservation.id) * 100) / CAST(anon_1.cap...
+                                                             ^
+
+[SQL: SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event JOIN reservation ON event.id = reservation.event_id 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s GROUP BY event.id ORDER BY (count(reservation.id) * %(count_1)s) / CAST(anon_1.capacity AS NUMERIC) DESC 
+ LIMIT %(param_1)s]
+[parameters: {'created_at_1': datetime.date(2024, 8, 15), 'created_at_2': datetime.date(2024, 10, 15), 'count_1': 100, 'param_1': 10}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2024-10-15 10:08:32 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:08:32 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:08:32 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 5adc6d52-a6ee-48c7-98b6-83c2e02d4a23 unread_notification: False
+2024-10-15 10:08:32 loglevel=INFO   logger=app.logger                dispatch() L102  Request 26020967-1399-4eff-93fa-fba206eb4c38 ended for path: /api/v1/statistics/statistics. Duration: 58.52 ms
+2024-10-15 10:10:29 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:10:29 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:10:34 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:10:34 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:10:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:10:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:10:44 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:10:44 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:10:49 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:10:49 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.GroupingError) column "event.id" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: SELECT event.id AS event_id, event.title AS event_title, eve...
+               ^
+
+[SQL: SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event JOIN "user" ON event.organizer_id = "user".user_id 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s GROUP BY "user".user_id ORDER BY count(event.id) DESC 
+ LIMIT %(param_1)s]
+[parameters: {'created_at_1': datetime.date(2024, 8, 15), 'created_at_2': datetime.date(2024, 10, 15), 'param_1': 10}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2024-10-15 10:10:49 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:10:49 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:10:49 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: e1d1aca8-fea1-4744-aa27-87f37c24da72 unread_notification: False
+2024-10-15 10:10:49 loglevel=INFO   logger=app.logger                dispatch() L102  Request c474f1c1-3b6e-4ed1-ad9e-a72b6ecc6601 ended for path: /api/v1/statistics/statistics. Duration: 213.53 ms
+2024-10-15 10:12:34 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:12:34 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:12:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:12:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:12:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:12:45 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:12:54 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:12:55 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:13:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:13:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:13:10 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:13:10 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:13:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:13:18 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:13:22 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:13:22 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: (psycopg2.errors.GroupingError) column "event.id" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: SELECT event.id AS event_id, event.title AS event_title, eve...
+               ^
+
+[SQL: SELECT event.id AS event_id, event.title AS event_title, event.institution_name AS event_institution_name, event.address AS event_address, event.city AS event_city, event.capacity AS event_capacity, event.available_spots AS event_available_spots, event.description AS event_description, event.annotation AS event_annotation, event.parent_info AS event_parent_info, event.target_group AS event_target_group, event.age_from AS event_age_from, event.age_to AS event_age_to, event.status AS event_status, event.event_type AS event_event_type, event.duration AS event_duration, event.created_at AS event_created_at, event.updated_at AS event_updated_at, event.organizer_id AS event_organizer_id, event.more_info_url AS event_more_info_url, event.ztp_access AS event_ztp_access, event.parking_spaces AS event_parking_spaces, event.district AS event_district, event.region AS event_region 
+FROM event JOIN reservation ON event.id = reservation.event_id JOIN "user" ON "user".user_id = reservation.user_id JOIN school ON school.id = "user".school_id 
+WHERE event.created_at >= %(created_at_1)s AND event.created_at <= %(created_at_2)s GROUP BY school.id ORDER BY count(reservation.id) DESC 
+ LIMIT %(param_1)s]
+[parameters: {'created_at_1': datetime.date(2024, 8, 15), 'created_at_2': datetime.date(2024, 10, 15), 'param_1': 5}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2024-10-15 10:13:22 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:13:22 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:13:22 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 696136d9-2e2d-43fa-b000-54c489b4a764 unread_notification: False
+2024-10-15 10:13:22 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2675bffa-c1e8-45e0-a69b-6204332526ea ended for path: /api/v1/statistics/statistics. Duration: 216.83 ms
+2024-10-15 10:14:51 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:14:51 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:14:57 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:14:57 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:15:02 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:02 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:02 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:02 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:02 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: eb79f365-9778-4601-8feb-bbabdd2d386a unread_notification: False
+2024-10-15 10:15:02 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0876cc2e-3111-426e-8078-f127a3270e7c ended for path: /api/v1/statistics/statistics. Duration: 223.36 ms
+2024-10-15 10:15:09 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:09 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:09 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:09 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:09 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 7c139ae5-9c58-4daa-b5cb-df5a70818d95 unread_notification: False
+2024-10-15 10:15:09 loglevel=INFO   logger=app.logger                dispatch() L102  Request 814c0311-719b-403e-a3b2-46b137335e54 ended for path: /api/v1/statistics/statistics. Duration: 28.27 ms
+2024-10-15 10:15:13 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:13 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:13 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:13 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:13 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: ce1e3b62-1132-4a53-959e-56cac7988df3 unread_notification: False
+2024-10-15 10:15:13 loglevel=INFO   logger=app.logger                dispatch() L102  Request f7cc9d80-a45d-49d1-9ab2-bc83d52513d7 ended for path: /api/v1/statistics/statistics. Duration: 74.60 ms
+2024-10-15 10:15:14 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:14 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:14 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:14 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:14 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 767db068-be64-478a-90b6-788da40dd940 unread_notification: False
+2024-10-15 10:15:14 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6c92ccd1-a679-4ea3-88ec-770b742a71c4 ended for path: /api/v1/statistics/statistics. Duration: 79.46 ms
+2024-10-15 10:15:15 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:15 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:15 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:15 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:15 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 3be4c2ba-76c9-4158-b324-b00e0202894b unread_notification: False
+2024-10-15 10:15:15 loglevel=INFO   logger=app.logger                dispatch() L102  Request 0e0b5131-4fc5-4bcb-b467-23d29cf8c527 ended for path: /api/v1/statistics/statistics. Duration: 64.64 ms
+2024-10-15 10:15:39 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:39 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:39 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:39 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:39 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: e0e62d87-a0ae-437a-9797-d7318562f9cb unread_notification: False
+2024-10-15 10:15:39 loglevel=INFO   logger=app.logger                dispatch() L102  Request 55682266-9b68-4dd1-bacc-17e446fb195f ended for path: /api/v1/statistics/statistics. Duration: 29.48 ms
+2024-10-15 10:15:41 loglevel=INFO   logger=app.logger                dispatch() L102  Request 9a431cc6-fe81-474e-939e-a2c0fd6b90dc ended for path: /api/docs. Duration: 1.08 ms
+2024-10-15 10:15:41 loglevel=INFO   logger=app.logger                dispatch() L102  Request cb877ba8-e883-493a-bead-de209726e884 ended for path: /api/openapi.json. Duration: 185.73 ms
+2024-10-15 10:15:52 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:15:52 loglevel=ERROR  logger=app.logger                get_event_statistics() L35   Error generating statistics: 4 validation errors for StatisticsResponseModel
+average_capacity
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_duration
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_from
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+average_age_range.average_age_to
+  Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.8/v/float_type
+2024-10-15 10:15:52 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:15:52 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:15:52 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 246babb3-7c7d-4bc6-b5c5-9485bfa51753 unread_notification: False
+2024-10-15 10:15:52 loglevel=INFO   logger=app.logger                dispatch() L102  Request 2dbad5bc-2a6f-4322-b88d-0b806fbe7bfb ended for path: /api/v1/statistics/statistics. Duration: 35.55 ms
+2024-10-15 10:17:10 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:17:10 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:17:46 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:17:46 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:17:52 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:17:52 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:18:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:18:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:18:09 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:18:09 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:18:15 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:18:16 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:18:44 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:18:44 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:18:48 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:18:48 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b81d240e-fe33-404c-ad95-d48ffa77185b unread_notification: False
+2024-10-15 10:18:48 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7b44b7d6-3582-4ba7-9ea9-ccf98bfbd6c8 ended for path: /api/v1/statistics/statistics. Duration: 233.97 ms
+2024-10-15 10:18:59 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:18:59 loglevel=INFO   logger=app.logger                validation_exception_handler() L129  Validation exception occurred: [{'type': 'date_from_datetime_parsing', 'loc': ('body', 'start_date'), 'msg': 'Input should be a valid date or datetime, input is too short', 'input': '2024-8-15', 'ctx': {'error': 'input is too short'}}]
+2024-10-15 10:18:59 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Input should be a valid date or datetime, input is too short
+2024-10-15 10:18:59 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:422 api_id: 0ac9c619-4bea-4ef7-93b0-ffd588f06049 unread_notification: False
+2024-10-15 10:18:59 loglevel=INFO   logger=app.logger                dispatch() L102  Request 8560eefb-5986-4c83-978e-f60e265b64e5 ended for path: /api/v1/statistics/statistics. Duration: 4.30 ms
+2024-10-15 10:19:05 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:19:05 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cb7d5e53-72c6-49d0-adea-be9738d43332 unread_notification: False
+2024-10-15 10:19:05 loglevel=INFO   logger=app.logger                dispatch() L102  Request d485a355-0db2-4ea2-a2da-c1a82672d318 ended for path: /api/v1/statistics/statistics. Duration: 31.58 ms
+2024-10-15 10:19:17 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:19:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: a9605b59-c989-4ed8-8db6-b8a86cf155f5 unread_notification: False
+2024-10-15 10:19:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request e69b5400-c5c4-4d44-8cc6-dc769bd8705f ended for path: /api/v1/statistics/statistics. Duration: 33.70 ms
+2024-10-15 10:20:04 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:20:04 loglevel=INFO   logger=app.logger                get_all_events() L249  Events retrieved. Page: 1, Items: 10, Total: 132
+2024-10-15 10:20:04 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 6aefdb5d-a19e-487c-8c84-e7b23359e311 unread_notification: False
+2024-10-15 10:20:04 loglevel=INFO   logger=app.logger                dispatch() L102  Request 6797cb74-ce5a-46fc-85d0-392f497651d1 ended for path: /api/v1/event/. Duration: 322.36 ms
+2024-10-15 10:22:23 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:22:23 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:22:29 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:22:29 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:22:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:22:35 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cd9efcd5-a778-4916-8fec-2c29d3dfd253 unread_notification: False
+2024-10-15 10:22:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request 4d2179b5-69dd-474c-b0ef-2498b70d5d24 ended for path: /api/v1/statistics/statistics. Duration: 234.94 ms
+2024-10-15 10:26:16 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:26:16 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:26:20 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:26:20 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:26:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:26:25 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: 10 validation errors for StatisticsResponseModel
+most_active_organizers.0
+  Input should be a valid dictionary [type=dict_type, input_value=(18, 'Národné divadlo K...ice', 'Organizer', 896), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.1
+  Input should be a valid dictionary [type=dict_type, input_value=(20, 'Slovenský ľudový...tív', 'Organizer', 336), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.2
+  Input should be a valid dictionary [type=dict_type, input_value=(8, 'Kino Lumière', 'Organizer', 336), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.3
+  Input should be a valid dictionary [type=dict_type, input_value=(22, 'Tanečné divadlo I...ivek', 'Organizer', 224), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.4
+  Input should be a valid dictionary [type=dict_type, input_value=(26, 'ÚĽUV a Slovenská...nica', 'Organizer', 224), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.5
+  Input should be a valid dictionary [type=dict_type, input_value=(16, 'Divadlo Nová scéna', 'Organizer', 224), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.6
+  Input should be a valid dictionary [type=dict_type, input_value=(14, 'Štátna opera', 'Organizer', 112), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.7
+  Input should be a valid dictionary [type=dict_type, input_value=(24, 'Slovenská ústredn...reň', 'Organizer', 112), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.8
+  Input should be a valid dictionary [type=dict_type, input_value=(12, 'Štátna filharmón...ice', 'Organizer', 112), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+most_active_organizers.9
+  Input should be a valid dictionary [type=dict_type, input_value=(10, 'Štátny komorný o...lina', 'Organizer', 112), input_type=Row]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+2024-10-15 10:26:25 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 10:26:25 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 10:26:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: c40af1a8-e0fa-4d3e-bfdc-ec0a3ce0eda5 unread_notification: False
+2024-10-15 10:26:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request a02f5f39-f977-4b99-a53b-8c2f79451204 ended for path: /api/v1/statistics/statistics. Duration: 249.92 ms
+2024-10-15 10:27:43 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:27:43 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:27:49 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 10:27:49 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 10:27:54 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 10:27:54 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 202e29c2-0f3b-4b68-b39a-bb0ddaa1353a unread_notification: False
+2024-10-15 10:27:54 loglevel=INFO   logger=app.logger                dispatch() L102  Request e6ea670c-0889-42c9-902b-39f160e6b9c8 ended for path: /api/v1/statistics/statistics. Duration: 251.50 ms
+2024-10-15 11:11:15 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:15 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:11:22 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:22 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:11:29 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:29 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:11:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:45 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:11:51 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:51 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:11:58 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:11:58 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:12:04 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:12:05 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:13:22 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:13:22 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:13:31 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:13:31 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:13:38 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:13:38 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:13:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:13:45 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:13:51 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:13:51 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:14:00 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:14:00 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:14:07 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:14:07 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:14:14 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:14:14 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:15:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:15:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:15:40 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:15:40 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:15:46 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:15:46 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:16:05 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:16:06 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:16:15 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:16:16 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:16:21 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:16:21 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:18:52 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:18:52 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:04 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:04 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:11 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:11 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:18 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:18 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:25 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:25 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:33 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:33 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:40 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:40 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:47 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:19:54 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:19:54 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:20:00 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:20:00 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:20:00 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:20:01 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:20:27 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:20:27 loglevel=INFO   logger=app.logger                validation_exception_handler() L129  Validation exception occurred: [{'type': 'date_from_datetime_parsing', 'loc': ('body', 'start_date'), 'msg': 'Input should be a valid date or datetime, input is too short', 'input': '2024-8-15', 'ctx': {'error': 'input is too short'}}]
+2024-10-15 11:20:27 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Input should be a valid date or datetime, input is too short
+2024-10-15 11:20:27 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:422 api_id: 9dc6986b-2cc8-4919-a2b4-7091e8f179a2 unread_notification: False
+2024-10-15 11:20:27 loglevel=INFO   logger=app.logger                dispatch() L102  Request 62e19ff1-f7d0-46cb-a1a8-0c8c50e306e4 ended for path: /api/v1/statistics/statistics. Duration: 4.93 ms
+2024-10-15 11:20:33 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:20:34 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: 10 validation errors for StatisticsResponseModel
+popular_events.0
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36190>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+popular_events.1
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5fa0bc3690>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+popular_events.2
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36210>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+popular_events.3
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36310>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+popular_events.4
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36450>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+highest_fill_rate_events.0
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36190>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+highest_fill_rate_events.1
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5fa0bc3690>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+highest_fill_rate_events.2
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36210>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+highest_fill_rate_events.3
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36450>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+highest_fill_rate_events.4
+  Input should be a valid dictionary [type=dict_type, input_value=<app.data_adapter.event.E...bject at 0x7f5f9fc36310>, input_type=Event]
+    For further information visit https://errors.pydantic.dev/2.8/v/dict_type
+2024-10-15 11:20:34 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 11:20:34 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 11:20:34 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 9918b9b9-e018-4484-bd36-7d6057284899 unread_notification: False
+2024-10-15 11:20:34 loglevel=INFO   logger=app.logger                dispatch() L102  Request 865d3abc-7b02-44d6-a9fe-4013d3586831 ended for path: /api/v1/statistics/statistics. Duration: 258.52 ms
+2024-10-15 11:25:27 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:25:27 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:25:33 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:25:33 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:25:40 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:25:40 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:25:46 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:25:46 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8647286c-fdea-4d26-91f3-81a27410682e unread_notification: False
+2024-10-15 11:25:46 loglevel=INFO   logger=app.logger                dispatch() L102  Request 3b8b97ee-6fc3-4de7-b292-a012e338c32b ended for path: /api/v1/statistics/statistics. Duration: 416.31 ms
+2024-10-15 11:28:13 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:28:13 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:28:17 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:28:17 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:28:27 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:28:27 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:28:36 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:28:36 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:28:47 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:28:47 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:28:51 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:28:51 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cc7fe283-d493-4772-84b9-6cdb155924d4 unread_notification: False
+2024-10-15 11:28:51 loglevel=INFO   logger=app.logger                dispatch() L102  Request f1d1a45a-5681-4575-8dc3-506626b9301c ended for path: /api/v1/statistics/statistics. Duration: 288.88 ms
+2024-10-15 11:30:08 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 401: Not authenticated
+2024-10-15 11:30:08 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Not authenticated
+2024-10-15 11:30:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:401 api_id: c4eb97b7-9096-4d7a-a75a-dbaf8a31dd2c unread_notification: False
+2024-10-15 11:30:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request e091260a-347d-4a01-94fd-61386c72b64c ended for path: /api/v1/reservation/. Duration: 5.81 ms
+2024-10-15 11:30:16 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:30:17 loglevel=INFO   logger=app.logger                login_user() L131  Login successful for user 5 at 15.10.2024 11:30:17 with token eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3MjkwMjA2MTd9.byurxBcNh1vjSdeSyDbIbZ_Lpi7pD6_nablDX9cjciuxJiQQ3FBu1JKAiwHf4OlM0PAoQ4_ONQrKbzKkeN6LwA
+2024-10-15 11:30:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request badfe822-843d-4625-86e7-6e5c82aa68e0 ended for path: /api/v1/auth/login_user/. Duration: 308.19 ms
+2024-10-15 11:30:25 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:30:25 loglevel=INFO   logger=app.logger                get_all_reservations() L150  User ID 5 retrieved all reservations. Page: 1, Items: 1000
+2024-10-15 11:30:25 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: b3583c0c-e6c1-4cf2-a594-a33824b77483 unread_notification: False
+2024-10-15 11:30:25 loglevel=INFO   logger=app.logger                dispatch() L102  Request b3aaa59c-8050-466b-ace2-6110fa5e8dca ended for path: /api/v1/reservation/. Duration: 39.40 ms
+2024-10-15 11:31:19 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:31:19 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 3921823d-6c42-4e86-96a9-defba74ef717 unread_notification: False
+2024-10-15 11:31:19 loglevel=INFO   logger=app.logger                dispatch() L102  Request c67bc13e-5b2d-4ac5-9a17-ff81a002ba0a ended for path: /api/v1/statistics/statistics. Duration: 75.96 ms
+2024-10-15 11:33:40 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:33:40 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:33:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:33:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:33:58 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:33:58 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:34:05 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:34:05 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:34:09 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:34:09 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 10c48b0d-adac-4e90-a058-82487ca5f912 unread_notification: False
+2024-10-15 11:34:09 loglevel=INFO   logger=app.logger                dispatch() L102  Request baabbfab-6b3b-4735-aef2-cc948d199bc4 ended for path: /api/v1/statistics/statistics. Duration: 289.79 ms
+2024-10-15 11:35:13 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:35:13 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 8137a55a-0d4b-43f2-8c2d-eb9016cb7eb5 unread_notification: False
+2024-10-15 11:35:13 loglevel=INFO   logger=app.logger                dispatch() L102  Request e5ebb7cb-78d3-4cd2-a84c-46d3e334167a ended for path: /api/v1/statistics/statistics. Duration: 103.25 ms
+2024-10-15 11:35:43 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:35:43 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:35:50 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:35:50 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:35:57 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:35:57 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:36:04 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:36:04 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:36:08 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:36:08 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: type object 'Reservation' has no attribute 'query'
+2024-10-15 11:36:08 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 11:36:08 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 11:36:08 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 9c8a4c8a-be2b-4885-810d-249fbebe7541 unread_notification: False
+2024-10-15 11:36:08 loglevel=INFO   logger=app.logger                dispatch() L102  Request 7ea3b012-8f4d-4b8a-851e-56ff3c951b63 ended for path: /api/v1/statistics/statistics. Duration: 253.51 ms
+2024-10-15 11:37:42 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:37:42 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:37:48 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:37:48 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:38:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:38:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:38:06 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:38:06 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:38:11 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:38:11 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: 'Query' object has no attribute 'query'
+2024-10-15 11:38:11 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 11:38:11 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 11:38:11 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: 8d3c5053-19d4-4dad-9963-1cdb34d738ec unread_notification: False
+2024-10-15 11:38:11 loglevel=INFO   logger=app.logger                dispatch() L102  Request 820d6782-46f5-423a-8f17-9b8ec833879d ended for path: /api/v1/statistics/statistics. Duration: 254.60 ms
+2024-10-15 11:39:38 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:39:38 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: 'Query' object has no attribute 'query'
+2024-10-15 11:39:38 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 11:39:38 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 11:39:38 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: c45db677-c08b-46c7-86c3-d8ab7fe3d654 unread_notification: False
+2024-10-15 11:39:38 loglevel=INFO   logger=app.logger                dispatch() L102  Request 963aea8b-587f-4eb7-ac1c-21ff9110b304 ended for path: /api/v1/statistics/statistics. Duration: 57.90 ms
+2024-10-15 11:39:45 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:39:45 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:39:52 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:39:52 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:39:56 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:39:56 loglevel=ERROR  logger=app.logger                get_event_statistics() L58   Error generating statistics: type object 'Reservation' has no attribute 'query'
+2024-10-15 11:39:56 loglevel=ERROR  logger=app.logger                get_db() L56   General exception in DB session: 400: Error generating statistics
+2024-10-15 11:39:56 loglevel=INFO   logger=app.logger                handle_exception() L96   Application exception occurred: Error generating statistics
+2024-10-15 11:39:56 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:400 api_id: ea380ab4-83d8-484e-87a1-11a8a198be2b unread_notification: False
+2024-10-15 11:39:56 loglevel=INFO   logger=app.logger                dispatch() L102  Request cd963627-41d8-4ac2-abf3-3ab9c3d1afdb ended for path: /api/v1/statistics/statistics. Duration: 265.02 ms
+2024-10-15 11:40:05 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:40:06 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:40:12 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:40:12 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:40:16 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:40:17 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 365e2023-edea-425e-a113-77a96016c7cb unread_notification: False
+2024-10-15 11:40:17 loglevel=INFO   logger=app.logger                dispatch() L102  Request e3378501-e1cc-4121-adb6-a688b205606a ended for path: /api/v1/statistics/statistics. Duration: 269.55 ms
+2024-10-15 11:41:35 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:41:35 loglevel=INFO   logger=app.logger                get_all_reservations() L150  User ID 5 retrieved all reservations. Page: 1, Items: 1000
+2024-10-15 11:41:35 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 7f34de5f-25fd-4d98-acac-9a811bd09e63 unread_notification: False
+2024-10-15 11:41:35 loglevel=INFO   logger=app.logger                dispatch() L102  Request 394e321a-5ee4-40dd-b940-547346d544a9 ended for path: /api/v1/reservation/. Duration: 40.07 ms
+2024-10-15 11:44:59 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:44:59 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:45:09 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:45:09 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:45:21 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:45:21 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:45:26 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:45:26 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: cddb33fd-95b8-4e8f-95b0-f3bdfd07f6a6 unread_notification: False
+2024-10-15 11:45:26 loglevel=INFO   logger=app.logger                dispatch() L102  Request 5e4e0f72-07ad-4772-a205-41b29f994193 ended for path: /api/v1/statistics/statistics. Duration: 266.46 ms
+2024-10-15 11:46:02 loglevel=INFO   logger=app.logger                <module>() L41   Logger initiated
+2024-10-15 11:46:02 loglevel=INFO   logger=app.logger                get_database_engine() L53   Created new database engine.
+2024-10-15 11:46:06 loglevel=INFO   logger=app.logger                build_request_context() L87   REQUEST_INITIATED
+2024-10-15 11:46:06 loglevel=INFO   logger=app.logger                build_api_response() L77   build_api_response: Generated Response with status_code:200 api_id: 0e650ed8-d320-4f81-831c-7e73d621e412 unread_notification: False
+2024-10-15 11:46:06 loglevel=INFO   logger=app.logger                dispatch() L102  Request f59b7f2f-d791-4429-b53b-445251c5ae99 ended for path: /api/v1/statistics/statistics. Duration: 233.08 ms

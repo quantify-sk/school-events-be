@@ -418,6 +418,7 @@ async def get_all_events_with_dates(
     ),
     admin: bool = Query(False, description="Flag to indicate if the user is an admin"),
     _=Depends(build_request_context),
+    auth=Depends(authenticate_user_token),
 ) -> GenericResponseModel:
     """
     Retrieve all events along with their dates with pagination, filtering, and sorting.

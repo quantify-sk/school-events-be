@@ -38,7 +38,7 @@ class ReservationService:
         try:
             new_reservation = Reservation.create_reservation(reservation_data)
             logger.info(
-                f"User ID {context_actor_user_data.get().user_id} created reservation: {new_reservation['id']}"
+                f"user_id={context_actor_user_data.get().user_id} created reservation: {new_reservation['id']}"
             )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
@@ -47,7 +47,7 @@ class ReservationService:
                 data=new_reservation,
             )
         except CustomBadRequestException as e:
-            logger.error(f"Error creating reservation: {str(e)}")
+            logger.error(f"Error creating reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise
         except Exception as e:
             logger.error(f"Unexpected error creating reservation: {str(e)}")
@@ -72,11 +72,11 @@ class ReservationService:
 
         reservation = Reservation.get_reservation_by_id(reservation_id)
         if not reservation:
-            logger.error(f"Reservation not found: {reservation_id}")
+            logger.error(f"Reservation not found: {reservation_id} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} retrieved reservation: {reservation_id}"
+            f"user_id={context_actor_user_data.get().user_id} retrieved reservation: {reservation_id}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -104,11 +104,11 @@ class ReservationService:
 
         result = Reservation.delete_reservation(reservation_id)
         if not result:
-            logger.error(f"Failed to delete reservation: {reservation_id}")
+            logger.error(f"Failed to delete reservation: {reservation_id} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} deleted reservation: {reservation_id}"
+            f"user_id={context_actor_user_data.get().user_id} deleted reservation: {reservation_id}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -147,7 +147,7 @@ class ReservationService:
         total_pages = math.ceil(total_count / items_per_page)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} retrieved all reservations. Page: {current_page}, Items: {items_per_page}"
+            f"user_id={context_actor_user_data.get().user_id} retrieved all reservations. Page: {current_page}, Items: {items_per_page}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -203,7 +203,7 @@ class ReservationService:
         total_pages = math.ceil(total_count / items_per_page)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} retrieved reservations for event ID {event_id}. Page: {current_page}, Items: {items_per_page}"
+            f"user_id={context_actor_user_data.get().user_id} retrieved reservations for event ID {event_id}. Page: {current_page}, Items: {items_per_page}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -251,7 +251,7 @@ class ReservationService:
             )
         except Exception as e:
             logger.error(
-                f"Error retrieving reservations for User ID {user_id}: {str(e)}"
+                f"Error retrieving reservations for User ID {user_id}: {str(e)} user_id={context_actor_user_data.get().user_id}"
             )
             raise
 
@@ -286,14 +286,14 @@ class ReservationService:
             )
             if not reservation:
                 logger.error(
-                    f"Reservation not found for User ID: {user_id} and Event ID: {event_id}"
+                    f"Reservation not found for user_id={context_actor_user_data.get().user_id} and Event ID: {event_id}"
                 )
                 raise CustomBadRequestException(
                     ResponseMessages.ERR_RESERVATION_NOT_FOUND
                 )
 
             logger.info(
-                f"Retrieved reservation for User ID: {user_id} and Event ID: {event_id}"
+                f"Retrieved reservation for user_id={context_actor_user_data.get().user_id} and Event ID: {event_id}"
             )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
@@ -303,7 +303,7 @@ class ReservationService:
             )
         except Exception as e:
             logger.error(
-                f"Error retrieving reservation for User ID {user_id} and Event ID {event_id}: {str(e)}"
+                f"Error retrieving reservation for user_id={context_actor_user_data.get().user_id} and Event ID {event_id}: {str(e)}"
             )
             raise
 
@@ -349,7 +349,7 @@ class ReservationService:
             raise e
         except Exception as e:
             # Log the unexpected error and raise a generic exception
-            logger.error(f"Unexpected error updating reservation: {str(e)}")
+            logger.error(f"Unexpected error updating reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
     @staticmethod
@@ -390,7 +390,7 @@ class ReservationService:
             total_pages = math.ceil(total_count / items_per_page)
 
             logger.info(
-                f"User reservations retrieved. User ID: {user_id}, Event ID: {event_id}, "
+                f"User reservations retrieved. user_id={context_actor_user_data.get().user_id}, Event ID: {event_id}, "
                 f"Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
             )
             return GenericResponseModel(
@@ -406,7 +406,7 @@ class ReservationService:
                 ),
             )
         except Exception as e:
-            logger.error(f"Error retrieving reservations: {str(e)}")
+            logger.error(f"Error retrieving reservations: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(f"Error retrieving reservations: {str(e)}")
 
     @staticmethod
@@ -435,7 +435,7 @@ class ReservationService:
                     ResponseMessages.ERR_RESERVATION_NOT_FOUND
                 )
         except Exception as e:
-            logger.error(f"Error finding reservation: {str(e)}")
+            logger.error(f"Error finding reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_RESERVATION_NOT_FOUND)
 
     @staticmethod
@@ -461,5 +461,31 @@ class ReservationService:
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
-            logger.error(f"Error confirming reservation: {str(e)}")
+            logger.error(f"Error confirming reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
+            raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+        
+    @staticmethod
+    def reject_reservation(reservation_id: int) -> GenericResponseModel:
+        """
+        Reject a reservation by setting its status to 'rejected'.
+
+        Args:
+            reservation_id (int): The ID of the reservation to reject.
+
+        Returns:
+            GenericResponseModel: A response model containing the updated reservation details.
+        """
+        try:
+            updated_reservation = Reservation.reject_reservation(reservation_id)
+
+            return GenericResponseModel(
+                api_id=context_id_api.get(),
+                message=ResponseMessages.MSG_SUCCESS_REJECT_RESERVATION,
+                status_code=status.HTTP_200_OK,
+                data=updated_reservation,
+            )
+        except CustomBadRequestException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error rejecting reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)

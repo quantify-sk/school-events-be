@@ -105,7 +105,7 @@ class UserService:
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
-            logger.error(f"Error while creating user: {str(e)}")
+            logger.error(f"Error while creating user: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()
 
     @staticmethod
@@ -177,7 +177,7 @@ class UserService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         # Log the successful deletion of the user
-        logger.info(f"User ID {user_id} deleted user ID {user_id}")
+        logger.info(f"User ID {user_id} deleted user ID {user_id} successfully, user_id={context_actor_user_data.get().user_id}")
 
         return GenericResponseModel(
             api_id=context_id_api.get(),  # The ID of the API
@@ -224,7 +224,7 @@ class UserService:
             raise CustomInternalServerErrorException()
 
         # Log the successful update of the user
-        logger.info(f"Successfully updated user ID {user_id}")
+        logger.info(f"Successfully updated user ID {user_id}, user_id={context_actor_user_data.get().user_id}")
         return GenericResponseModel(
             api_id=context_id_api.get(),
             message=ResponseMessages.MSG_SUCCESS_UPDATE_USER,
@@ -256,7 +256,7 @@ class UserService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         # Log the successful retrieval of the user
-        logger.info(f"Successfully retrieved user ID {user_id}")
+        logger.info(f"Successfully retrieved user ID {user_id}, user_id={context_actor_user_data.get().user_id}")
 
         # Return the user
         return GenericResponseModel(
@@ -391,12 +391,12 @@ class UserService:
         Returns:
             GenericResponseModel: A response model containing the result of the operation.
         """
-        logger.info(f"Approving school representative with ID: {user_id}")
+        logger.info(f"Approving school representative with ID: {user_id}, user_id={context_actor_user_data.get().user_id}")
         user = User.update_user_status(user_id, UserStatus.ACTIVE)
 
         if user:
             logger.info(
-                f"Successfully approved school representative: {user.user_email}"
+                f"Successfully approved school representative: {user.user_email}, user_id={context_actor_user_data.get().user_id}"
             )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
@@ -426,12 +426,12 @@ class UserService:
         Returns:
             GenericResponseModel: A response model containing the result of the operation.
         """
-        logger.info(f"Rejecting school representative with ID: {user_id}")
+        logger.info(f"Rejecting school representative with ID: {user_id}, user_id={context_actor_user_data.get().user_id}")
         user = User.update_user_status(user_id, UserStatus.INACTIVE, reason)
 
         if user:
             logger.info(
-                f"Successfully rejected school representative: {user.user_email}"
+                f"Successfully rejected school representative: {user.user_email}, user_id={context_actor_user_data.get().user_id}"
             )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
@@ -440,7 +440,7 @@ class UserService:
                 data=user,
             )
         else:
-            logger.warning(f"User with ID {user_id} not found for rejection")
+            logger.warning(f"User with ID {user_id} not found for rejection, user_id={context_actor_user_data.get().user_id}")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -488,7 +488,7 @@ class UserService:
                 data=pagination_data,
             )
         except Exception as e:
-            logger.error(f"Error searching organizers: {str(e)}")
+            logger.error(f"Error searching organizers: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
     @staticmethod
@@ -520,5 +520,16 @@ class UserService:
                     data=None,
                 )
         except Exception as e:
-            logger.error(f"Error getting parent organizer: {str(e)}")
+            logger.error(f"Error getting parent organizer: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def change_password(user_id: int, new_password: str) -> None:
+        """
+        Change the password of a user.
+
+        Args:
+            user (UserModel): The user whose password is being changed.
+            new_password (str): The new password for the user.
+        """
+        User.change_password(user_id, new_password)

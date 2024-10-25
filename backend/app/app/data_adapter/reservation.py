@@ -56,6 +56,11 @@ class Reservation(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "local_reservation_code": self.local_reservation_code,
+            "event_date_date": self.event_date.date,
+            "event_title": self.event.title,
+            "event_address": self.event.address,
+            "event_city": self.event.city,
+            "user": self.user._to_model(),
         }
 
     @classmethod
@@ -543,5 +548,38 @@ class Reservation(Base):
 
             session.commit()
             session.refresh(reservation)
+
+            return reservation._to_model()
+
+    @classmethod
+    def reject_reservation(cls, reservation_id: int) -> Dict[str, Any]:
+        """
+        Reject a reservation by its ID.
+
+        Args:
+            reservation_id (int): The ID of the reservation to reject.
+
+        Returns:
+            GenericResponseModel: The response containing the result of the operation.
+
+        Raises:
+            CustomNotFoundException: If the reservation is not found.
+        """
+        with get_db_session() as session:
+            reservation = session.query(Reservation).filter_by(id=reservation_id).first()
+            if not reservation:
+                raise CustomBadRequestException(
+                    ResponseMessages.ERR_RESERVATION_NOT_FOUND
+                )
+
+            # Update the reservation status to rejected
+            reservation.status = ReservationStatus.REJECTED
+
+            # Free up the seats in the event_date
+            total_seats = reservation.number_of_students + reservation.number_of_teachers
+            event_date = reservation.event_date
+            event_date.available_spots += total_seats
+
+            session.commit()
 
             return reservation._to_model()

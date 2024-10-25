@@ -1330,6 +1330,8 @@ class EventClaim(Base):
                         cls._process_delete_event(db, claim)
                     elif claim.claim_type == ClaimType.CANCEL_DATE:
                         cls._process_cancel_date(db, claim)
+                    elif claim.claim_type == ClaimType.ADD_DATE:
+                        cls._process_add_date(db, claim)
 
             claim.status = new_status
             claim.updated_at = datetime.utcnow()
@@ -1340,14 +1342,34 @@ class EventClaim(Base):
 
     @classmethod
     def _process_create_event(cls, db: Session, claim: "EventClaim"):
-        event_data = EventCreateModel(**claim.event_data)
-        new_event = Event(**event_data.dict(exclude={"attachments", "event_dates"}))
+        # Prepare event data
+        event_data = claim.event_data.copy()
+        
+        # Add missing required fields
+        event_data["institution_name"] = ""
+        event_data["organizer_id"] = claim.organizer_id
+        
+        # Create temporary event dates without id and event_id
+        dates = event_data.pop("eventDates", []) or event_data.pop("dates", [])
+        event_data["event_dates"] = []
+        
+        # Create new event first
+        event_model = EventCreateModel(**{
+            **event_data,
+            "event_dates": []  # Initialize with empty dates
+        })
+        
+        new_event = Event(**event_model.dict(exclude={"attachments", "event_dates"}))
         new_event.available_spots = new_event.capacity
         db.add(new_event)
-        db.flush()
-
-        for event_date in event_data.event_dates:
-            combined_datetime = datetime.combine(event_date.date, event_date.time)
+        db.flush()  # Get the event ID
+    
+        # Now create event dates with the event ID
+        for date_entry in dates:
+            date_obj = datetime.strptime(date_entry["date"], "%Y-%m-%d").date()
+            time_obj = datetime.strptime(date_entry["time"], "%H:%M").time()
+            combined_datetime = datetime.combine(date_obj, time_obj)
+            
             new_event_date = EventDate(
                 event_id=new_event.id,
                 date=combined_datetime,
@@ -1356,12 +1378,13 @@ class EventClaim(Base):
                 available_spots=new_event.capacity,
             )
             db.add(new_event_date)
-
-        if event_data.attachments:
-            for attachment_data in event_data.attachments:
-                attachment = Attachment(**attachment_data.dict(), event=new_event)
+    
+        # Process attachments if any
+        if event_data.get("attachments"):
+            for attachment_data in event_data["attachments"]:
+                attachment = Attachment(**attachment_data, event=new_event)
                 db.add(attachment)
-
+    
         claim.event = new_event
 
     @classmethod
@@ -1410,6 +1433,43 @@ class EventClaim(Base):
                 logger.warning(
                     f"Event date with id {date_id} not found for cancel claim {claim.id}"
                 )
+
+    @classmethod
+    def _process_add_date(cls, db: Session, claim: "EventClaim"):
+        """
+        Process a claim of type 'add_date' to add new event dates.
+
+        Args:
+            db (Session): Database session.
+            claim (EventClaim): The claim object to process.
+        """
+        if not claim.event_data or "new_dates" not in claim.event_data:
+            raise ValueError("No new dates found in claim data")
+
+        event = claim.event
+        if not event:
+            raise ValueError("Event not found for add date claim")
+
+        for new_date in claim.event_data["new_dates"]:
+            # Assuming new_date is a dict with 'date' and 'time' keys
+            combined_datetime = datetime.combine(
+                datetime.strptime(new_date["date"], "%Y-%m-%d"),  # Adjust date format as needed
+                datetime.strptime(new_date["time"], "%H:%M").time()
+            )
+
+            # Create a new EventDate instance
+            new_event_date = EventDate(
+                event_id=event.id,
+                date=combined_datetime,
+                time=combined_datetime,
+                capacity=event.capacity,
+                available_spots=event.capacity,
+            )
+            db.add(new_event_date)
+
+        # Optionally, update claim status to indicate processing is complete
+        claim.status = ClaimStatus.APPROVED
+        claim.updated_at = datetime.utcnow()
 
     @classmethod
     def _update_event_dates(

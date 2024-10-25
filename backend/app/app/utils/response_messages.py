@@ -127,3 +127,9 @@ class ResponseMessages:
     MSG_SUCCESS_GET_ALL_EVENTS_WITH_DATES = (
         "All events with dates retrieved successfully"
     )
+
+    MSG_PASSWORD_CHANGED = "Password changed successfully"
+
+    MSG_SUCCESS_GET_LOGS = "Logs retrieved successfully"
+
+    MSG_SUCCESS_REJECT_RESERVATION = "Reservation rejected successfully"

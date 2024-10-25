@@ -26,6 +26,7 @@ from app.utils.response_messages import ResponseMessages
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.service.user_service import UserService
+from app.models.user import UserChangePasswordModel
 
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRE_MINUTES = settings.REFRESH_TOKEN_EXPIRE_MINUTES
@@ -68,7 +69,7 @@ async def login_user(
     :param _: build_request_context dependency injection handles the request context
     :return: OAuth2TokenModel or GenericResponseModel
     """
-
+    print(form_data)
     user = User.get_user_object_by_email(form_data.username)
     if user is None:
         context_set_db_session_rollback.set(True)
@@ -200,3 +201,69 @@ async def refresh_token(
         access_token=access_token,
         refresh_token=refresh_token,
     )
+
+@router.put(
+    "/change_password/",
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Successful password change",
+        },
+        401: {
+            "model": GenericResponseModel,
+            "description": "Invalid user credentials",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+    summary="Change Password",
+    description="Change password using JSON body.",
+    response_description="GenericResponseModel",
+)
+async def change_password(
+    form_data: UserChangePasswordModel,  # Use the model directly
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+):
+    """
+    Change password
+    :param form_data: UserChangePasswordModel contains user_id, old_password, and new_password
+    :param auth: authenticate_user_token dependency injection handles the authentication
+    :param _: build_request_context dependency injection handles the request context
+    :return: GenericResponseModel
+    """
+    context_user_data = context_actor_user_data.get()
+    if not context_user_data:
+        raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+
+    user_id = context_user_data.user_id
+    user: UserModel = User.get_user_by_id(user_id)
+    if not user:
+        raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
+
+    if not verify_password(form_data.old_password, user.password_hash):
+        User.handle_failed_login(user.user_id)
+        logger.info(
+            msg=f"Invalid credentials for user {user.user_id} at {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
+        )
+        context_set_db_session_rollback.set(True)
+        return build_api_response(
+            GenericResponseModel(
+                api_id=context_id_api.get(),
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                error=ResponseMessages.ERR_INVALID_USER_CREDENTIALS,
+            )
+        )
+
+    UserService.change_password(user_id, form_data.new_password)  # Pass user_id directly
+    return build_api_response(
+        GenericResponseModel(
+            api_id=context_id_api.get(),
+            status_code=status.HTTP_200_OK,
+            message=ResponseMessages.MSG_PASSWORD_CHANGED,
+        )
+    )
+

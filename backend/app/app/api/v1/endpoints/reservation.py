@@ -506,3 +506,44 @@ async def confirm_reservation(
     """
     response = ReservationService.confirm_reservation(reservation_id)
     return build_api_response(response)
+
+
+@router.put(
+    "/{reservation_id}/reject/",
+    status_code=status.HTTP_200_OK,
+    response_model=GenericResponseModel,
+    summary="Reject Reservation",
+    description="Reject a reservation by its ID.",
+    responses={
+        200: {
+            "model": GenericResponseModel,
+            "description": "Reservation rejected",
+        },
+        404: {
+            "model": GenericResponseModel,
+            "description": "Reservation not found",
+        },
+        500: {
+            "model": GenericResponseModel,
+            "description": "Internal Server Error",
+        },
+    },
+)
+async def reject_reservation(
+    reservation_id: int,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+) -> GenericResponseModel:
+    """
+    Reject a reservation by its ID.
+
+    Args:
+        reservation_id (int): ID of the reservation to reject.
+        auth (Depends): The authentication token.
+        _ (Depends): The request context.
+
+    Returns:
+        GenericResponseModel: The response confirming the rejection.
+    """
+    response = ReservationService.reject_reservation(reservation_id)
+    return build_api_response(response)

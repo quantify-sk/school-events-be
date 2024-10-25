@@ -31,6 +31,7 @@ class ClaimType(str, Enum):
     DELETE_EVENT = "delete_event"
     EDIT_EVENT = "edit_event"
     CREATE_EVENT = "create_event"
+    ADD_DATE = "add_date"
 
 
 class ClaimStatus(str, Enum):

@@ -9,6 +9,7 @@ class ReservationStatus(str, Enum):
     CONFIRMED = "confirmed"
     CANCELLED = "cancelled"
     CREATED = "created"
+    REJECTED = "rejected"
 
 
 class ReservationCreateModel(BaseModel):

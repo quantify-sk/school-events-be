@@ -69,7 +69,7 @@ class ReportService:
             )
 
             logger.info(
-                f"Generated report of type {report_type} for user ID: {filters.user_id}"
+                f"Generated report of type {report_type} for user_id={context_actor_user_data.get().user_id}"
             )
             return GenericResponseModel(
                 api_id=context_id_api.get(),
@@ -79,10 +79,10 @@ class ReportService:
             )
 
         except ValueError as e:
-            logger.error(f"Invalid input for report generation: {str(e)}")
+            logger.error(f"Invalid input for report generation: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INVALID_REPORT_INPUT)
         except Exception as e:
-            logger.error(f"Unexpected error generating report: {str(e)}")
+            logger.error(f"Unexpected error generating report: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()
 
     @staticmethod
@@ -99,7 +99,7 @@ class ReportService:
             raise e
         except Exception as e:
             logger.error(
-                f"Unexpected error getting report. ID: {report_id}. Error: {str(e)}"
+                f"Unexpected error getting report. ID: {report_id}. Error: {str(e)} user_id={context_actor_user_data.get().user_id}"
             )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
@@ -114,7 +114,7 @@ class ReportService:
                 data=reports,
             )
         except Exception as e:
-            logger.error(f"Unexpected error getting all reports. Error: {str(e)}")
+            logger.error(f"Unexpected error getting all reports. Error: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
     @staticmethod
@@ -127,7 +127,7 @@ class ReportService:
                 filters=report_data.get("filters", {}),
                 data=report_data["data"],
             )
-            logger.info(f"Saved report for user ID: {user_id}")
+            logger.info(f"Saved report for user_id={context_actor_user_data.get().user_id}")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_SAVE_REPORT,
@@ -135,7 +135,7 @@ class ReportService:
                 data=report,
             )
         except Exception as e:
-            logger.error(f"Unexpected error saving report. Error: {str(e)}")
+            logger.error(f"Unexpected error saving report. Error: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException(
                 ResponseMessages.ERR_INTERNAL_SERVER_ERROR
             )
@@ -151,14 +151,14 @@ class ReportService:
             # Implement email sending logic here
             # ...
         except Exception as e:
-            logger.error(f"Unexpected error emailing report. Error: {str(e)}")
+            logger.error(f"Unexpected error emailing report. Error: {str(e)} user_id={context_actor_user_data.get().user_id}")
             # Since this is a background task, we'll log the error but not raise an exception
 
     @staticmethod
     def export_report(report_data: Dict[str, Any], format: str) -> StreamingResponse:
         try:
             user_id = context_actor_user_data.get().user_id
-            logger.info(f"Exporting report in {format} format for user ID: {user_id}")
+            logger.info(f"Exporting report in {format} format for user_id={context_actor_user_data.get().user_id}")
 
             # Convert report_data to a pandas DataFrame
             df = pd.DataFrame(report_data.get("data", []))
@@ -258,10 +258,10 @@ class ReportService:
                 raise ValueError(f"Unsupported format: {format}")
 
         except ValueError as ve:
-            logger.error(f"ValueError in export_report: {str(ve)}")
+            logger.error(f"ValueError in export_report: {str(ve)} user_id={context_actor_user_data.get().user_id}")
             raise HTTPException(status_code=400, detail=str(ve))
         except Exception as e:
-            logger.error(f"Unexpected error exporting report. Error: {str(e)}")
+            logger.error(f"Unexpected error exporting report. Error: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()
 
     @staticmethod
@@ -274,5 +274,5 @@ class ReportService:
                 status_code=status.HTTP_200_OK,
             )
         except Exception as e:
-            logger.error(f"Unexpected error deleting report: {str(e)}")
+            logger.error(f"Unexpected error deleting report: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()

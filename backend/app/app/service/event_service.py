@@ -89,7 +89,7 @@ class EventService:
             raise CustomInternalServerErrorException(ResponseMessages.ERR_CREATE_EVENT)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} created event: {new_event['id']}"
+            f"user_id={context_actor_user_data.get().user_id} created event: {new_event['id']}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -127,7 +127,7 @@ class EventService:
         existing_event = Event.get_event_by_id(event_id)
         print("EVENT", existing_event)
         if not existing_event:
-            logger.error(f"Event not found for update: {event_id}")
+            logger.error(f"Event not found for update: {event_id}, user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
         # Handle new attachments
@@ -143,7 +143,7 @@ class EventService:
             raise CustomInternalServerErrorException(ResponseMessages.ERR_UPDATE_EVENT)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} updated event: {event_id}"
+            f"user_id={context_actor_user_data.get().user_id} updated event: {event_id}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -175,7 +175,7 @@ class EventService:
             raise CustomBadRequestException(ResponseMessages.ERR_EVENT_NOT_FOUND)
 
         logger.info(
-            f"User ID {context_actor_user_data.get().user_id} deleted event: {event_id}"
+            f"user_id={context_actor_user_data.get().user_id} deleted event: {event_id}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -201,6 +201,7 @@ class EventService:
         # if not context_actor_user_data.get():
         #     raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
+        current_user = context_actor_user_data.get()
         event = Event.get_event_by_id(event_id)
         if not event:
             logger.error(f"Event not found: {event_id}")
@@ -293,7 +294,7 @@ class EventService:
         total_pages = math.ceil(total_count / items_per_page)
 
         logger.info(
-            f"Events with dates retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
+            f"Events with dates retrieved. Page: {current_page}, Items: {items_per_page}, Total: {total_count} user_id={context_actor_user_data.get().user_id}"
         )
 
         # Return the paginated response
@@ -342,7 +343,7 @@ class EventService:
         total_pages = math.ceil(total_count / items_per_page)
 
         logger.info(
-            f"Organizer events retrieved. Organizer ID: {organizer_id}, Page: {current_page}, Items: {items_per_page}, Total: {total_count}"
+            f"Organizer events retrieved. Organizer ID: {organizer_id}, Page: {current_page}, Items: {items_per_page}, Total: {total_count} user_id={context_actor_user_data.get().user_id}"
         )
         return GenericResponseModel(
             api_id=context_id_api.get(),
@@ -388,7 +389,7 @@ class EventService:
 
         except ValidationError as e:
             logger.error(
-                f"Validation error for event date. ID: {event_date_id}. Error: {str(e)}"
+                f"Validation error for event date. ID: {event_date_id}. Error: {str(e)} user_id={context_actor_user_data.get().user_id}"
             )
             raise CustomBadRequestException(
                 ResponseMessages.ERR_INVALID_EVENT_DATE_DATA
@@ -399,7 +400,7 @@ class EventService:
 
         except Exception as e:
             logger.error(
-                f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)}"
+                f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)} user_id={context_actor_user_data.get().user_id}"
             )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 
@@ -419,7 +420,7 @@ class EventService:
         """
         try:
             new_claim = EventClaim.create_claim(claim_data.dict())
-            logger.info(f"Created new claim: {new_claim.id}")
+            logger.info(f"Created new claim: {new_claim.id} user_id={context_actor_user_data.get().user_id}")
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_CREATE_CLAIM,
@@ -450,7 +451,7 @@ class EventService:
                 data=[claim._to_model() for claim in pending_claims],
             )
         except Exception as e:
-            logger.error(f"Error retrieving pending claims: {str(e)}")
+            logger.error(f"Error retrieving pending claims: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()
 
     @staticmethod
@@ -484,7 +485,7 @@ class EventService:
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
-            logger.error(f"Error updating claim status: {str(e)}")
+            logger.error(f"Error updating claim status: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomInternalServerErrorException()
 
     @staticmethod
@@ -496,7 +497,7 @@ class EventService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         logger.info(
-            f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid."
+            f"Admin user_id={context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid."
         )
         try:
             success = EventDate.mark_as_paid(event_date_id)
@@ -510,7 +511,7 @@ class EventService:
                 )
             else:
                 logger.warning(
-                    f"Failed to mark event_id {event_date_id} as paid. Event may not exist or has invalid status."
+                    f"Failed to mark event_id {event_date_id} as paid. Event may not exist or has invalid status. user_id={context_actor_user_data.get().user_id}"
                 )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
@@ -519,7 +520,7 @@ class EventService:
                     data={"event_date_id": event_date_id},
                 )
         except Exception as e:
-            logger.error(f"Error marking event_id {event_date_id} as paid: {str(e)}")
+            logger.error(f"Error marking event_id {event_date_id} as paid: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise Exception(f"Error marking event as paid: {str(e)}")
 
     @staticmethod
@@ -531,13 +532,13 @@ class EventService:
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
 
         logger.info(
-            f"Admin user_id {context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as completed."
+            f"Admin user_id={context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as completed."
         )
         try:
             success = EventDate.mark_as_completed(event_date_id)
             if success:
                 logger.info(
-                    f"Event_id {event_date_id} marked as completed successfully."
+                    f"Event_id {event_date_id} marked as completed successfully. user_id={context_actor_user_data.get().user_id}"
                 )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
@@ -547,7 +548,7 @@ class EventService:
                 )
             else:
                 logger.warning(
-                    f"Failed to mark event_id {event_date_id} as completed. Event may not exist or has invalid status."
+                    f"Failed to mark event_id {event_date_id} as completed. Event may not exist or has invalid status. user_id={context_actor_user_data.get().user_id}"
                 )
                 return GenericResponseModel(
                     api_id=context_id_api.get(),
@@ -557,6 +558,6 @@ class EventService:
                 )
         except Exception as e:
             logger.error(
-                f"Error marking event_id {event_date_id} as completed: {str(e)}"
+                f"Error marking event_id {event_date_id} as completed: {str(e)} user_id={context_actor_user_data.get().user_id}"
             )
             raise Exception(f"Error marking event as completed: {str(e)}")

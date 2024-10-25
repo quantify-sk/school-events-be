@@ -1,5 +1,6 @@
 import app.api.v1.endpoints
 import app.logger
+import bcrypt
 from datetime import datetime, timedelta
 import starlette.responses
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
 from app.logger import logger
 from app.models.user import UserModel
 from app.models.school import SchoolUpdateModel
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, backref
 from app.data_adapter.event import EventClaim
 
 
@@ -71,8 +72,19 @@ class User(Base):
     school = relationship("School", back_populates="representatives")
 
     # New field for employee accounts
+    # This defines which organizer this user works for
+    
     parent_organizer_id = Column(Integer, ForeignKey("user.user_id"), nullable=True)
-    employees = relationship("User", backref="parent_organizer", remote_side=[user_id])
+    
+    # Employees that this organizer manages
+    employees = relationship(
+        "User",
+        primaryjoin="User.user_id==User.parent_organizer_id",
+        backref=backref(
+            "parent_organizer",
+            remote_side=[user_id]
+        )
+    )
     reservations = relationship("Reservation", back_populates="user")
     waiting_list = relationship("WaitingList", back_populates="user")
     reports = relationship("Report", back_populates="user")
@@ -120,6 +132,16 @@ class User(Base):
         """
         Convert the User ORM object to a Pydantic model.
         """
+        # Handle employees relationship
+        if self.employees:
+            if isinstance(self.employees, list):
+                employees_list = [employee._to_model() for employee in self.employees]
+            else:
+                # If it's a single employee, wrap it in a list
+                employees_list = [self.employees._to_model()]
+        else:
+            employees_list = []
+
         return UserModel(
             user_id=self.user_id,
             created_at=self.created_at,
@@ -138,7 +160,9 @@ class User(Base):
             school=self.school._to_model() if self.school else None,
             parent_organizer_id=self.parent_organizer_id,
             phone_number=self.phone_number,
+            employees=employees_list
         )
+            
 
     @classmethod
     def get_user_by_email(cls, email: str) -> UserModel | None:
@@ -156,6 +180,34 @@ class User(Base):
         db = get_db_session()
         user = db.query(cls).filter(cls.user_email == email).first()
         return user._to_model() if user else None
+    
+    @classmethod
+    def change_password(cls, user_id: int, new_password: str) -> bool:
+        """
+        Change the password of a user.
+
+        Args:
+            user_id (int): The ID of the user.
+            new_password (str): The new password.
+
+        Returns:
+            bool: True if the password was changed successfully, False otherwise.
+        """
+        from app.dependencies import get_password_hash
+        with get_db_session() as session:
+            user = session.query(cls).filter(cls.user_id == user_id).first()
+            if user:
+                print("User found:", user.user_email)  # Debug: Check if user is found
+                print("New password", new_password)  # Debug: Check the new password
+                print("Hashed password", get_password_hash(new_password))  # Debug: Check the hashed password
+                      
+                # Hash the new password using the utility function
+                user.password_hash = get_password_hash(new_password)
+                session.commit()  # Commit the transaction to save changes
+                print("Password changed successfully")  # Debug: Confirm password change
+                return True
+            print("User not found")  # Debug: User not found
+        return False
 
     @classmethod
     def get_user_object_by_email(cls, email: str) -> "User":

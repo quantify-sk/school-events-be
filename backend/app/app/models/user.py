@@ -42,6 +42,7 @@ class UserModel(BaseModel):
     subscription: str | None = None
     school: SchoolModel | None = None
     phone_number: str | None = None
+    employees: list["UserModel"] | None = None
 
     def build_user_token_data(self) -> UserTokenData:
         return UserTokenData(
@@ -84,3 +85,9 @@ class UserUpdateModel(UserCreateWithoutPasswordModel):
     subscription: str | None = None
     school: SchoolUpdateModel | None = None
     parent_organizer_id: int | None = None  # Added this field
+
+
+class UserChangePasswordModel(BaseModel):
+    user_id: int
+    old_password: str
+    new_password: str

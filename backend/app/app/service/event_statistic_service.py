@@ -26,5 +26,5 @@ class EventStatisticsService:
             )
 
         except Exception as e:
-            logger.error(f"Error generating statistics: {str(e)}")
+            logger.error(f"Error generating statistics: {str(e)} user_id={context_actor_user_data.get().user_id}")
             raise CustomBadRequestException(ResponseMessages.ERR_GENERATING_STATISTICS)

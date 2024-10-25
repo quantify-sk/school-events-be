@@ -6,6 +6,7 @@ from app.api.v1.endpoints import (
     waiting_list,
     report,
     statistics,
+    log
 )
 from fastapi import APIRouter
 
@@ -52,4 +53,10 @@ api_router.include_router(
     statistics.router,
     prefix="/statistics",
     tags=["Statistics"],
+)
+
+api_router.include_router(
+    log.router,
+    prefix="/log",
+    tags=["Log"],
 )
