@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aktualizácia stavu požiadavky</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .footer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Aktualizácia stavu požiadavky</h2>
+        </div>
+        <div class="content">
+            <p>Dobrý deň,</p>
+            
+            <p>stav Vašej požiadavky pre podujatie "{{ event_title }}" bol aktualizovaný.</p>
+            
+            <p><strong>Detaily požiadavky:</strong></p>
+            <ul>
+                <li>Typ požiadavky: {{ claim_type }}</li>
+                <li>Nový stav: {{ status }}</li>
+            </ul>
+
+            {% if status == 'approved' %}
+            <p>Vaša požiadavka bola schválená a zmeny boli aplikované.</p>
+            {% elif status == 'rejected' %}
+            <p>Vaša požiadavka bola zamietnutá. V prípade otázok nás prosím kontaktujte.</p>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>S pozdravom,<br>Váš tím podpory</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,7 @@
+import json
 import math
 from datetime import datetime, timedelta
+import os
 import typing
 
 from app.context_manager import context_actor_user_data, context_id_api
@@ -21,38 +23,17 @@ from app.utils.exceptions import (
     CustomInternalServerErrorException,
 )
 from app.utils.response_messages import ResponseMessages
-from fastapi import status
+from fastapi import status, BackgroundTasks
 from app.data_adapter.school import School
 from typing import Any, List, Dict, Optional
+from app.data_adapter.email_log import EmailLog, EmailLogStatus
+from app.models.email_log import EmailLogTemplates, EmailLogTypes, EmailLogLanguage
+from app.service.email_service import EmailService
 
 
 class UserService:
     @staticmethod
-    def create_user(user_data: UserCreateModel) -> GenericResponseModel:
-        """
-        Create a new user, handling school representatives separately.
-
-        This method performs the following steps:
-        1. Checks if the email is already taken
-        2. For school representatives:
-           - Validates school data
-           - Checks if the school already exists and raises an exception if it does
-           - Creates a new school
-           - Associates the school with the user
-        3. Creates the new user
-        4. Creates a notification for the new user
-
-        Args:
-            user_data (UserCreateModel): The data for creating the new user.
-
-        Returns:
-            GenericResponseModel: A response model containing the created user data or error information.
-
-        Raises:
-            CustomBadRequestException: If the email is already taken, school data is missing for representatives,
-                                       or the school is already registered.
-            CustomInternalServerErrorException: If there's an unexpected error during user creation.
-        """
+    async def create_user(user_data: UserCreateModel, background_tasks: BackgroundTasks,) -> GenericResponseModel:
         try:
             # Check if the email is already taken
             existing_user = User.get_user_by_email(user_data.user_email)
@@ -77,8 +58,6 @@ class UserService:
 
                 # Create a new school
                 school = School.create_new_school(user_data.school)
-
-                # Associate the school with the user data
                 user_data.school_id = school.id
 
             # Create a new user
@@ -92,9 +71,55 @@ class UserService:
                 [new_user.user_id],
             )
 
+            # Create and send registration email
+            email_data = {
+                "first_name": new_user.first_name,
+                "last_name": new_user.last_name,
+                "email": new_user.user_email,
+            }
+
+            # Create email log with all required parameters
+            email_log = EmailLog.create_new_email_log(
+                user_id=new_user.user_id,
+                recipient_email=new_user.user_email,
+                subject="Registrácia používateľa",
+                email_template=EmailLogTemplates.USER_REGISTRATION,
+                email_type=EmailLogTypes.USER_REGISTRATION,
+                email_data=json.dumps(email_data),
+                language=EmailLogLanguage.SK,
+                status=EmailLogStatus.PENDING
+            )
+
+            admin_email = os.getenv('ADMIN_EMAIL')  # Add your admin email environment variable
+            admin_id = os.getenv('ADMIN_ID')  # Add your admin ID environment variable
+
+            admin_email_data = {
+                "first_name": new_user.first_name,
+                "last_name": new_user.last_name,
+                "email": new_user.user_email,
+                "user_id": new_user.user_id,  # Use the ID of the newly created user
+            }
+            # Create an email log for admin notification
+            email_log_admin_notification = EmailLog.create_new_email_log(
+                user_id=new_user.user_id,  # Add the user_id
+                recipient_email=admin_email,
+                subject="Nová registrácia používateľa",
+                email_template=EmailLogTemplates.USER_REGISTRATION_ADMIN_NOTIFICATION,  # New template
+                email_type=EmailLogTypes.USER_REGISTRATION_ADMIN_NOTIFICATION,
+                email_data=json.dumps(admin_email_data),
+                language=EmailLogLanguage.SK,
+                status=EmailLogStatus.PENDING
+            )
+
+
+            if email_log_admin_notification:
+                background_tasks.add_task(EmailService.send_new_email, email_log_admin_notification)
+
+            if email_log:
+                background_tasks.add_task(EmailService.send_new_email, email_log)
+
             new_user = new_user._to_model()
 
-            # Return a GenericResponseModel with the created user
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_CREATE_USER,
@@ -105,8 +130,9 @@ class UserService:
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
-            logger.error(f"Error while creating user: {str(e)} user_id={context_actor_user_data.get().user_id}")
+            logger.error(f"Error while creating user: {str(e)}")
             raise CustomInternalServerErrorException()
+
 
     @staticmethod
     def get_all_users(
@@ -379,7 +405,7 @@ class UserService:
         )
 
     @staticmethod
-    def approve_user(user_id: int) -> GenericResponseModel:
+    def approve_user(user_id: int, background_tasks: BackgroundTasks) -> GenericResponseModel:
         """
         Approve a school representative account.
 
@@ -398,6 +424,31 @@ class UserService:
             logger.info(
                 f"Successfully approved school representative: {user.user_email}, user_id={context_actor_user_data.get().user_id}"
             )
+
+            # Create email data
+            email_data = {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.user_email,
+            }
+            # Create email log entry
+            email_log = EmailLog.create_new_email_log(
+                user_id=user.user_id,
+                recipient_email=user.user_email,  # User's email
+                subject="Tvoj účet bol schválený",  # Email subject
+                email_data=json.dumps(email_data),
+                email_template=EmailLogTemplates.USER_ACCOUNT_ACTIVATION,  # Use the appropriate template
+                email_type=EmailLogTypes.USER_ACCOUNT_ACTIVATION,
+                language=EmailLogLanguage.SK,  # Adjust as needed
+            )
+
+            # Send email
+            background_tasks.add_task(
+                EmailService.send_new_email,
+                pending_email=email_log,
+                attachment_file_paths=[],  # Include any attachment paths if needed
+            )
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_200_OK,
@@ -413,7 +464,7 @@ class UserService:
             )
 
     @staticmethod
-    def reject_user(user_id: int, reason: str) -> GenericResponseModel:
+    def reject_user(user_id: int, reason: str, background_tasks: BackgroundTasks) -> GenericResponseModel:
         """
         Reject a school representative account.
 
@@ -433,6 +484,31 @@ class UserService:
             logger.info(
                 f"Successfully rejected school representative: {user.user_email}, user_id={context_actor_user_data.get().user_id}"
             )
+
+            # Create email data
+            email_data = {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.user_email,
+            }
+            # Create email log entry
+            email_log = EmailLog.create_new_email_log(
+                user_id=user.user_id,
+                recipient_email=user.user_email,  # User's email
+                subject="Tvoj účet nebol schválený",  # Email subject
+                email_data=json.dumps(email_data),
+                email_template=EmailLogTemplates.USER_ACCOUNT_REJECTION,  # Use the appropriate template
+                email_type=EmailLogTypes.USER_ACCOUNT_REJECTION,
+                language=EmailLogLanguage.SK,  # Adjust as needed
+            )
+
+            # Send email
+            background_tasks.add_task(
+                EmailService.send_new_email,
+                pending_email=email_log,
+                attachment_file_paths=[],  # Include any attachment paths if needed
+            )
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 status_code=status.HTTP_200_OK,

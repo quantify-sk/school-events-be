@@ -28,6 +28,10 @@ from app.logger import logger
 from pydantic import ValidationError
 from fastapi import Body
 
+import pandas as pd
+from io import BytesIO
+from fastapi.responses import StreamingResponse
+
 router = APIRouter()
 
 
@@ -769,3 +773,44 @@ async def mark_event_as_completed(
     """
     response: GenericResponseModel = await EventService.mark_as_completed(event_date_id)
     return build_api_response(response)
+
+
+
+@router.post("/export")
+async def export_events_to_excel(data: List[dict]):
+    # Create DataFrame from the data
+    df = pd.DataFrame(data)
+    
+    # Create Excel file in memory
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Podujatia', index=False)
+        
+        # Get workbook and worksheet objects
+        workbook = writer.book
+        worksheet = writer.sheets['Podujatia']
+        
+        # Add some formatting
+        header_format = workbook.add_format({
+            'bold': True,
+            'bg_color': '#F0F0F0',
+            'border': 1
+        })
+        
+        # Format the header row
+        for col_num, value in enumerate(df.columns.values):
+            worksheet.write(0, col_num, value, header_format)
+            worksheet.set_column(col_num, col_num, len(value) + 5)  # Adjust column width
+    
+    # Prepare the response
+    output.seek(0)
+    
+    headers = {
+        'Content-Disposition': 'attachment; filename=events_export.xlsx'
+    }
+    
+    return StreamingResponse(
+        output, 
+        media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers=headers
+    )

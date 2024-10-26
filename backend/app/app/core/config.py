@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     DATABASE_NAME: str
     DATABASE_PORT: int
 
+    # Email
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_SERVER: str
+    MAIL_PORT: int
+    MAIL_FROM_NAME: str
+    SENDING_NOTIFICATIONS: bool
+
+
     # 5 minutes
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 

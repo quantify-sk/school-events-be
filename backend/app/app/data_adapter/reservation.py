@@ -402,7 +402,7 @@ class Reservation(Base):
             return reservation._to_model()
 
     @classmethod
-    def generate_local_code(session) -> str:
+    def generate_local_code(cls, session) -> str:
         """
         Generate a unique local reservation code.
 
@@ -583,3 +583,24 @@ class Reservation(Base):
             session.commit()
 
             return reservation._to_model()
+        
+    @classmethod
+    def get_active_reservations_by_event_id(cls, event_id: int) -> List["Reservation"]:
+        """
+        Get all active reservations for a specific event without pagination.
+
+        Args:
+            event_id (int): The ID of the event
+
+        Returns:
+            List[ReservationModel]: List of active reservations for the event
+        """
+        from app.context_manager import get_db_session
+        db = get_db_session()
+
+        reservations = db.query(cls).filter(
+            cls.event_id == event_id,
+            cls.status != ReservationStatus.CANCELLED
+        ).all()
+
+        return reservations

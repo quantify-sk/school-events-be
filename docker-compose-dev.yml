@@ -7,7 +7,9 @@ services:
     volumes:
       - ./backend/app:/code
       - ../files:/files
-      - ../logs:/logs   
+      - ../logs:/logs  
+      - ./backend/templates:/code/app/templates 
+      - ./backend/app/qr_codes:/code/app/qr_codes
     expose:
       - 8000    
     env_file: 

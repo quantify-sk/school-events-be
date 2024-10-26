@@ -9,6 +9,9 @@ from app.utils.exceptions import CustomAuthException
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
+
+context_request: ContextVar[Optional[Request]] = ContextVar("request", default=None)
+
 # Context variables
 context_db_session: ContextVar[Session] = ContextVar("db_session", default=None)
 context_id_api: ContextVar[str] = ContextVar("id_api", default=None)

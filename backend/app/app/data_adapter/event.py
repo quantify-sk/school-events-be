@@ -1279,8 +1279,8 @@ class EventClaim(Base):
         JSON, nullable=True
     )  # Store event data for create/update claims
 
-    event = relationship("Event", back_populates="claims")
-    event_date = relationship("EventDate", back_populates="claims")
+    event = relationship("Event", back_populates="claims", lazy='joined')
+    event_date = relationship("EventDate", back_populates="claims", lazy='joined')
 
     @classmethod
     def create_claim(cls, claim_data: Dict[str, Any]) -> "EventClaim":

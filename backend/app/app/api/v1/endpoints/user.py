@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import json
 from typing import Optional, List
 
@@ -16,7 +17,11 @@ from app.models.user import (
 )
 from app.service.user_service import UserService
 from app.utils.response_messages import ResponseMessages
-from fastapi import APIRouter, Depends, Query, status
+from app.data_adapter.email_log import EmailLog
+from app.service.email_service import EmailService
+from app.models.email_log import EmailLogModel
+from fastapi import APIRouter, Depends, Query, status, BackgroundTasks
+
 
 router = APIRouter()
 
@@ -52,6 +57,7 @@ router = APIRouter()
 )
 async def create_user(
     user_data: UserCreateModel,  # The data for creating the user.
+    background_tasks: BackgroundTasks,
     _=Depends(build_request_context),  # Build the request context.
 ) -> GenericResponseModel:  # The response containing the result of the operation.
     """Create a new user for a user.
@@ -66,8 +72,9 @@ async def create_user(
     """
     # Call the create_user method of the UserService class to create the user
     # The UserService.create_user method takes in the user_data and returns a GenericResponseModel
-    response: GenericResponseModel = UserService.create_user(
-        user_data,  # The data for creating the user.
+    response: GenericResponseModel = await UserService.create_user(
+        user_data,
+        background_tasks  # The data for creating the user.
     )
 
     # Build the response with the request context
@@ -450,6 +457,7 @@ async def get_pending_approval_requests(
 )
 async def approve_user(
     user_id: int,
+    background_tasks: BackgroundTasks,
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ):
@@ -473,7 +481,7 @@ async def approve_user(
         - 404: User not found. The model is GenericResponseModel.
         - 500: Internal Server Error. The model is GenericResponseModel.
     """
-    response: GenericResponseModel = UserService.approve_user(user_id)
+    response: GenericResponseModel = UserService.approve_user(user_id, background_tasks)
     return build_api_response(response)
 
 
@@ -595,3 +603,55 @@ async def search_organizers(
 
     # Return the response after adding the request context
     return build_api_response(response)
+
+
+@router.post("/test-email/")
+async def test_email_sending(
+    background_tasks: BackgroundTasks,
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+):
+    try:
+        # Fetch the email log data you want to test with
+        email_log = EmailLog.get_first_pending_email()  # Retrieve or create a sample EmailLogModel
+
+        if not email_log:
+            raise HTTPException(status_code=404, detail="Email log not found")
+
+        email_log_model = EmailLogModel(
+            email_log_id=email_log.email_log_id,
+            user_id=email_log.user_id,
+            recipient_email=email_log.recipient_email,
+            subject=email_log.subject,
+            email_data=email_log.email_data,
+            email_template=email_log.email_template,
+            status=email_log.status,
+            language=email_log.language,
+            email_type=email_log.email_type,
+            retry_count=email_log.retry_count,
+            response=email_log.response,
+            priority=email_log.priority,
+            created_at=email_log.created_at,
+            updated_at=email_log.updated_at,
+        )
+            
+        # Test by calling the method directly
+        await EmailService.send_new_email(email_log_model)
+
+        return {"message": "Test email sent successfully"}
+
+    except Exception as e:
+        return {"error": str(e)}
+    
+
+@router.get("/get-pending-emails/")
+async def get_pending_emails(
+    auth=Depends(authenticate_user_token),
+    _=Depends(build_request_context),
+    ):
+    pending_emails = EmailLog.get_all_pending_email_logs()
+
+    if not pending_emails:
+        return {"message": "No pending emails found."}
+
+    return {"pending_emails": pending_emails}

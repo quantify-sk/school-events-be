@@ -2,7 +2,7 @@ from http.client import HTTPException
 from typing import Dict, List, Optional, Union
 from app.models.get_params import parse_json_params
 from app.utils.exceptions import CustomBadRequestException
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.service.reservation_service import ReservationService
 from app.models.response import GenericResponseModel
@@ -42,9 +42,11 @@ router = APIRouter()
 )
 async def create_reservation(
     reservation_data: ReservationCreateModel,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
+    
 ) -> GenericResponseModel:
     """
     Create a new reservation.
@@ -58,7 +60,7 @@ async def create_reservation(
     Returns:
         GenericResponseModel: The response containing the created reservation.
     """
-    response = ReservationService.create_reservation(db, reservation_data)
+    response = ReservationService.create_reservation(db, reservation_data, background_tasks)
     return build_api_response(response)
 
 

@@ -455,33 +455,107 @@ class EventService:
             raise CustomInternalServerErrorException()
 
     @staticmethod
-    async def update_claim_status(
-        claim_id: int, new_status: ClaimStatus
-    ) -> GenericResponseModel:
+    async def update_claim_status(claim_id: int, new_status: ClaimStatus) -> GenericResponseModel:
         """
-        Update the status of a claim.
-
-        Args:
-            claim_id (int): The ID of the claim to update.
-            new_status (ClaimStatus): The new status to set for the claim.
-
-        Returns:
-            GenericResponseModel: A response containing the updated claim data.
-
-        Raises:
-            CustomNotFoundException: If the claim is not found.
-            CustomInternalServerErrorException: If there's an error updating the claim.
+        Update the status of a claim and notify relevant parties.
         """
         try:
+            # Get the claim with relationships using class method
             updated_claim = EventClaim.update_claim_status(claim_id, new_status)
             if not updated_claim:
                 raise CustomBadRequestException(ResponseMessages.ERR_CLAIM_NOT_FOUND)
+
+            # Get affected event ID (either direct or from event_date)
+            event_id = updated_claim.event_id
+            if not event_id and updated_claim.event_date_id:
+                event_id = updated_claim.event_date.event_id
+
+            if event_id:
+                from app.data_adapter.reservation import Reservation, ReservationStatus
+                from app.data_adapter.email_log import EmailLog, EmailLogTemplates, EmailLogTypes, EmailLogLanguage, EmailLogStatus
+                from app.data_adapter.notification import Notification, NotificationType
+                from app.service.email_service import EmailService
+                from app.data_adapter.user import User
+
+                # Get all reservations using class method
+                reservations = Reservation.get_active_reservations_by_event_id(event_id)
+
+                # Create notification text
+                event_title = updated_claim.event.title if updated_claim.event else "New Event"
+                notification_text = f"Claim {updated_claim.claim_type.value} for event {event_title} has been {new_status.value}"
+
+                # Notify organizer
+                Notification.create_notification(
+                    notification_text,
+                    datetime.now().date(),
+                    NotificationType.INFO,
+                    [updated_claim.organizer_id]
+                )
+
+                # Notify school representatives
+                if reservations:
+                    school_rep_ids = list(set(res.user_id for res in reservations))
+                    if school_rep_ids:
+                        Notification.create_notification(
+                            f"Event you have reservation for has been modified: {notification_text}",
+                            datetime.now().date(),
+                            NotificationType.INFO,
+                            school_rep_ids
+                        )
+
+                    # Send emails to organizer
+                    organizer = User.get_user_by_id(updated_claim.organizer_id)
+                    if organizer:
+                        email_data = {
+                            "claim_type": updated_claim.claim_type.value,
+                            "status": new_status.value,
+                            "event_title": event_title,
+                        }
+
+                        email_log = EmailLog.create_new_email_log(
+                            user_id=updated_claim.organizer_id,
+                            recipient_email=organizer.user_email,
+                            subject=f"Claim Status Update: {new_status.value}",
+                            email_template=EmailLogTemplates.ORGANIZER_CLAIM_ACCEPTED,
+                            email_type=EmailLogTypes.ORGANIZER_CLAIM_ACCEPTED,
+                            email_data=json.dumps(email_data),
+                            language=EmailLogLanguage.SK,
+                            status=EmailLogStatus.PENDING
+                        )
+
+                        await EmailService.send_new_email(email_log)
+
+                    # Send emails to school representatives
+                    for reservation in reservations:
+                        school_rep = User.get_user_by_id(reservation.user_id)
+                        if school_rep:
+                            email_data = {
+                                "event_title": event_title,
+                                "claim_type": updated_claim.claim_type.value,
+                                "status": new_status.value,
+                                "reservation_code": reservation.local_reservation_code
+                            }
+
+                            email_log = EmailLog.create_new_email_log(
+                                user_id=reservation.user_id,
+                                recipient_email=school_rep.user_email,
+                                subject="Event Update Notification",
+                                email_template=EmailLogTemplates.EVENT_DATA_CHANGE,
+                                email_type=EmailLogTypes.EVENT_DATA_CHANGE,
+                                email_data=json.dumps(email_data),
+                                language=EmailLogLanguage.SK,
+                                status=EmailLogStatus.PENDING
+                            )
+
+                            await EmailService.send_new_email(email_log)
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_UPDATE_CLAIM,
                 status_code=status.HTTP_200_OK,
                 data=updated_claim._to_model(),
             )
+
         except CustomBadRequestException as e:
             raise e
         except Exception as e:
@@ -495,7 +569,6 @@ class EventService:
         """
         if not context_actor_user_data.get():
             raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
-
         logger.info(
             f"Admin user_id={context_actor_user_data.get().user_id} is attempting to mark event_id {event_date_id} as paid."
         )

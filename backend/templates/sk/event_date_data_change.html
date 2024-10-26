@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Oznámenie o zmene podujatia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .reservation-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Oznámenie o zmene podujatia</h2>
+        </div>
+        <div class="content">
+            <p>Dobrý deň,</p>
+            
+            <p>došlo k zmene v podujatí "{{ event_title }}", na ktoré máte rezerváciu.</p>
+
+            <div class="reservation-info">
+                <p><strong>Informácie o rezervácii:</strong></p>
+                <p>Kód rezervácie: {{ reservation_code }}</p>
+            </div>
+
+            <p><strong>Detaily zmeny:</strong></p>
+            <ul>
+                <li>Typ zmeny: {{ claim_type }}</li>
+                <li>Stav: {{ status }}</li>
+            </ul>
+
+            {% if claim_type == 'cancel_date' %}
+            <p><strong>Upozornenie:</strong> Termín podujatia bol zrušený. Prosím, kontaktujte organizátora pre ďalšie informácie.</p>
+            {% elif claim_type == 'cancel_event' %}
+            <p><strong>Upozornenie:</strong> Podujatie bolo zrušené. Vaša rezervácia bude automaticky stornovaná.</p>
+            {% elif claim_type == 'edit_event' %}
+            <p>V detailoch podujatia boli vykonané zmeny. Odporúčame skontrolovať aktuálne informácie o podujatí.</p>
+            {% endif %}
+
+            <p>V prípade akýchkoľvek otázok nás prosím kontaktujte.</p>
+        </div>
+        
+        <div class="footer">
+            <p>S pozdravom,<br>Váš tím podpory</p>
+        </div>
+    </div>
+</body>
+</html>

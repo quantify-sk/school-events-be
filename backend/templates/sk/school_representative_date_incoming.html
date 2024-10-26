@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pripomienka rezervácie</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .reservation-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Pripomienka rezervácie</h2>
+        </div>
+        <div class="content">
+            <p>Dobrý deň {{ first_name }} {{ last_name }},</p>
+            
+            <p>pripomíname Vám, že o 3 dni máte rezervované podujatie.</p>
+
+            <div class="reservation-details">
+                <p><strong>Detaily rezervácie:</strong></p>
+                <ul>
+                    <li>Podujatie: {{ event_title }}</li>
+                    <li>Dátum: {{ event_date }}</li>
+                    <li>Čas: {{ event_time }}</li>
+                    <li>Miesto: {{ event_location }}</li>
+                    <li>Kód rezervácie: {{ reservation_code }}</li>
+                </ul>
+            </div>
+
+            <p>Počet účastníkov:</p>
+            <ul>
+                <li>Študenti: {{ number_of_students }}</li>
+                <li>Učitelia: {{ number_of_teachers }}</li>
+            </ul>
+
+            <p>Tešíme sa na Vašu účasť!</p>
+        </div>
+        
+        <div class="footer">
+            <p>S pozdravom,<br>Váš tím podpory</p>
+        </div>
+    </div>
+</body>
+</html>

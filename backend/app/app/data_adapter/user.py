@@ -34,6 +34,8 @@ from app.models.school import SchoolUpdateModel
 from sqlalchemy.orm import joinedload, backref
 from app.data_adapter.event import EventClaim
 
+from sqlalchemy.exc import SQLAlchemyError
+
 
 class User(Base):
     __tablename__ = "user"
@@ -301,29 +303,22 @@ class User(Base):
     def delete_user_by_id(cls, user_id: int) -> bool:
         """
         Delete a user by ID from the database.
-
-        This method will permanently remove the user from the database. It will also
-        delete any related data that has a foreign key relationship with CASCADE delete.
-
-        Args:
-            user_id (int): The ID of the user to delete.
-
-        Returns:
-            bool: True if the user was deleted successfully, False if the user was not found.
-
-        Raises:
-            SQLAlchemyError: If there's an error during the database operation.
         """
         from app.context_manager import get_db_session
-
+        from app.data_adapter.email_log import EmailLog  # Import EmailLog model
+    
         try:
             with get_db_session() as db:
+                # First, delete associated email logs
+                db.query(EmailLog).filter(EmailLog.user_id == user_id).delete()
+                
+                # Then delete the user
                 user = db.query(cls).filter(cls.user_id == user_id).first()
                 if user:
                     db.delete(user)
                     db.commit()
                     logger.info(
-                        f"User with ID {user_id} has been deleted successfully."
+                        f"User with ID {user_id} and associated logs have been deleted successfully."
                     )
                     return True
                 else:
@@ -332,6 +327,7 @@ class User(Base):
                     )
                     return False
         except SQLAlchemyError as e:
+            db.rollback()
             logger.error(f"Error deleting user with ID {user_id}: {str(e)}")
             raise
 

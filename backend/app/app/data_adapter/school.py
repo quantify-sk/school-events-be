@@ -120,7 +120,7 @@ class School(Base):
         )
 
     @classmethod
-    def create_new_school(cls, school_data: SchoolCreateModel) -> SchoolModel:
+    def create_new_school(cls, school_data: SchoolCreateModel) -> "School":
         """
         Create a new school in the database.
 
@@ -143,7 +143,7 @@ class School(Base):
             db.add(new_school)
             db.commit()
             db.refresh(new_school)
-            return new_school._to_model()
+            return new_school
         except Exception as e:
             db.rollback()
             logger.error(f"Error creating new school: {str(e)}")

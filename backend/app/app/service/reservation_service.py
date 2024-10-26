@@ -1,3 +1,4 @@
+from pathlib import Path
 import app.api.v1.endpoints
 from typing import Dict, List, Optional, Union
 from sqlalchemy.orm import Session
@@ -11,47 +12,108 @@ from app.utils.exceptions import (
     CustomInternalServerErrorException,
 )
 from app.logger import logger
-from fastapi import status
+from fastapi import status, BackgroundTasks
 import math
 from app.data_adapter.event import Event
+from io import BytesIO
+import os
+import qrcode
+from PIL import Image
+import os
+import json
 
+from app.data_adapter.email_log import EmailLog, EmailLogStatus
+from app.models.email_log import EmailLogTemplates, EmailLogTypes, EmailLogLanguage
+from app.service.email_service import EmailService
+from app.data_adapter.user import User
 
 class ReservationService:
+
     @staticmethod
     def create_reservation(
-        session: Session, reservation_data: ReservationCreateModel
+        session: Session, reservation_data: ReservationCreateModel, background_tasks: BackgroundTasks
     ) -> GenericResponseModel:
-        if not context_actor_user_data.get():
-            raise CustomBadRequestException(ResponseMessages.ERR_USER_NOT_FOUND)
-
-        total_seats = (
-            reservation_data.number_of_students + reservation_data.number_of_teachers
-        )
-        if total_seats <= 0:
-            raise CustomBadRequestException(
-                ResponseMessages.ERR_INVALID_NUMBER_OF_SEATS
-            )
-
-        if reservation_data.user_id != context_actor_user_data.get().user_id:
-            raise CustomBadRequestException(ResponseMessages.ERR_INVALID_USER_ID)
+        qr_code_dir = "/code/app/qr_codes"
+        qr_code_path = None
 
         try:
+            # Ensure directory exists
+            os.makedirs(qr_code_dir, exist_ok=True)
+
+            # Create the reservation
             new_reservation = Reservation.create_reservation(reservation_data)
-            logger.info(
-                f"user_id={context_actor_user_data.get().user_id} created reservation: {new_reservation['id']}"
+
+            # Generate QR code
+            local_reservation_code = new_reservation['local_reservation_code']
+            qr_code_filename = f"qr_code_{local_reservation_code}.png"
+            qr_code_path = os.path.join(qr_code_dir, qr_code_filename)
+
+            # Generate QR code
+            logger.info(f"Generating QR code at path: {qr_code_path}")
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
             )
+            qr.add_data(local_reservation_code)
+            qr.make(fit=True)
+
+            # Create and save the image
+            qr_image = qr.make_image(fill_color="black", back_color="white")
+            qr_image.save(qr_code_path)
+
+            if os.path.exists(qr_code_path):
+                file_size = os.path.getsize(qr_code_path)
+                logger.info(f"QR code created successfully. Size: {file_size} bytes")
+
+                # Create email log entry
+                email_data = {
+                    'reservation_code': local_reservation_code,
+                    'event_name': new_reservation.get('event_title'),
+                    'event_date': new_reservation.get('event_date_date').strftime('%Y-%m-%d'),
+                    'qr_code_path': qr_code_path,
+                }
+
+                user = User.get_user_by_id(new_reservation.get('user_id'))
+
+                email_log = EmailLog.create_new_email_log(
+                    user_id=context_actor_user_data.get().user_id,
+                    recipient_email=user.user_email,
+                    subject="Your Reservation Confirmation",
+                    email_data=json.dumps(email_data),
+                    email_template=EmailLogTemplates.SCHOOL_REPRESENTATIVE_RESERVATION,
+                    email_type=EmailLogTypes.SCHOOL_REPRESENTATIVE_RESERVATION,
+                    language=EmailLogLanguage.SK,
+                )
+
+                # Send email with QR code attachment
+                logger.info(f"Sending email with verified attachment: {qr_code_path}")
+                background_tasks.add_task(
+                    EmailService.send_new_email,
+                    email_log,
+                    [qr_code_path]  # Pass the path to be cleaned up after email is sent
+                )
+
             return GenericResponseModel(
                 api_id=context_id_api.get(),
                 message=ResponseMessages.MSG_SUCCESS_CREATE_RESERVATION,
                 status_code=status.HTTP_201_CREATED,
                 data=new_reservation,
             )
-        except CustomBadRequestException as e:
-            logger.error(f"Error creating reservation: {str(e)} user_id={context_actor_user_data.get().user_id}")
-            raise
+
         except Exception as e:
-            logger.error(f"Unexpected error creating reservation: {str(e)}")
+            logger.error(f"Error in create_reservation: {str(e)}")
+            # Only clean up QR code if there's an error
+            if qr_code_path and os.path.exists(qr_code_path):
+                try:
+                    os.remove(qr_code_path)
+                    logger.info(f"Cleaned up QR code file after error: {qr_code_path}")
+                except Exception as cleanup_error:
+                    logger.error(f"Error cleaning up QR code file: {cleanup_error}")
             raise CustomInternalServerErrorException()
+
+        
 
     @staticmethod
     def get_reservation_by_id(
