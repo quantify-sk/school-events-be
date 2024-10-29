@@ -43,6 +43,7 @@ from sqlalchemy.orm import Session
 from app.data_adapter.school import School
 from app.models.statistics import StatisticsRequestModel
 from sqlalchemy import Enum, JSON
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Event(Base):
@@ -152,103 +153,69 @@ class Event(Base):
         query = query.join(EventDate, cls.id == EventDate.event_id)
         query = query.outerjoin(Attachment, cls.id == Attachment.event_id)
 
-        # Handle event_dates manually
+        # Apply filters for event dates if provided
         if filter_params and "event_dates" in filter_params:
             date_filters = filter_params["event_dates"]
             if "date_from" in date_filters:
-                from_date = datetime.strptime(
-                    date_filters["date_from"], "%Y-%m-%d"
-                ).date()
+                from_date = datetime.strptime(date_filters["date_from"], "%Y-%m-%d").date()
                 query = query.filter(EventDate.date >= from_date)
             if "date_to" in date_filters:
                 to_date = datetime.strptime(date_filters["date_to"], "%Y-%m-%d").date()
                 query = query.filter(EventDate.date <= to_date)
 
-            # Remove event_dates from filter_params to avoid processing it again
             del filter_params["event_dates"]
         elif not admin:
-            # If not admin and no date filters, show only future events
             today = datetime.now().date()
             query = query.filter(EventDate.date >= today)
 
-        # Use ParameterValidator for other filters
+        # Apply other filters and sorting
         if filter_params:
-            query = ParameterValidator.apply_filters_and_sorting(
-                query, cls, filter_params, None
-            )
+            query = ParameterValidator.apply_filters_and_sorting(query, cls, filter_params, None)
 
-        # Handle sorting separately
         if sorting_params:
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
-                        # Always sort in descending order for dates
-                        query = query.order_by(
-                            EventDate.date.desc(),
-                            EventDate.time.desc()
-                        )
+                        query = query.order_by(EventDate.date.desc(), EventDate.time.desc())
         else:
             query = query.order_by(EventDate.date.desc(), EventDate.time.desc())
 
-        # Count total results
+        # Count total results for pagination
         total_count = query.count()
 
         # Apply pagination
         query = query.limit(items_per_page).offset((current_page - 1) * items_per_page)
 
-        # Execute query
+        # Execute the query
         all_results = query.all()
 
         # Process results
         all_events = []
         event_attachments = {}
 
-
-
         for event, event_date, attachment in all_results:
-
-
             event_dict = event._to_model()
 
-            # Sort the event dates
-            sorted_event_dates = sorted(
-                event.event_dates,
-                key=lambda x: (x.date, x.time),  # Use datetime objects directly
-                reverse=True
-            )
-            
-            # Use only the first (most recent) date after sorting
-            if sorted_event_dates:
-                most_recent_date = sorted_event_dates[0]
-                event_dict["event_date"] = most_recent_date.date
-                event_dict["event_time"] = most_recent_date.time
-                event_dict["current_event_date_id"] = most_recent_date.id
-                event_dict["is_current_event_date_locked"] = most_recent_date.is_locked()
-                event_dict["event_date_status"] = most_recent_date.status
-        
 
-            event_id = event_dict["id"]
-
+            # Handle attachments
             if attachment is not None:
-                if event_id not in event_attachments:
+                if event_dict["id"] not in event_attachments:
                     with open(attachment.path, "rb") as file:
                         file_data = file.read()
-                    event_attachments[event_id] = {
+                    event_attachments[event_dict["id"]] = {
                         "id": attachment.id,
                         "name": attachment.name,
-                        "data": base64.b64encode(file_data).decode("utf-8")
-                        if not admin
-                        else None,
+                        "data": base64.b64encode(file_data).decode("utf-8") if not admin else None,
                         "type": attachment.type,
                     }
 
             all_events.append(event_dict)
 
+        # Attachments processing
         for event_dict in all_events:
             event_dict["attachments"] = (
                 [event_attachments.get(event_dict["id"])]
-                if event_dict["id"] in event_attachments
-                else []
+                if event_dict["id"] in event_attachments else []
             )
 
         return all_events, total_count
@@ -1095,6 +1062,16 @@ class EventDate(Base):
     claims = relationship(
         "EventClaim", back_populates="event_date", cascade="all, delete-orphan"
     )
+    @hybrid_property
+    def total_attendees(self):
+        from app.models.reservation import ReservationStatus
+        return sum(
+            reservation.number_of_students + reservation.number_of_teachers
+            for reservation in self.reservations
+            if reservation.status == ReservationStatus.CONFIRMED
+        )
+
+    
 
     def __init__(
         self,
@@ -1174,6 +1151,7 @@ class EventDate(Base):
             "available_spots": self.available_spots,
             "is_locked": self.is_locked(),
             "status": self.status,
+            "total_attendees": self.total_attendees,
         }
 
     @classmethod
@@ -1183,7 +1161,12 @@ class EventDate(Base):
         """
         try:
             with get_db_session() as db:
-                event_date = db.query(cls).filter(cls.id == event_date_id).first()
+                event_date = (
+                    db.query(cls)
+                    .options(joinedload(cls.reservations))  # Eager load reservations
+                    .filter(cls.id == event_date_id)
+                    .first()
+                )
                 return event_date
         except Exception as e:
             print(f"Error retrieving event date: {str(e)}")

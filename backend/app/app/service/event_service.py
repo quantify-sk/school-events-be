@@ -389,7 +389,7 @@ class EventService:
 
         except ValidationError as e:
             logger.error(
-                f"Validation error for event date. ID: {event_date_id}. Error: {str(e)} user_id={context_actor_user_data.get().user_id}"
+                f"Validation error for event date. ID: {event_date_id}. Error: {str(e)} "
             )
             raise CustomBadRequestException(
                 ResponseMessages.ERR_INVALID_EVENT_DATE_DATA
@@ -400,7 +400,7 @@ class EventService:
 
         except Exception as e:
             logger.error(
-                f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)} user_id={context_actor_user_data.get().user_id}"
+                f"Unexpected error retrieving event date. ID: {event_date_id}. Error: {str(e)}"
             )
             raise CustomBadRequestException(ResponseMessages.ERR_INTERNAL_SERVER_ERROR)
 

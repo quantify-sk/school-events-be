@@ -63,6 +63,7 @@ class EventDateModel(BaseModel):
     lock_time: Optional[datetime] = None
     is_locked: bool = False
     status: EventStatus = EventStatus.PUBLISHED
+    total_attendees: int = 0
 
     class Config:
         from_attributes = True
