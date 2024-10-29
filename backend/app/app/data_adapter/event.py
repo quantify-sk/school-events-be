@@ -182,21 +182,13 @@ class Event(Base):
             for sort_param in sorting_params:
                 for key, value in sort_param.items():
                     if key == "event_dates.date":
+                        # Always sort in descending order for dates
                         query = query.order_by(
-                            EventDate.date.asc()
-                            if value == "asc"
-                            else EventDate.date.desc(),
-                            EventDate.time.asc()
-                            if value == "asc"
-                            else EventDate.time.desc(),
-                        )
-                    elif hasattr(cls, key):
-                        column = getattr(cls, key)
-                        query = query.order_by(
-                            column.asc() if value == "asc" else column.desc()
+                            EventDate.date.desc(),
+                            EventDate.time.desc()
                         )
         else:
-            query = query.order_by(EventDate.date.asc(), EventDate.time.asc())
+            query = query.order_by(EventDate.date.desc(), EventDate.time.desc())
 
         # Count total results
         total_count = query.count()
@@ -211,13 +203,29 @@ class Event(Base):
         all_events = []
         event_attachments = {}
 
+
+
         for event, event_date, attachment in all_results:
+
+
             event_dict = event._to_model()
-            event_dict["event_date"] = event_date.date
-            event_dict["event_time"] = event_date.time
-            event_dict["current_event_date_id"] = event_date.id
-            event_dict["is_current_event_date_locked"] = event_date.is_locked()
-            event_dict["event_date_status"] = event_date.status
+
+            # Sort the event dates
+            sorted_event_dates = sorted(
+                event.event_dates,
+                key=lambda x: (x.date, x.time),  # Use datetime objects directly
+                reverse=True
+            )
+            
+            # Use only the first (most recent) date after sorting
+            if sorted_event_dates:
+                most_recent_date = sorted_event_dates[0]
+                event_dict["event_date"] = most_recent_date.date
+                event_dict["event_time"] = most_recent_date.time
+                event_dict["current_event_date_id"] = most_recent_date.id
+                event_dict["is_current_event_date_locked"] = most_recent_date.is_locked()
+                event_dict["event_date_status"] = most_recent_date.status
+        
 
             event_id = event_dict["id"]
 
