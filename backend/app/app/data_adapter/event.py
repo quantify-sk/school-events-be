@@ -1337,25 +1337,61 @@ class EventClaim(Base):
         event_data = claim.event_data.copy()
         
         # Add missing required fields
-        event_data["institution_name"] = ""
+        event_data["institution_name"] = event_data.get("institution_name", "")
         event_data["organizer_id"] = claim.organizer_id
         
-        # Create temporary event dates without id and event_id
+        # Handle dates
         dates = event_data.pop("eventDates", []) or event_data.pop("dates", [])
-        event_data["event_dates"] = []
+        event_data["event_dates"] = []  # Initialize empty dates list
         
-        # Create new event first
-        event_model = EventCreateModel(**{
-            **event_data,
-            "event_dates": []  # Initialize with empty dates
-        })
+        # Process attachments
+        attachments = event_data.get("attachments", [])
+        validated_attachments = []
+        for attachment in attachments:
+            if isinstance(attachment, dict) and "file" in attachment:
+                file_data = attachment["file"]  # Extract file info, assuming "file" contains file data
+                # Mock upload and storage process (e.g., upload file and get file path)
+                file_path = f"/uploads/{file_data['name']}"  # Replace with actual upload logic
+                validated_attachment = {
+                    "name": file_data["name"],
+                    "path": file_path,
+                    "type": file_data.get("type", "unknown")
+                }
+                validated_attachments.append(validated_attachment)
+        event_data["attachments"] = validated_attachments if validated_attachments else None
         
+        # Create event model with validated data
+        event_model = EventCreateModel(
+            title=event_data["title"],
+            institution_name=event_data["institution_name"],
+            address=event_data["address"],
+            city=event_data["city"],
+            capacity=event_data["capacity"],
+            description=event_data.get("description"),
+            annotation=event_data.get("annotation"),
+            parent_info=event_data.get("parent_info"),
+            target_group=event_data["target_group"],
+            age_from=event_data["age_from"],
+            age_to=event_data.get("age_to"),
+            event_type=event_data["event_type"],
+            duration=event_data["duration"],
+            organizer_id=event_data["organizer_id"],
+            more_info_url=event_data.get("more_info_url"),
+            attachments=event_data["attachments"],
+            event_dates=[],  # Will be added later
+            parking_spaces=event_data.get("parking_spaces"),
+            ztp_access=event_data.get("ztp_access"),
+            region=event_data.get("region"),
+            district=event_data.get("district")
+        )
+        
+        # Create new event excluding attachments and dates
         new_event = Event(**event_model.dict(exclude={"attachments", "event_dates"}))
         new_event.available_spots = new_event.capacity
         db.add(new_event)
         db.flush()  # Get the event ID
-    
-        # Now create event dates with the event ID
+        
+        # Process dates
         for date_entry in dates:
             date_obj = datetime.strptime(date_entry["date"], "%Y-%m-%d").date()
             time_obj = datetime.strptime(date_entry["time"], "%H:%M").time()
@@ -1369,14 +1405,21 @@ class EventClaim(Base):
                 available_spots=new_event.capacity,
             )
             db.add(new_event_date)
-    
-        # Process attachments if any
-        if event_data.get("attachments"):
-            for attachment_data in event_data["attachments"]:
-                attachment = Attachment(**attachment_data, event=new_event)
+        
+        # Process validated attachments for DB storage
+        if event_model.attachments:
+            for attachment_data in event_model.attachments:
+                attachment = Attachment(
+                    event_id=new_event.id,
+                    name=attachment_data["name"],
+                    path=attachment_data["path"],
+                    type=attachment_data["type"]
+                )
                 db.add(attachment)
-    
+        
         claim.event = new_event
+        return new_event
+
 
     @classmethod
     def _process_edit_event(cls, db: Session, claim: "EventClaim"):
