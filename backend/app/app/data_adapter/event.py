@@ -1331,94 +1331,27 @@ class EventClaim(Base):
             db.refresh(claim)
             return claim
 
+    
+
     @classmethod
     def _process_create_event(cls, db: Session, claim: "EventClaim"):
-        # Prepare event data
-        event_data = claim.event_data.copy()
-        
-        # Add missing required fields
-        event_data["institution_name"] = event_data.get("institution_name", "")
-        event_data["organizer_id"] = claim.organizer_id
-        
-        # Handle dates
-        dates = event_data.pop("eventDates", []) or event_data.pop("dates", [])
-        event_data["event_dates"] = []  # Initialize empty dates list
-        
-        # Process attachments
-        attachments = event_data.get("attachments", [])
-        validated_attachments = []
-        for attachment in attachments:
-            if isinstance(attachment, dict) and "file" in attachment:
-                file_data = attachment["file"]  # Extract file info, assuming "file" contains file data
-                # Mock upload and storage process (e.g., upload file and get file path)
-                file_path = f"/uploads/{file_data['name']}"  # Replace with actual upload logic
-                validated_attachment = {
-                    "name": file_data["name"],
-                    "path": file_path,
-                    "type": file_data.get("type", "unknown")
-                }
-                validated_attachments.append(validated_attachment)
-        event_data["attachments"] = validated_attachments if validated_attachments else None
-        
-        # Create event model with validated data
-        event_model = EventCreateModel(
-            title=event_data["title"],
-            institution_name=event_data["institution_name"],
-            address=event_data["address"],
-            city=event_data["city"],
-            capacity=event_data["capacity"],
-            description=event_data.get("description"),
-            annotation=event_data.get("annotation"),
-            parent_info=event_data.get("parent_info"),
-            target_group=event_data["target_group"],
-            age_from=event_data["age_from"],
-            age_to=event_data.get("age_to"),
-            event_type=event_data["event_type"],
-            duration=event_data["duration"],
-            organizer_id=event_data["organizer_id"],
-            more_info_url=event_data.get("more_info_url"),
-            attachments=event_data["attachments"],
-            event_dates=[],  # Will be added later
-            parking_spaces=event_data.get("parking_spaces"),
-            ztp_access=event_data.get("ztp_access"),
-            region=event_data.get("region"),
-            district=event_data.get("district")
-        )
-        
-        # Create new event excluding attachments and dates
-        new_event = Event(**event_model.dict(exclude={"attachments", "event_dates"}))
-        new_event.available_spots = new_event.capacity
-        db.add(new_event)
-        db.flush()  # Get the event ID
-        
-        # Process dates
-        for date_entry in dates:
-            date_obj = datetime.strptime(date_entry["date"], "%Y-%m-%d").date()
-            time_obj = datetime.strptime(date_entry["time"], "%H:%M").time()
-            combined_datetime = datetime.combine(date_obj, time_obj)
-            
-            new_event_date = EventDate(
-                event_id=new_event.id,
-                date=combined_datetime,
-                time=combined_datetime,
-                capacity=new_event.capacity,
-                available_spots=new_event.capacity,
-            )
-            db.add(new_event_date)
-        
-        # Process validated attachments for DB storage
-        if event_model.attachments:
-            for attachment_data in event_model.attachments:
-                attachment = Attachment(
-                    event_id=new_event.id,
-                    name=attachment_data["name"],
-                    path=attachment_data["path"],
-                    type=attachment_data["type"]
-                )
-                db.add(attachment)
-        
-        claim.event = new_event
-        return new_event
+        # Find the event associated with the claim
+        event = db.query(Event).filter(Event.id == claim.event_id).first()
+    
+        if not event:
+            raise ValueError(f"No event found with ID {claim.event_id}")
+    
+        # Update the event's status to published
+        event.status = EventStatus.PUBLISHED
+    
+        # Commit the changes to the database
+        db.commit()
+        db.refresh(event)  # Refresh to get the latest state of the event
+    
+        # Associate the event with the claim
+        claim.event = event
+    
+        return event
 
 
     @classmethod

@@ -1,3 +1,4 @@
+import fastapi
 from pydantic import BaseModel, Field
 import threading
 from typing import Any, Dict, List, Optional
@@ -11,6 +12,7 @@ class EventStatus(str, Enum):
     CANCELLED = "cancelled"
     COMPLETED = "completed_paid"
     COMPLETED_UNPAID = "completed_unpaid"
+    CLAIM = "claim"
 
 
 class EventType(str, Enum):
@@ -91,6 +93,7 @@ class EventCreateModel(BaseModel):
     ztp_access: Optional[bool] = None  # Added ZTP access
     region: Optional[str] = None  # Added region
     district: Optional[str] = None  # Added district
+    status: Optional[EventStatus] = EventStatus.PUBLISHED 
 
 
 class EventUpdateModel(BaseModel):

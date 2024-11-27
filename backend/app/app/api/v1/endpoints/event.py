@@ -77,6 +77,7 @@ async def create_event(
     attachments: List[UploadFile] = File(None),
     region: Optional[str] = Form(None),
     district: Optional[str] = Form(None),
+    status: Optional[EventStatus] = Form(None),
     auth=Depends(authenticate_user_token),
     _=Depends(build_request_context),
 ) -> GenericResponseModel:
@@ -122,6 +123,7 @@ async def create_event(
             ztp_access=ztp_access,
             region=region,
             district=district,
+            status=status if status else EventStatus.PUBLISHED,
         )
     except ValidationError as e:
         raise CustomBadRequestException(f"Invalid event data: {str(e)}")
