@@ -1330,7 +1330,6 @@ def seed_new_accounts_and_event():
         return organizer
 
     new_users = [
-        ("Skola", "skola@quantify.sk", "fupvas-xyBmub-xewfu4", "school_representative"),
         ("Admin", "admin@quantify.sk", "rywkan-qorfyc-Coxnu3", "admin"),
         ("Organizator", "organizator@quantify.sk", "Fabtug-guqcek-wytde5", "organizer"),
     ]
