@@ -29,7 +29,7 @@ Príkazy v tejto dokumentácii môžete prispôsobiť v **Makefile**. Môžete i
 
 1. Naklonujte repozitár
 ```bash
-git clone https://github.com/quantify-sk/school-events-be.git
+git clone GIT-URL
 cd school-events-be
 ```
 
