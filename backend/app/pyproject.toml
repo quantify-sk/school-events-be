@@ -2,7 +2,7 @@
 name = "app"
 version = "0.0.1"
 description = "Video Platform BE"
-authors = [ "Tomas Snyrch <t.snyrch@gmail.com>",]
+authors = [ "AUTHOR_EXAMPLE",]
 [[tool.poetry.packages]]
 include = "app"
 

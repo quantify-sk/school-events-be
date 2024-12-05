@@ -161,7 +161,6 @@ def get_random_photo():
     photo_dir = "/code/app/bank-photos"
 
     # Alternatively, you can use forward slashes, which work on both Windows and Unix-like systems:
-    # photo_dir = "C:/Users/david/school-events-be/backend/app/app/bank-photos"
 
     # Check if the directory exists
     if not os.path.exists(photo_dir):
@@ -1330,8 +1329,8 @@ def seed_new_accounts_and_event():
         return organizer
 
     new_users = [
-        ("Admin", "admin@quantify.sk", "rywkan-qorfyc-Coxnu3", "admin"),
-        ("Organizator", "organizator@quantify.sk", "Fabtug-guqcek-wytde5", "organizer"),
+        ("Admin", "example@email.cz", "rywkan-qorfyc-Coxnu3", "admin"),
+        ("Organizator", "example2@email.cz", "Fabtug-guqcek-wytde5", "organizer"),
     ]
 
     for first_name, email, password, role in new_users:
