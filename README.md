@@ -27,38 +27,100 @@ Príkazy v tejto dokumentácii môžete prispôsobiť v **Makefile**. Môžete i
 
 ## Inštalácia a spustenie projektu
 
-1. Naklonujte repozitár
+# Požiadavky
+
+Pred začiatkom sa uistit, že máte nainštalované nasledujúce:
+
+1. Git
+```bash
+sudo apt update
+sudo apt install -y git
+cd school-events-be
+```
+
+2. Python 3.11
+```bash
+sudo apt install -y python3 python3-pip python3.11-venv
+sudo apt install libpq-dev python3-dev gcc
+```
+3. Docker a docker Compose
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+4. Curl pre inštaláciu poetry
+```bash
+sudo apt install -y curl
+```
+
+# Klonovanie repozitára
+Naklonujte repozitár
 ```bash
 git clone GIT-URL
 cd school-events-be
 ```
 
-2. Najprv sa uistite, že máte nainštalované všetky balíky.
+## Spustenie projektu bez Dockeru
 
+1. Inštalácia Poetry
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+2. Inštalácia závislostí: Uistite sa, že sú nainštalované vývojové hlavičky PostgreSQL:
+```bash
+sudo apt install -y libpq-dev
+```
+
+Potom nainštalujte závislosti projektu
 ```bash
 make install
 ```
+Ak narazíte na chyby s psycopg2, použite namiesto toho binárnu verziu:
+```bash
+poetry add psycopg2-binary
+```
 
-3. Spustite vývojové prostredie: 
-Spustiť lokálne v dev móde:
+3. Spustenie aplikácie
+```bash
+make run-app
+```
+
+## Spustenie projektu pomocou Dockeru
+
+
+1. Vytvorenie a spustenie kontajnerov:
+
 ```bash
 make run-dev-build
 ```
-Spustiť lokálne v production móde(AutoReload vypnutý):
-```bash
-make run-prod
-```
 
-4. Naplňte databázu počiatočnými dátami:
+2. Inicializácia databázy 
 ```bash
 make seed-db
 ```
+3. Zobrazenie logov (voliteľné):
+```bash
+make logs-dev
+```
 
+
+## Spustenie produkčného režimu
+
+1. Vytvorenie a spustenie kontajnerov
+```bash
+make run-prod
+```
+2. Prístup k aplikácií na: https://example-domain.com (Táto doména sa nastavuje v Caddyfile)
+3. Zastavenie produkčných kontrajnerov:
+```bash
+make stop-prod
+```
 5. (Voliteľné) Pre prípad, že potrebujete kompletne resetnúť aplikáciu:
 ```bash
 make rm-volumes
 ```
-Následne opakujte spustenie apikácie znova
+Následne opakujte spustenie aplikácie znovu
 
 ## Po spustení je backend dostupný na:
 - API: [http://localhost:8082/api/v1](http://localhost:8002/api/v1) 
