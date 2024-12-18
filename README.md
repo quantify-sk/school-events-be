@@ -35,16 +35,33 @@ Pred začiatkom sa uistit, že máte nainštalované nasledujúce:
 ```bash
 sudo apt update
 sudo apt install -y git
+git clone https://github.com/quantify-sk/school-events-be.git
 cd school-events-be
 ```
 
 2. Python 3.11
 ```bash
-sudo apt install -y python3 python3-pip python3.11-venv
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+
+sudo apt install -y python3 python3-pip python3.11-venv python3.11-dev
 sudo apt install libpq-dev python3-dev gcc
 ```
 3. Docker a docker Compose
 ```bash
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 4. Curl pre inštaláciu poetry
@@ -58,6 +75,23 @@ Naklonujte repozitár
 git clone GIT-URL
 cd school-events-be
 ```
+
+# Pridat environmentálne premenné
+
+Pridaj premenné pre váš SMTP server, email administrátora a ID administrátora do .env.
+```
+# Email
+MAIL_USERNAME=""
+MAIL_PASSWORD=""
+MAIL_FROM=""
+MAIL_SERVER=""
+MAIL_PORT=
+MAIL_FROM_NAME=""
+SENDING_NOTIFICATIONS=""
+ADMIN_EMAIL=""
+ADMIN_ID=
+```
+
 
 ## Spustenie projektu bez Dockeru
 
