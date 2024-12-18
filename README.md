@@ -35,16 +35,33 @@ Pred začiatkom sa uistit, že máte nainštalované nasledujúce:
 ```bash
 sudo apt update
 sudo apt install -y git
+git clone https://github.com/quantify-sk/school-events-be.git
 cd school-events-be
 ```
 
 2. Python 3.11
 ```bash
-sudo apt install -y python3 python3-pip python3.11-venv
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+
+sudo apt install -y python3 python3-pip python3.11-venv python3.11-dev
 sudo apt install libpq-dev python3-dev gcc
 ```
 3. Docker a docker Compose
 ```bash
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 4. Curl pre inštaláciu poetry
@@ -58,6 +75,23 @@ Naklonujte repozitár
 git clone GIT-URL
 cd school-events-be
 ```
+
+# Pridat environmentálne premenné
+
+Pridaj premenné pre váš SMTP server, email administrátora a ID administrátora do .env.
+```
+# Email
+MAIL_USERNAME="example@example.com"
+MAIL_PASSWORD="securepassword123"
+MAIL_FROM="noreply@example.sk"
+MAIL_SERVER="smtp.example.sk"
+MAIL_PORT=587
+MAIL_FROM_NAME="Example name"
+SENDING_NOTIFICATIONS="True/False"
+ADMIN_EMAIL="admin@example.sk"
+ADMIN_ID=12345
+```
+
 
 ## Spustenie projektu bez Dockeru
 
@@ -121,6 +155,45 @@ make stop-prod
 make rm-volumes
 ```
 Následne opakujte spustenie aplikácie znovu
+
+## Po spustení je backend dostupný na:
+
+Príkladový caddyfile setup:
+```bash
+{
+    email example@mail.com
+}
+
+https://example-api.sk {
+    handle_path /api/docs* {
+        basicauth {
+            admin $2a$14$drIJWG9SNhJDXkkdnR7t..qoK9YbccmQcgiZJ3GB.lRBw7yt871J2
+        }
+        rewrite * /api/docs{http.request.uri.path}
+        reverse_proxy fastapi_server:8000
+    }
+    reverse_proxy fastapi_server:8000
+}
+
+```
+
+- example-api.sk: Názov domény.
+- handle_path: tu špecifikujeme presnú path kde sa môže napríklad nachádzať swagger
+- reverse_proxy: Preposiela /api/* požiadavky na backend aplikáciu (napr. FastAPI).
+
+##  Zmena EMAIL sekcie v env v budúcnosti
+
+Ak potrebujete zmeniť hodnoty (napr. odosielateľa alebo SMTP server):
+
+# Zmena .env
+
+- upraviť príslušné premenné v súbore .env
+- aplikáciu reštartovať
+```bash
+make stop-prod / make stop-dev
+make run-prod / make run-dev
+```
+-Databáza nebude ovplyvnená. Zmena e-mailových nastavení nijako neovplyvňuje existujúce dáta.
 
 ## Po spustení je backend dostupný na:
 - API: [http://localhost:8082/api/v1](http://localhost:8002/api/v1) 
