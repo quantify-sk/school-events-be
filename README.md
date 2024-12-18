@@ -185,7 +185,7 @@ https://example-api.sk {
 
 Ak potrebujete zmeniť hodnoty (napr. odosielateľa alebo SMTP server):
 
-# Zmena SMTP v .env
+### Zmena SMTP v .env
 
 - upraviť príslušné premenné v súbore .env
 - aplikáciu reštartovať
