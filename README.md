@@ -185,7 +185,7 @@ https://example-api.sk {
 
 Ak potrebujete zmeniť hodnoty (napr. odosielateľa alebo SMTP server):
 
-# Zmena .env
+# Zmena SMTP v .env
 
 - upraviť príslušné premenné v súbore .env
 - aplikáciu reštartovať
@@ -193,7 +193,7 @@ Ak potrebujete zmeniť hodnoty (napr. odosielateľa alebo SMTP server):
 make stop-prod / make stop-dev
 make run-prod / make run-dev
 ```
--Databáza nebude ovplyvnená. Zmena e-mailových nastavení nijako neovplyvňuje existujúce dáta.
+- Databáza nebude ovplyvnená. Zmena e-mailových nastavení nijako neovplyvňuje existujúce dáta.
 
 ## Po spustení je backend dostupný na:
 - API: [http://localhost:8082/api/v1](http://localhost:8002/api/v1) 
