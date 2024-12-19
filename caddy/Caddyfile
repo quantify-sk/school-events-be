@@ -2,7 +2,7 @@
     email example@mail.com
 }
 
-
+# Serve Frontend on HTTPS
 API-EXAMPLE-URL {
     handle_path /api/docs* {
         basicauth {
@@ -14,3 +14,9 @@ API-EXAMPLE-URL {
     reverse_proxy fastapi_server:8000
 }
 
+# Serve Frontend on HTTPS
+FRONTEND-EXAMPLE-URL {
+  root * /home/ubuntu/app/dist
+  file_server
+  try_files {path} /index.html
+}
